@@ -15,6 +15,9 @@ nltk.download('punkt')
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
+def custom_replacement(match, most_similar_name):
+    return f"{match.group(1)}\n{most_similar_name}"
+
 def replace_similar_names(text, names_list):
     full_name_pattern = re.compile(r'\b(?:\w+(?:\s+\w+){1,4})\b')
     full_names_in_text = full_name_pattern.findall(text)
@@ -31,7 +34,8 @@ def replace_similar_names(text, names_list):
 
         if max_similarity >= 0.8:  # Adjust the similarity threshold as needed
             replaced_names.append((full_name, most_similar_name))
-            text = re.sub(fr'(\d\d:\d\d:\d\d,\d\d\d\s-->\s\d\d:\d\d:\d\d,\d\d\d\n)({full_name})', fr'\1\n{most_similar_name}', text)
+            text = re.sub(fr'(\d\d:\d\d:\d\d,\d\d\d\s-->\s\d\d:\d\d:\d\d,\d\d\d\n)({full_name})',
+                          lambda match: custom_replacement(match, most_similar_name), text)
 
     return replaced_names, text
 
