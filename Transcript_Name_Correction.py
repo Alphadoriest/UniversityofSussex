@@ -31,7 +31,7 @@ def replace_similar_names(text, names_list):
 
         if max_similarity >= 0.8:  # Adjust the similarity threshold as needed
             replaced_names.append((full_name, most_similar_name))
-            text = re.sub(fr'(\d\d:\d\d:\d\d,\d\d\d\s-->\s\d\d:\d\d:\d\d,\d\d\d\n)({full_name})', fr'\1{most_similar_name}\n', text)
+            text = re.sub(fr'(\d\d:\d\d:\d\d,\d\d\d\s-->\s\d\d:\d\d:\d\d,\d\d\d\n)({full_name})', fr'\1\n{most_similar_name}', text)
 
     return replaced_names, text
 
