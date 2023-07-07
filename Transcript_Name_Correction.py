@@ -11,6 +11,9 @@ import streamlit as st
 nltk.download('names')
 nltk.download('punkt')
 
+# Replace the URL below with the image URL of The University of Sussex
+IMAGE_URL = "https://www.example.com/sussex_university_logo.jpg"
+
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
@@ -61,20 +64,23 @@ def extract_names(text):
             names.add(word)
     return ', '.join(names)
 
-st.title("Name Replacer")
+# Display the banner image
+st.image(https://assetbank-eu-west-1-thumbnails.s3.eu-west-1.amazonaws.com/sussex_5bfc7c294c3a67a87231cebbd6fb9162/d5e/4zQ0U1q9SKoQJtX67oPyIYpqA0y30eOo.jpg?response-content-disposition=inline%3B%20filename%3D%22abt_738888560706388056MTQ3Ng.jpg%22%3B%20filename%2A%3DUTF-8%27%27abt%255F738888560706388056MTQ3Ng%252Ejpg&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20230707T223454Z&X-Amz-SignedHeaders=host&X-Amz-Expires=900&X-Amz-Credential=AKIAJAFNSNM4PNBWWYLQ%2F20230707%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Signature=7c1911cb3a39ca420253db742631a162e33ed2aaef4646efb62d8286bad644dc, use_column_width=True)
 
-names_input = st.text_input("Enter names to match (separated by commas):")
-text_input = st.text_area("Enter text:")
+st.title("Graduation Transcript Name Correction")
 
-names_file = st.file_uploader("Upload names list file (PDF, DOCX, or URL):", type=['pdf', 'docx', 'txt', 'html'])
-text_file = st.file_uploader("Upload text file (PDF, DOCX, or URL):", type=['pdf', 'docx', 'txt', 'html'])
+names_input = st.text_input("Enter all names from a Ceremony In-Person List (separated by commas):")
+text_input = st.text_area("Enter Subtitles/Transcript text:")
+
+names_file = st.file_uploader("Upload Ceremony In-Person List:", type=['pdf', 'docx', 'txt', 'html', 'vtt'])
+text_file = st.file_uploader("Upload Subtitles/Transcript file:", type=['pdf', 'docx', 'txt', 'html', 'vtt'])
 
 if names_file:
     if names_file.type == 'application/pdf':
         names_text = read_pdf(names_file)
     elif names_file.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
         names_text = read_docx(names_file)
-    elif names_file.type in ['text/plain', 'text/html']:
+    elif names_file.type in ['text/plain', 'text/html', 'text/vtt']:
         names_text = names_file.getvalue().decode('utf-8')
 
     names_input = extract_names(names_text)
@@ -84,7 +90,7 @@ if text_file:
         text_input = read_pdf(text_file)
     elif text_file.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
         text_input = read_docx(text_file)
-    elif text_file.type in ['text/plain', 'text/html']:
+    elif text_file.type in ['text/plain', 'text/html', 'text/vtt']:
         text_input = text_file.getvalue().decode('utf-8')
 
 if st.button("Submit"):
