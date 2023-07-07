@@ -8,7 +8,7 @@ def similarity(a, b):
 def replace_similar_names(text, names_list):
     # ... (same as before)
 
-st.title("Name Replacer")
+    st.title("Name Replacer")
 
 names_input = st.text_input("Enter names to match (separated by commas):")
 text_input = st.text_area("Enter text:")
