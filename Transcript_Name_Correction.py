@@ -35,6 +35,9 @@ def replace_similar_names(text, names_list):
             replaced_names.append((full_name, most_similar_name))
             text = re.sub(fr'(\d\d:\d\d:\d\d,\d\d\d\s-->\s\d\d:\d\d:\d\d,\d\d\d)(\W*)({full_name})', fr'\1\n{most_similar_name}', text)
 
+    # Add newline before the text following timecodes
+    text = re.sub(r'(\d\d:\d\d:\d\d,\d\d\d\s-->\s\d\d:\d\d:\d\d,\d\d\d)(\S)', r'\1\n\2', text)
+
     return replaced_names, text
 
 
