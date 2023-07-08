@@ -19,8 +19,8 @@ def custom_replacement(match, most_similar_name):
     return f"{match.group(1)}\n{most_similar_name}"
 
 def replace_similar_names(text, names_list):
-    full_name_pattern = re.compile(r'\b(?:\w+(?:\s+\w+){1,4})\b')
-    full_names_in_text = full_name_pattern.findall(text)
+    timecode_pattern = re.compile(r'(\d\d:\d\d:\d\d,\d\d\d\s-->\s\d\d:\d\d:\d\d,\d\d\d\n)(\w+(?:\s+\w+){0,4})')
+    full_names_in_text = [match.group(2) for match in timecode_pattern.finditer(text)]
     replaced_names = []
 
     for full_name in full_names_in_text:
