@@ -13,20 +13,21 @@ def replace_similar_names(text, names_list):
     processed_lines = []
 
     def replace_name(match):
-        full_name = match.group(0)
-        max_similarity = 0
-        most_similar_name = None
-        for name in names_list:
-            sim = similarity(full_name, name)
-            if sim > max_similarity:
-                max_similarity = sim
-                most_similar_name = name
+    full_name = match.group(0)
+    max_similarity = 0
+    most_similar_name = None
+    for name in names_list:
+        sim = similarity(full_name, name)
+        if sim > max_similarity:
+            max_similarity = sim
+            most_similar_name = name
 
-        if max_similarity >= 0.8:  # Adjust the similarity threshold as needed
-            replaced_names.append((full_name, most_similar_name))
-            return most_similar_name
-        else:
-            return full_name
+    if max_similarity >= 0.8:  # Adjust the similarity threshold as needed
+        replaced_names.append((full_name, most_similar_name))
+        most_similar_name = most_similar_name.replace('"', '').replace(',', '')
+        return most_similar_name
+    else:
+        return full_name
 
     for line in lines:
         # Skip timecode lines
