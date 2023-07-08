@@ -16,9 +16,9 @@ def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
 def replace_similar_names(text, names_list):
-full_name_pattern = re.compile(r'\b(?:\w+(?:\s+\w+){1,4})\b')
-full_names_in_text = full_name_pattern.findall(text)
-replaced_names = []
+    full_name_pattern = re.compile(r'\b(?:\w+(?:\s+\w+){1,4})\b')
+    full_names_in_text = full_name_pattern.findall(text)
+    replaced_names = []
 
 taggerscript
 Copy
