@@ -33,10 +33,10 @@ def replace_similar_names(text, names_list):
 
         if max_similarity >= 0.8:  # Adjust the similarity threshold as needed
             replaced_names.append((full_name, most_similar_name))
-            text = re.sub(fr'(\d\d:\d\d:\d\d,\d\d\d\s-->\s\d\d:\d\d:\d\d,\d\d\d)(\W*)({full_name})', fr'\1\n{most_similar_name}', text)
+            text = re.sub(fr'(\d\d:\d\d:\d\d,\d\d\d\s-->\s\d\d:\d\d:\d\d,\d\d\d\s*)({full_name})', fr'\1\n{most_similar_name}', text)
 
-    # Add newline before the text following timecodes
-    text = re.sub(r'(\d\d:\d\d:\d\d,\d\d\d\s-->\s\d\d:\d\d:\d\d,\d\d\d)(\S)', r'\1\n\2', text)
+    # Add newline after the timecodes for lines that haven't had a name replaced
+    text = re.sub(r'(\d\d:\d\d:\d\d,\d\d\d\s-->\s\d\d:\d\d:\d\d,\d\d\d)(\s*)(\w)', r'\1\n\3', text)
 
     return replaced_names, text
 
