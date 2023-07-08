@@ -12,6 +12,13 @@ def replace_similar_names(text, names_list):
     lines = text.split('\n')
     processed_lines = []
 
+    def replace_similar_names(text, names_list):
+    full_name_pattern = re.compile(r'(?<!:)(?:\b\w+(?:\s+\w+){1,4}\b)(?!\d)')
+    replaced_names = []
+
+    lines = text.split('\n')
+    processed_lines = []
+
     def replace_name(match):
         full_name = match.group(0)
         max_similarity = 0
@@ -31,11 +38,15 @@ def replace_similar_names(text, names_list):
     for line in lines:
         # Skip timecode lines
         if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line):
-            processed_lines.append(line.lstrip())
+            processed_lines.append(line)
+            processed_lines.append('')
             continue
 
+        # Remove quotation marks and commas
+        line = line.replace('"', '').replace(',', '')
+
         line = full_name_pattern.sub(replace_name, line)
-        processed_lines.append(line.lstrip())
+        processed_lines.append(line)
 
     return replaced_names, '\n'.join(processed_lines)
 
