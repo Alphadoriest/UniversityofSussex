@@ -19,32 +19,23 @@ def similarity(a, b):
 
 def replace_similar_names(text, names_list):
     full_name_pattern = re.compile(r'\b(?:\w+(?:\s+\w+){1,4})\b')
-    lines = text.splitlines()
+    full_names_in_text = full_name_pattern.findall(text)
     replaced_names = []
-    output_lines = []
 
-    for line in lines:
-        if re.match(r'\d\d:\d\d:\d\d,\d\d\d\s-->\s\d\d:\d\d:\d\d,\d\d\d', line):
-            output_lines.append(line)
-            continue
+    for full_name in full_names_in_text:
+        max_similarity = 0
+        most_similar_name = None
+        for name in names_list:
+            sim = similarity(full_name, name)
+            if sim > max_similarity:
+                max_similarity = sim
+                most_similar_name = name
 
-        full_names_in_line = full_name_pattern.findall(line)
-        for full_name in full_names_in_line:
-            max_similarity = 0
-            most_similar_name = None
-            for name in names_list:
-                sim = similarity(full_name, name)
-                if sim > max_similarity:
-                    max_similarity = sim
-                    most_similar_name = name
+        if max_similarity >= 0.8:  # Adjust the similarity threshold as needed
+            replaced_names.append((full_name, most_similar_name))
+            text = re.sub(fr'(\d\d:\d\d:\d\d\.\d\d\d\s-->\s\d\d:\d\d:\d\d\.\d\d\d\n)({full_name})', fr'\1{most_similar_name}', text)
 
-            if max_similarity >= 0.8:  # Adjust the similarity threshold as needed
-                replaced_names.append((full_name, most_similar_name))
-                line = line.replace(full_name, most_similar_name)
-
-        output_lines.append(line)
-
-    return replaced_names, '\n'.join(output_lines)
+    return replaced_names, text
 
 
 def read_pdf(file):
