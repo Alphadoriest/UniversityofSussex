@@ -1,7 +1,7 @@
-streamlit==1.2.0
-nltk==3.6.5
-beautifulsoup4==4.10.0
-PyPDF2==1.26.0
-python-docx==0.8.11
-requests==2.26.0
-pillow==8.4.0
+streamlit
+nltk
+beautifulsoup4
+PyPDF2
+python-docx
+requests
+pillow
