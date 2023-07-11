@@ -1,7 +1,7 @@
 import re
 from difflib import SequenceMatcher
 import streamlit as st
-import clipboard
+from streamlit.components.v1 import html
 
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
@@ -57,6 +57,5 @@ st.subheader("Text with replaced names:")
 st.write(new_text)
 
 # Add a button to copy the replaced text to the clipboard
-if st.button("Copy replaced text to clipboard"):
-    clipboard.copy(new_text)
-    st.success("Replaced text copied to clipboard.")
+copy_button_html = f"""<button onclick="navigator.clipboard.writeText('{new_text}')">Copy replaced text to clipboard</button>"""
+html(copy_button_html, height=30)
