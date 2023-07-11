@@ -106,6 +106,8 @@ st.title("Graduation Transcript Name Corrector")
 # Initialize transcript_text as an empty string
 transcript_text = ''
 
+uploaded_transcript_file = st.file_uploader("Choose a VTT or text document for transcript", type=["vtt", "txt"])
+
 if uploaded_transcript_file is not None:
     if st.button("Load Transcript"):
         transcript_text = uploaded_transcript_file.read().decode()
