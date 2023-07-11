@@ -56,6 +56,17 @@ for original, replaced in replaced_names:
 st.subheader("Text with replaced names:")
 st.write(new_text)
 
+# Escape newline characters in new_text
+escaped_new_text = new_text.replace('\n', '\\n').replace('\r', '\\r')
+
 # Add a button to copy the replaced text to the clipboard
-copy_button_html = f"""<button onclick="navigator.clipboard.writeText('{new_text}')">Copy replaced text to clipboard</button>"""
+copy_button_html = f"""
+<button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
+<script>
+function copyReplacedText() {{
+    let text = '{escaped_new_text}';
+    navigator.clipboard.writeText(text);
+}}
+</script>
+"""
 html(copy_button_html, height=30)
