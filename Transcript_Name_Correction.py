@@ -1,8 +1,58 @@
+import io
+import itertools
 import re
 from difflib import SequenceMatcher
 import streamlit as st
 from streamlit.components.v1 import html
+from docx import Document
 
+def extract_middle_column_text(doc):
+    middle_column_texts = []
+
+    for table in doc.tables:
+        for row in table.rows:
+            cells = row.cells
+            if len(cells) > 1:
+                middle_cell = cells[len(cells) // 2]
+                # Split the text into lines
+                lines = middle_cell.text.split('\n')
+                # Initialize desired text as empty string
+                desired_text = ''
+                for line in lines:
+                    line = line.strip()
+                    # If line contains bracketed text or starts with a bracket, break the loop
+                    if line.startswith('(') or re.search(r'\[.*\]', line):
+                        break
+                    # If line is non-empty, update the desired text
+                    if line:
+                        desired_text = line
+                middle_column_texts.append(desired_text)
+
+    # Remove 'VACANT SEAT' instances
+    middle_column_texts = [text for text in middle_column_texts if text != 'VACANT SEAT']
+
+    # Decapitalize text with exceptions
+    def decapitalize(text):
+        words = text.split()
+        for i, word in enumerate(words):
+            if word != 'I' and not (word.endswith(',') and word[:-1].isupper()):
+                words[i] = word[0].upper() + word[1:].lower()
+        return ' '.join(words)
+
+    middle_column_texts = [decapitalize(text) for text in middle_column_texts]
+
+    return ', '.join(middle_column_texts)
+
+st.title('Middle Column Extractor')
+
+uploaded_file = st.file_uploader("Choose a Word document", type="docx")
+
+if uploaded_file is not None:
+    if st.button("Extract Text"):
+        document = Document(io.BytesIO(uploaded_file.read()))
+        extracted_text = extract_middle_column_text(document)
+        st.write(extracted_text)
+-----------------------------------------------------------------------------
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
