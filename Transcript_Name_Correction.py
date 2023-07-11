@@ -6,6 +6,7 @@ import streamlit as st
 from streamlit.components.v1 import html
 from docx import Document
 
+#Name Extractor from graduation ceremony in-person lists
 def extract_middle_column_text(doc):
     middle_column_texts = []
 
@@ -43,15 +44,23 @@ def extract_middle_column_text(doc):
 
     return ', '.join(middle_column_texts)
 
-st.title('Middle Column Extractor')
+st.title('Name Extractor from graduation ceremony in-person lists')
 
 uploaded_file = st.file_uploader("Choose a Word document", type="docx")
+
+extracted_text = ''
 
 if uploaded_file is not None:
     if st.button("Extract Text"):
         document = Document(io.BytesIO(uploaded_file.read()))
         extracted_text = extract_middle_column_text(document)
         st.write(extracted_text)
+
+# Use the extracted_text as the default value for the names_list text_area
+names_list = st.text_area("Enter names (one per line):", extracted_text).split('\n')
+text = st.text_area("Enter text:", "")
+
+#Correct all names in graduation transcript
 
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
@@ -92,10 +101,7 @@ def replace_similar_names(text, names_list):
 
     return replaced_names, '\n'.join(processed_lines)
 
-st.title("Name Replacer")
-
-names_list = st.text_area("Enter names (one per line):", "").split('\n')
-text = st.text_area("Enter text:", "")
+st.title("Graduation Transcript Name Corrector")
 
 replaced_names, new_text = replace_similar_names(text, names_list)
 
@@ -103,7 +109,7 @@ st.subheader("Names replaced:")
 for original, replaced in replaced_names:
     st.write(f"{original} -> {replaced}")
 
-st.subheader("Text with replaced names:")
+st.subheader("Transcript Text with replaced names:")
 st.write(new_text)
 
 # Escape newline characters and single quotes in new_text
