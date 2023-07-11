@@ -52,7 +52,7 @@ if uploaded_file is not None:
         document = Document(io.BytesIO(uploaded_file.read()))
         extracted_text = extract_middle_column_text(document)
         st.write(extracted_text)
------------------------------------------------------------------------------
+
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
