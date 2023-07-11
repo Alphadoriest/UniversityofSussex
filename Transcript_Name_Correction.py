@@ -1,6 +1,7 @@
 import re
 from difflib import SequenceMatcher
 import streamlit as st
+import clipboard
 
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
@@ -41,21 +42,6 @@ def replace_similar_names(text, names_list):
 
     return replaced_names, '\n'.join(processed_lines)
 
-    for line in lines:
-        # Skip timecode lines
-        if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line):
-            processed_lines.append(line)
-            processed_lines.append('')
-            continue
-
-        # Remove quotation marks and commas
-        line = line.replace('"', '').replace(',', '')
-
-        line = full_name_pattern.sub(replace_name, line)
-        processed_lines.append(line)
-
-    return replaced_names, '\n'.join(processed_lines)
-
 st.title("Name Replacer")
 
 names_list = st.text_area("Enter names (one per line):", "").split('\n')
@@ -69,3 +55,8 @@ for original, replaced in replaced_names:
 
 st.subheader("Text with replaced names:")
 st.write(new_text)
+
+# Add a button to copy the replaced text to the clipboard
+if st.button("Copy replaced text to clipboard"):
+    clipboard.copy(new_text)
+    st.success("Replaced text copied to clipboard.")
