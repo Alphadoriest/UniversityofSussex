@@ -56,8 +56,8 @@ for original, replaced in replaced_names:
 st.subheader("Text with replaced names:")
 st.write(new_text)
 
-# Escape newline characters in new_text
-escaped_new_text = new_text.replace('\n', '\\n').replace('\r', '\\r')
+# Escape newline characters and single quotes in new_text
+escaped_new_text = new_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
 
 # Add a button to copy the replaced text to the clipboard
 copy_button_html = f"""
