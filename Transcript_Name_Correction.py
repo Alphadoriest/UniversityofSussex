@@ -55,7 +55,6 @@ if uploaded_file is not None:
     if st.button("Extract Names"):
         document = Document(io.BytesIO(uploaded_file.read()))
         extracted_text = extract_middle_column_text(document)
-        st.write(extracted_text)
 
 # Use the extracted_text as the default value for the names_list text_area
 names_list = st.text_area("Enter names (separate names with commas):", extracted_text).split(',')
@@ -108,10 +107,12 @@ transcript_text = ''
 
 uploaded_transcript_file = st.file_uploader("Choose a VTT or text document for transcript", type=["vtt", "txt"])
 
+# Initialize transcript_text as an empty string
+transcript_text = ''
+
 if uploaded_transcript_file is not None:
     if st.button("Load Transcript"):
         transcript_text = uploaded_transcript_file.read().decode()
-        st.write(transcript_text)
 
 # Use the transcript_text as the default value for the transcript text_area
 text = st.text_area("Enter graduation transcript text:", transcript_text)
@@ -121,9 +122,6 @@ replaced_names, new_text = replace_similar_names(text, names_list)
 st.subheader("Names replaced:")
 for original, replaced in replaced_names:
     st.write(f"{original} -> {replaced}")
-
-st.subheader("Transcript Text with replaced names:")
-st.write(new_text)
 
 # Escape newline characters and single quotes in new_text
 escaped_new_text = new_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
