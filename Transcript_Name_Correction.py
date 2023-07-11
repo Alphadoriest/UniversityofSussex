@@ -48,17 +48,18 @@ st.title('Name Extractor from graduation ceremony in-person lists')
 
 uploaded_file = st.file_uploader("Choose a Word document", type="docx")
 
+# Initialize extracted_text as an empty string
 extracted_text = ''
 
 if uploaded_file is not None:
-    if st.button("Extract Text"):
+    if st.button("Extract Names"):
         document = Document(io.BytesIO(uploaded_file.read()))
         extracted_text = extract_middle_column_text(document)
         st.write(extracted_text)
 
 # Use the extracted_text as the default value for the names_list text_area
-names_list = st.text_area("Enter names (one per line):", extracted_text).split('\n')
-text = st.text_area("Enter text:", "")
+names_list = st.text_area("Enter names (separate names with commas):", extracted_text).split(',')
+names_list = [name.strip() for name in names_list]
 
 #Correct all names in graduation transcript
 
@@ -102,6 +103,16 @@ def replace_similar_names(text, names_list):
     return replaced_names, '\n'.join(processed_lines)
 
 st.title("Graduation Transcript Name Corrector")
+# Initialize transcript_text as an empty string
+transcript_text = ''
+
+if uploaded_transcript_file is not None:
+    if st.button("Load Transcript"):
+        transcript_text = uploaded_transcript_file.read().decode()
+        st.write(transcript_text)
+
+# Use the transcript_text as the default value for the transcript text_area
+text = st.text_area("Enter graduation transcript text:", transcript_text)
 
 replaced_names, new_text = replace_similar_names(text, names_list)
 
