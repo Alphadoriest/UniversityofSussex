@@ -33,13 +33,29 @@ def extract_middle_column_text(doc):
     middle_column_texts = [text for text in middle_column_texts if text != 'VACANT SEAT']
 
     # Decapitalize text with exceptions
-    def decapitalize(text):
-        roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
-        words = text.split()
-        for i, word in enumerate(words):
-            if word not in roman_numerals:
-                words[i] = word[0].upper() + word[1:].lower()
-        return ' '.join(words)
+def decapitalize(text):
+    roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
+    words = text.split()
+    for i, word in enumerate(words):
+        if word not in roman_numerals:
+            new_word = word[0].upper() + word[1:].lower()
+            new_word_parts = []
+
+            for part in new_word.split('-'):
+                new_word_parts.append(part[0].upper() + part[1:].lower())
+
+            new_word = '-'.join(new_word_parts)
+
+            new_word_parts = []
+
+            for part in new_word.split("'"):
+                new_word_parts.append(part[0].upper() + part[1:].lower())
+
+            new_word = "'".join(new_word_parts)
+
+            words[i] = new_word
+
+    return ' '.join(words)
 
     middle_column_texts = [decapitalize(text) for text in middle_column_texts]
 
