@@ -76,7 +76,7 @@ uploaded_file = st.file_uploader("Choose a Word document", type="docx")
 # Initialize names_list as an empty string
 names_list = ''
 
-    return [decapitalize(text) for text in middle_column_texts if text != 'VACANT SEAT']
+      return [decapitalize(text) for text in middle_column_texts if text != 'VACANT SEAT']
 
 if uploaded_file is not None:
     document = Document(io.BytesIO(uploaded_file.read()))
