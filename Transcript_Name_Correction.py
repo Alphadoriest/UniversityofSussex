@@ -50,12 +50,12 @@ def decapitalize(text):
 
             # Split hyphenated words and capitalize each part
             hyphen_parts = word.split('-')
-            hyphen_parts = [part.lower().capitalize() for part in hyphen_parts]
+            hyphen_parts = [part.lower().title() for part in hyphen_parts]
             word = '-'.join(hyphen_parts)
 
             # Split words with apostrophes and capitalize each part
             apostrophe_parts = word.split("'")
-            apostrophe_parts = [part.lower().capitalize() for part in apostrophe_parts]
+            apostrophe_parts = [part.lower().title() for part in apostrophe_parts]
             words[i] = "'".join(apostrophe_parts)
 
     return ' '.join(words)
