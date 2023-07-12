@@ -55,6 +55,7 @@ if uploaded_file is not None:
     if st.button("Extract Names"):
         document = Document(io.BytesIO(uploaded_file.read()))
         extracted_text = extract_middle_column_text(document)
+        names_list = st.text_area("Enter names (separate names with commas):", extracted_text).split(',')
 
 # Use the extracted_text as the default value for the names_list text_area
 names_list = st.text_area("Enter names (separate names with commas):", extracted_text).split(',')
