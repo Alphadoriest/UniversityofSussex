@@ -97,14 +97,14 @@ def replace_similar_names(text, names_list):
     processed_lines = []
 
     def replace_similar_names(text, names_list):
-    full_name_pattern = re.compile(r'(?<!:)(?:\b\w+(?:\s+\w+){1,4}\b)(?!\d)')
-    replaced_names = []
-
-    # Sort names list by length in descending order
-    names_list.sort(key=len, reverse=True)
-
-    lines = text.split('\n')
-    processed_lines = []
+        full_name_pattern = re.compile(r'(?<!:)(?:\b\w+(?:\s+\w+){1,4}\b)(?!\d)')
+        replaced_names = []
+    
+        # Sort names list by length in descending order
+        names_list.sort(key=len, reverse=True)
+    
+        lines = text.split('\n')
+        processed_lines = []
 
     def replace_name(match):
         full_name = match.group(0)
