@@ -129,22 +129,22 @@ def replace_similar_names(text, names_list):
         else:
             return full_name
         for line in lines:
-    # Skip timecode lines
-    if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line):
-        processed_lines.append(line)
-        processed_lines.append('')
-        continue
-
-    line = full_name_pattern.sub(replace_name, line)
-    processed_lines.append(line)
-
-new_text = '\n'.join(processed_lines)
-
-# Remove leading whitespaces from all lines as a final step
-new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
-
-# Outdent the return statement to ensure it always runs
-return replaced_names, new_text
+            # Skip timecode lines
+            if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line):
+                processed_lines.append(line)
+                processed_lines.append('')
+                continue
+        
+            line = full_name_pattern.sub(replace_name, line)
+            processed_lines.append(line)
+        
+        new_text = '\n'.join(processed_lines)
+        
+        # Remove leading whitespaces from all lines as a final step
+        new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
+        
+        # Outdent the return statement to ensure it always runs
+        return replaced_names, new_text
 
 #Name Corrector UI
 
