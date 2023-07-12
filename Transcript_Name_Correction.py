@@ -107,27 +107,27 @@ def replace_similar_names(text, names_list):
         processed_lines = []
 
     def replace_name(match):
-    full_name = match.group(0)
-
-    # If the full name is already in the names list, don't replace it
-    if full_name in names_list:
+        full_name = match.group(0)
+    
+        # If the full name is already in the names list, don't replace it
+        if full_name in names_list:
+            return full_name
+    
+        max_similarity = 0
+        most_similar_name = None
+        for name in names_list:
+            sim = similarity(full_name, name)
+            if sim > max_similarity:
+                max_similarity = sim
+                most_similar_name = name
+    
+        if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
+            # Add an additional check here to avoid replacing substrings of names
+            if not (full_name in most_similar_name):
+                replaced_names.append((full_name, most_similar_name))
+                most_similar_name = most_similar_name.replace('"', '').replace(',', '')
+                return most_similar_name
         return full_name
-
-    max_similarity = 0
-    most_similar_name = None
-    for name in names_list:
-        sim = similarity(full_name, name)
-        if sim > max_similarity:
-            max_similarity = sim
-            most_similar_name = name
-
-    if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
-        # Add an additional check here to avoid replacing substrings of names
-        if not (full_name in most_similar_name):
-            replaced_names.append((full_name, most_similar_name))
-            most_similar_name = most_similar_name.replace('"', '').replace(',', '')
-            return most_similar_name
-    return full_name
 
     for line in lines:
         # Skip timecode lines
