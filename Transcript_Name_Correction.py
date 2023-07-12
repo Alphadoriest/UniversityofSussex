@@ -76,13 +76,14 @@ uploaded_file = st.file_uploader("Choose a Word document", type="docx")
 # Initialize names_list as an empty string
 names_list = ''
 
+return [decapitalize(text) for text in middle_column_texts if text != 'VACANT SEAT']
+
 if uploaded_file is not None:
     document = Document(io.BytesIO(uploaded_file.read()))
-    extracted_text = extract_middle_column_text(document)
-    names_list = extracted_text  # Update names_list with the extracted text
+    names_list = extract_middle_column_text(document)  # Keep names_list as a list
 
 # Use names_list as the default value for the names_list text_area
-names_list = st.text_area("Enter names (separate names with commas):", names_list, key='names_list')
+names_list = st.text_area("Enter names (separate names with commas):", ', '.join(names_list), key='names_list')
 
 if names_list:  # Check if names_list is not empty
     names_list = names_list.split(',')
