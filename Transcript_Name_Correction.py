@@ -45,10 +45,6 @@ def decapitalize(text):
 
     return ' '.join(words)
 
-middle_column_texts = [decapitalize(text) for text in middle_column_texts]
-
-return ', '.join(middle_column_texts)
-
 st.header('Graduation Transcription Workflow Web Tool')
 
 # Add the banner image at the top of the app
