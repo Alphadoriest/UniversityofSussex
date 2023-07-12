@@ -48,17 +48,17 @@ st.title('Name Extractor from graduation ceremony in-person lists')
 
 uploaded_file = st.file_uploader("Choose a Word document", type="docx")
 
-# Initialize extracted_text as an empty string
-extracted_text = ''
+# Initialize names_list as an empty string
+names_list = ''
 
 if uploaded_file is not None:
     if st.button("Extract Names"):
         document = Document(io.BytesIO(uploaded_file.read()))
         extracted_text = extract_middle_column_text(document)
-        names_list = st.text_area("Enter names (separate names with commas):", extracted_text, key='names_list').split(',')
+        names_list = extracted_text  # Update names_list with the extracted text
 
-# Use the extracted_text as the default value for the names_list text_area
-names_list = st.text_area("Enter names (separate names with commas):", extracted_text).split(',')
+# Use names_list as the default value for the names_list text_area
+names_list = st.text_area("Enter names (separate names with commas):", names_list, key='names_list').split(',')
 names_list = [name.strip() for name in names_list]
 
 #Correct all names in graduation transcript
