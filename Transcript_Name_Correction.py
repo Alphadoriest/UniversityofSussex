@@ -40,10 +40,7 @@ def extract_middle_column_text(doc):
                         desired_text = line
                 middle_column_texts.append(desired_text)
 
-    middle_column_texts = [text for text in middle_column_texts if text != 'VACANT SEAT']
-    middle_column_texts = [decapitalize(text) for text in middle_column_texts]
-
-    return ', '.join(middle_column_texts)
+    return [decapitalize(text) for text in middle_column_texts if text != 'VACANT SEAT']
 
 def decapitalize(text):
     roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
