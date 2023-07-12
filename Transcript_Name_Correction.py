@@ -1,3 +1,7 @@
+import io
+import itertools
+import re
+from difflib import SequenceMatcher
 import streamlit as st
 from streamlit.components.v1 import html
 from docx import Document
