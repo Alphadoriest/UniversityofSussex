@@ -145,3 +145,5 @@ if st.button("Run"):  # Run button added
         st.subheader("Names replaced:")
         for original, replaced in replaced_names:
             st.write(f"{original} -> {replaced}")
+
+        st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
