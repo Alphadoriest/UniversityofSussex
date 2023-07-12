@@ -42,7 +42,7 @@ def extract_middle_column_text(doc):
 
     return [decapitalize(text) for text in middle_column_texts if text != 'VACANT SEAT']
     
-ddef decapitalize(text):
+def decapitalize(text):
     roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
     words = text.split()
     for i, word in enumerate(words):
