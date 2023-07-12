@@ -44,6 +44,9 @@ def extract_middle_column_text(doc):
 
     return ', '.join(middle_column_texts) 
 
+# Add the banner image at the top of the app
+st.image("banner.jpg")
+
 #Name Extractor UI
 st.title('Name Extractor from graduation ceremony in-person lists')
 
@@ -53,10 +56,9 @@ uploaded_file = st.file_uploader("Choose a Word document", type="docx")
 names_list = ''
 
 if uploaded_file is not None:
-    if st.button("Extract"):  # Extract button added
-        document = Document(io.BytesIO(uploaded_file.read()))
-        extracted_text = extract_middle_column_text(document)
-        names_list = extracted_text  # Update names_list with the extracted text
+    document = Document(io.BytesIO(uploaded_file.read()))
+    extracted_text = extract_middle_column_text(document)
+    names_list = extracted_text  # Update names_list with the extracted text
 
 # Use names_list as the default value for the names_list text_area
 names_list = st.text_area("Enter names (separate names with commas):", names_list, key='names_list')
@@ -114,33 +116,31 @@ transcript_text = ''
 
 uploaded_transcript_file = st.file_uploader("Choose a VTT or text document for transcript", type=["vtt", "txt"])
 
-# Initialize transcript_text as an empty string
-transcript_text = ''
-
 if uploaded_transcript_file is not None:
-    if st.button("Load Transcript"):
-        transcript_text = uploaded_transcript_file.read().decode()
+    transcript_text = uploaded_transcript_file.read().decode()
 
 # Use the transcript_text as the default value for the transcript text_area
 text = st.text_area("Enter graduation transcript text:", transcript_text, key='transcript_text')
 
-replaced_names, new_text = replace_similar_names(text, names_list)
+if st.button("Run"):  # Run button added
+    if names_list and text:  # Check if both text boxes are populated
+        replaced_names, new_text = replace_similar_names(text, names_list)
 
-st.subheader("Names replaced:")
-for original, replaced in replaced_names:
-    st.write(f"{original} -> {replaced}")
+        st.subheader("Names replaced:")
+        for original, replaced in replaced_names:
+            st.write(f"{original} -> {replaced}")
 
-# Escape newline characters and single quotes in new_text
-escaped_new_text = new_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
+        # Escape newline characters and single quotes in new_text
+        escaped_new_text = new_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
 
-# Add a button to copy the replaced text to the clipboard
-copy_button_html = f"""
-<button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
-<script>
-function copyReplacedText() {{
-    let text = '{escaped_new_text}';
-    navigator.clipboard.writeText(text);
-}}
-</script>
-"""
-html(copy_button_html, height=30)
+        # Add a button to copy the replaced text to the clipboard
+        copy_button_html = f"""
+        <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
+        <script>
+        function copyReplacedText() {{
+            let text = '{escaped_new_text}';
+            navigator.clipboard.writeText(text);
+        }}
+        </script>
+        """
+        html(copy_button_html, height=30)
