@@ -6,7 +6,7 @@ import streamlit as st
 from streamlit.components.v1 import html
 from docx import Document
 
-#Name Extractor from graduation ceremony in-person lists
+#Name Extractor from graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
     middle_column_texts = []
 
@@ -42,8 +42,9 @@ def extract_middle_column_text(doc):
 
     middle_column_texts = [decapitalize(text) for text in middle_column_texts]
 
-    return ', '.join(middle_column_texts)
+    return ', '.join(middle_column_texts) 
 
+#Name Extractor UI
 st.title('Name Extractor from graduation ceremony in-person lists')
 
 uploaded_file = st.file_uploader("Choose a Word document", type="docx")
@@ -52,9 +53,10 @@ uploaded_file = st.file_uploader("Choose a Word document", type="docx")
 names_list = ''
 
 if uploaded_file is not None:
-    document = Document(io.BytesIO(uploaded_file.read()))
-    extracted_text = extract_middle_column_text(document)
-    names_list = extracted_text  # Update names_list with the extracted text
+    if st.button("Extract"):  # Extract button added
+        document = Document(io.BytesIO(uploaded_file.read()))
+        extracted_text = extract_middle_column_text(document)
+        names_list = extracted_text  # Update names_list with the extracted text
 
 # Use names_list as the default value for the names_list text_area
 names_list = st.text_area("Enter names (separate names with commas):", names_list, key='names_list')
@@ -63,7 +65,7 @@ if names_list:  # Check if names_list is not empty
     names_list = names_list.split(',')
     names_list = [name.strip() for name in names_list]
 
-#Correct all names in graduation transcript
+#Correct all names in graduation transcript (find and replace) functions
 
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
@@ -103,6 +105,8 @@ def replace_similar_names(text, names_list):
         processed_lines.append(line)
 
     return replaced_names, '\n'.join(processed_lines)
+
+#Name Corrector UI
 
 st.title("Graduation Transcript Name Corrector")
 # Initialize transcript_text as an empty string
