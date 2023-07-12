@@ -6,7 +6,7 @@ import streamlit as st
 from streamlit.components.v1 import html
 from docx import Document
 
-#Name Extractor for graduation ceremony in-person lists functions
+# Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
     middle_column_texts = []
 
@@ -41,7 +41,6 @@ def extract_middle_column_text(doc):
                 middle_column_texts.append(desired_text)
 
     return [decapitalize(text) for text in middle_column_texts if text != 'VACANT SEAT']
-
 def decapitalize(text):
     roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
     words = text.split()
