@@ -34,9 +34,10 @@ def extract_middle_column_text(doc):
 
     # Decapitalize text with exceptions
     def decapitalize(text):
+        roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
         words = text.split()
         for i, word in enumerate(words):
-            if word != 'I' and not (word.endswith(',') and word[:-1].isupper()):
+            if word not in roman_numerals:
                 words[i] = word[0].upper() + word[1:].lower()
         return ' '.join(words)
 
