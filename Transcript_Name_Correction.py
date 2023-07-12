@@ -61,8 +61,6 @@ def decapitalize(text):
 
     return ' '.join(words)
 
-    return ' '.join(words)
-
     middle_column_texts = [decapitalize(text) for text in middle_column_texts]
 
     return ', '.join(middle_column_texts) 
