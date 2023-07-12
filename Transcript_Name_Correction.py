@@ -50,6 +50,9 @@ def decapitalize(text):
     words = text.split()
     for i, word in enumerate(words):
         if word not in roman_numerals:
+            word = word.lower()  # Convert the entire word to lowercase first
+            word = word.capitalize()  # Capitalize the first letter of the word
+
             hyphen_parts = word.split('-')
             hyphen_parts = [part.capitalize() for part in hyphen_parts]
             word = '-'.join(hyphen_parts)
