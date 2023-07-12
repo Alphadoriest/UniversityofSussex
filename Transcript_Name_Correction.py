@@ -42,10 +42,9 @@ def decapitalize(text):
     words = text.split()
     for i, word in enumerate(words):
         if word not in roman_numerals:
-            new_word = word[0].upper() + word[1:].lower()
             new_word_parts = []
 
-            for part in new_word.split('-'):
+            for part in word.split('-'):
                 new_word_parts.append(part[0].upper() + part[1:].lower())
 
             new_word = '-'.join(new_word_parts)
@@ -55,9 +54,7 @@ def decapitalize(text):
             for part in new_word.split("'"):
                 new_word_parts.append(part[0].upper() + part[1:].lower())
 
-            new_word = "'".join(new_word_parts)
-
-            words[i] = new_word
+            words[i] = "'".join(new_word_parts)
 
     return ' '.join(words)
 
