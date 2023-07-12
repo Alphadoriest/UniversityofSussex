@@ -97,14 +97,14 @@ def replace_similar_names(text, names_list):
     processed_lines = []
 
     def replace_name(match):
-    full_name = match.group(0)
-    max_similarity = 0
-    most_similar_name = None
-    for name in names_list:
-        # Check if the word count of the name in the transcript matches with the word count of the name in the list
-        if len(name.split()) != len(full_name.split()):
-            continue
-        sim = similarity(full_name, name)
+        full_name = match.group(0)
+        max_similarity = 0
+        most_similar_name = None
+        for name in names_list:
+            # Check if the word count of the name in the transcript matches with the word count of the name in the list
+            if len(name.split()) != len(full_name.split()):
+                continue
+            sim = similarity(full_name, name)
         if sim > max_similarity:
             max_similarity = sim
             most_similar_name = name
