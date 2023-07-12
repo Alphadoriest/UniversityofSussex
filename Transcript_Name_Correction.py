@@ -107,10 +107,10 @@ def replace_similar_names(text, names_list):
         processed_lines = []
 
     def replace_name(match):
-        full_name = match.group(0)
-    
-        # If the full name is already in the names list, don't replace it
-        if full_name in names_list:
+    full_name = match.group(0)
+
+    # If the full name is already in the names list, don't replace it
+    if full_name in names_list:
             return full_name
     
         max_similarity = 0
@@ -122,19 +122,9 @@ def replace_similar_names(text, names_list):
                 most_similar_name = name
     
         if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
-            # Special handling for hyphenated names
-            full_name_parts = full_name.split('-')
-            most_similar_name_parts = most_similar_name.split('-')
-    
-            if len(full_name_parts) == len(most_similar_name_parts):
-                for i in range(len(full_name_parts)):
-                    if full_name_parts[i] != most_similar_name_parts[i]:
-                        full_name_parts[i] = most_similar_name_parts[i]
-                
-                replaced = '-'.join(full_name_parts)
-    
-                replaced_names.append((full_name, replaced))
-                return replaced
+            # Check if the most similar name is already present in the full name
+            if most_similar_name in full_name:
+                return full_name
     
             replaced_names.append((full_name, most_similar_name))
             return most_similar_name
