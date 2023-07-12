@@ -86,8 +86,35 @@ if names_list:  # Check if names_list is not empty
 
 #Correct all names in graduation transcript (find and replace) functions
 
+# Function to calculate similarity between two strings
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
+
+# Function to replace similar names in the text
+def replace_name(match):
+    full_name = match.group(0)
+
+    # If the full name is already in the names list, don't replace it
+    if full_name in names_list:
+            return full_name
+
+    max_similarity = 0
+    most_similar_name = None
+    for name in names_list:
+        sim = similarity(full_name, name)
+        if sim > max_similarity:
+            max_similarity = sim
+            most_similar_name = name
+
+    if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
+        # Check if the most similar name is already present in the full name
+        if most_similar_name in full_name:
+            return full_name
+
+        replaced_names.append((full_name, most_similar_name))
+        return most_similar_name
+
+    return full_name
 
 def replace_similar_names(text, names_list):
     full_name_pattern = re.compile(r'(?<!:)(?:\b\w+(?:\s+\w+){1,4}\b)(?!\d)')
@@ -95,41 +122,6 @@ def replace_similar_names(text, names_list):
 
     lines = text.split('\n')
     processed_lines = []
-
-    def replace_similar_names(text, names_list):
-        full_name_pattern = re.compile(r'(?<!:)(?:\b\w+(?:\s+\w+){1,4}\b)(?!\d)')
-        replaced_names = []
-    
-        # Sort names list by length in descending order
-        names_list.sort(key=len, reverse=True)
-    
-        lines = text.split('\n')
-        processed_lines = []
-
-    def replace_name(match):
-        full_name = match.group(0)
-    
-        # If the full name is already in the names list, don't replace it
-        if full_name in names_list:
-                return full_name
-        
-                max_similarity = 0
-                most_similar_name = None
-                for name in names_list:
-                    sim = similarity(full_name, name)
-                    if sim > max_similarity:
-                        max_similarity = sim
-                        most_similar_name = name
-            
-                if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
-                    # Check if the most similar name is already present in the full name
-                    if most_similar_name in full_name:
-                        return full_name
-            
-                    replaced_names.append((full_name, most_similar_name))
-                    return most_similar_name
-            
-                return full_name
 
     for line in lines:
         # Skip timecode lines
