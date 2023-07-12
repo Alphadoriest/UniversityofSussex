@@ -113,23 +113,23 @@ def replace_similar_names(text, names_list):
         if full_name in names_list:
                 return full_name
         
-            max_similarity = 0
-            most_similar_name = None
-            for name in names_list:
-                sim = similarity(full_name, name)
-                if sim > max_similarity:
-                    max_similarity = sim
-                    most_similar_name = name
-        
-            if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
-                # Check if the most similar name is already present in the full name
-                if most_similar_name in full_name:
-                    return full_name
-        
-                replaced_names.append((full_name, most_similar_name))
-                return most_similar_name
-        
-            return full_name
+                max_similarity = 0
+                most_similar_name = None
+                for name in names_list:
+                    sim = similarity(full_name, name)
+                    if sim > max_similarity:
+                        max_similarity = sim
+                        most_similar_name = name
+            
+                if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
+                    # Check if the most similar name is already present in the full name
+                    if most_similar_name in full_name:
+                        return full_name
+            
+                    replaced_names.append((full_name, most_similar_name))
+                    return most_similar_name
+            
+                return full_name
 
     for line in lines:
         # Skip timecode lines
