@@ -162,26 +162,26 @@ text = st.text_area("Enter graduation transcript text:", transcript_text, key='t
 
 if st.button("Run"):  # Run button added
     if names_list and text:  # Check if both text boxes are populated
-        replaced_names, new_text = replace_similar_names(text, names_list)
-        
-        if replaced_names and new_text:  # Check if replaced_names and new_text exist
-            # Escape newline characters and single quotes in new_text
-            escaped_new_text = new_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
-            
-            # Button to copy the replaced text to the clipboard
-            copy_button_html = f"""
-            <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
-            <script>
-            function copyReplacedText() {{
-                let text = '{escaped_new_text}';
-                navigator.clipboard.writeText(text);
-            }}
-            </script>
-            """
-            html(copy_button_html, height=30)
+    replaced_names, new_text = replace_similar_names(text, names_list)
 
-        st.subheader("Names replaced:")
-        for original, replaced in replaced_names:
-            st.write(f"{original} -> {replaced}")
+    if replaced_names and new_text:  # Check if replaced_names and new_text exist
+        # Escape newline characters and single quotes in new_text
+        escaped_new_text = new_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
 
-        st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
+        # Button to copy the replaced text to the clipboard
+        copy_button_html = f"""
+        <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
+        <script>
+        function copyReplacedText() {{
+            let text = '{escaped_new_text}';
+            navigator.clipboard.writeText(text);
+        }}
+        </script>
+        """
+        html(copy_button_html, height=30)
+
+    st.subheader("Names replaced:")
+    for original, replaced in replaced_names:
+        st.write(f"{original} -> {replaced}")
+
+    st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
