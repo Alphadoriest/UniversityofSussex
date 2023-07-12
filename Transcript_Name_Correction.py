@@ -17,17 +17,25 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 lines = middle_cell.text.split('\n')
                 desired_text = ''
+                inside_brackets = False  # Initialize bracket flag
                 for line in lines:
                     line = line.strip()
-                    
-                    # Ignore lines that start or end with a bracket
-                    if line.startswith('(') or line.endswith(')'):
+
+                    # Update bracket flag
+                    if line.startswith('('):
+                        inside_brackets = True
+                    if line.endswith(')'):
+                        inside_brackets = False
+                        continue
+
+                    # Ignore lines inside brackets
+                    if inside_brackets:
                         continue
 
                     # Ignore lines that contain full bracketed phrases
                     line = re.sub(r'\(.*?\)', '', line)
                     line = re.sub(r'\[.*?\]', '', line)
-                    
+
                     if line:
                         desired_text = line
                 middle_column_texts.append(desired_text)
