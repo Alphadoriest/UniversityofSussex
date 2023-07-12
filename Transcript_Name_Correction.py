@@ -93,7 +93,7 @@ def similarity(a, b):
 # Function to replace similar names in the text
 def replace_name(match, replaced_names):
     full_name = match.group(0)
-
+    
     # If the full name is already in the names list, don't replace it
     if full_name in names_list:
         return full_name
@@ -110,11 +110,11 @@ def replace_name(match, replaced_names):
         # Check if the most similar name is already part of the full name
         if most_similar_name in full_name:
             return full_name
-        # Check if the full name is a substring of the most similar name
-        elif full_name in most_similar_name:
+        # Check if the full name is not a part of a hyphenated name in the most similar name
+        elif re.search(f'(?<!-){re.escape(full_name)}(?!-)', most_similar_name):
             replaced_names.append((full_name, most_similar_name))
             return most_similar_name
-      
+
     return full_name
 
 def replace_similar_names(text, names_list):
