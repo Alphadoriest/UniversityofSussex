@@ -42,27 +42,21 @@ def decapitalize(text):
     words = text.split()
     for i, word in enumerate(words):
         if word not in roman_numerals:
-            new_word_parts = []
+            # Handle hyphenated words
+            hyphen_parts = word.split('-')
+            hyphen_parts = [part[0].upper() + part[1:].lower() if part else '' for part in hyphen_parts]
+            word = '-'.join(hyphen_parts)
 
-            for part in word.split('-'):
-                if part:  # Check if the part is not an empty string
-                    new_word_parts.append(part[0].upper() + part[1:].lower())
-
-            new_word = '-'.join(new_word_parts)
-
-            new_word_parts = []
-
-            for part in new_word.split("'"):
-                if part:  # Check if the part is not an empty string
-                    new_word_parts.append(part[0].upper() + part[1:].lower())
-
-            words[i] = "'".join(new_word_parts)
+            # Handle words with apostrophes
+            apostrophe_parts = word.split("'")
+            apostrophe_parts = [part[0].upper() + part[1:].lower() if part else '' for part in apostrophe_parts]
+            words[i] = "'".join(apostrophe_parts)
 
     return ' '.join(words)
 
-    middle_column_texts = [decapitalize(text) for text in middle_column_texts]
+middle_column_texts = [decapitalize(text) for text in middle_column_texts]
 
-    return ', '.join(middle_column_texts) 
+return ', '.join(middle_column_texts)
 
 st.header('Graduation Transcription Workflow Web Tool')
 
