@@ -58,8 +58,11 @@ if uploaded_file is not None:
         names_list = extracted_text  # Update names_list with the extracted text
 
 # Use names_list as the default value for the names_list text_area
-names_list = st.text_area("Enter names (separate names with commas):", names_list, key='names_list').split(',')
-names_list = [name.strip() for name in names_list]
+names_list = st.text_area("Enter names (separate names with commas):", names_list, key='names_list')
+
+if names_list:  # Check if names_list is not empty
+    names_list = names_list.split(',')
+    names_list = [name.strip() for name in names_list]
 
 #Correct all names in graduation transcript
 
