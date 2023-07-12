@@ -15,24 +15,17 @@ def extract_middle_column_text(doc):
             cells = row.cells
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
-                # Split the text into lines
                 lines = middle_cell.text.split('\n')
-                # Initialize desired text as empty string
                 desired_text = ''
                 for line in lines:
                     line = line.strip()
-                    # If line contains bracketed text, remove it
                     line = re.sub(r'\(.*?\)', '', line)
                     line = re.sub(r'\[.*?\]', '', line)
-                    # If line is non-empty, update the desired text
                     if line:
                         desired_text = line
                 middle_column_texts.append(desired_text)
 
-    # Remove 'VACANT SEAT' instances
     middle_column_texts = [text for text in middle_column_texts if text != 'VACANT SEAT']
-
-    # Decapitalize text with exceptions
     middle_column_texts = [decapitalize(text) for text in middle_column_texts]
 
     return ', '.join(middle_column_texts)
@@ -42,12 +35,10 @@ def decapitalize(text):
     words = text.split()
     for i, word in enumerate(words):
         if word not in roman_numerals:
-            # Handle hyphenated words
             hyphen_parts = word.split('-')
             hyphen_parts = [part[0].upper() + part[1:].lower() if part else '' for part in hyphen_parts]
             word = '-'.join(hyphen_parts)
 
-            # Handle words with apostrophes
             apostrophe_parts = word.split("'")
             apostrophe_parts = [part[0].upper() + part[1:].lower() if part else '' for part in apostrophe_parts]
             words[i] = "'".join(apostrophe_parts)
