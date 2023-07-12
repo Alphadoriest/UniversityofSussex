@@ -36,7 +36,10 @@ def decapitalize(text):
     for i, word in enumerate(words):
         if word not in roman_numerals:
             hyphen_parts = word.split('-')
-            hyphen_parts = [part[0].upper() + part[1:].lower() if part else '' for part in hyphen_parts]
+            for j, part in enumerate(hyphen_parts):
+                space_parts = part.split()
+                space_parts = [p[0].upper() + p[1:].lower() if p else '' for p in space_parts]
+                hyphen_parts[j] = ' '.join(space_parts)
             word = '-'.join(hyphen_parts)
 
             apostrophe_parts = word.split("'")
