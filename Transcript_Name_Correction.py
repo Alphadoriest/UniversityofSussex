@@ -6,7 +6,7 @@ import streamlit as st
 from streamlit.components.v1 import html
 from docx import Document
 
-#Name Extractor from graduation ceremony in-person lists functions
+#Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
     middle_column_texts = []
 
@@ -44,11 +44,13 @@ def extract_middle_column_text(doc):
 
     return ', '.join(middle_column_texts) 
 
+st.header('Graduation Transcription Workflow Web Tool')
+
 # Add the banner image at the top of the app
 st.image("banner.jpg")
 
 #Name Extractor UI
-st.title('Name Extractor for Graduation Ceremony Lists')
+st.title('Name Extractor for Graduation Ceremony In-Person Lists')
 
 uploaded_file = st.file_uploader("Choose a Word document", type="docx")
 
