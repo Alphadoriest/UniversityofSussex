@@ -96,8 +96,20 @@ def replace_similar_names(text, names_list):
     lines = text.split('\n')
     processed_lines = []
 
+    def replace_similar_names(text, names_list):
+    full_name_pattern = re.compile(r'(?<!:)(?:\b\w+(?:\s+\w+){1,4}\b)(?!\d)')
+    replaced_names = []
+
+    lines = text.split('\n')
+    processed_lines = []
+
     def replace_name(match):
         full_name = match.group(0)
+
+        # If the full name is already in the names list, don't replace it
+        if full_name in names_list:
+            return full_name
+
         max_similarity = 0
         most_similar_name = None
         for name in names_list:
