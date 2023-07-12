@@ -91,12 +91,12 @@ def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
 # Function to replace similar names in the text
-def replace_name(match):
+def replace_name(match, replaced_names):  # add replaced_names as an argument
     full_name = match.group(0)
 
     # If the full name is already in the names list, don't replace it
     if full_name in names_list:
-            return full_name
+        return full_name
 
     max_similarity = 0
     most_similar_name = None
@@ -130,7 +130,7 @@ def replace_similar_names(text, names_list):
             processed_lines.append('')
             continue
 
-        line = full_name_pattern.sub(replace_name, line)
+        line = full_name_pattern.sub(lambda match: replace_name(match, replaced_names), line)  # pass replaced_names to replace_name
         processed_lines.append(line)
 
     new_text = '\n'.join(processed_lines)
