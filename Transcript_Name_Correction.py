@@ -123,7 +123,12 @@ def replace_similar_names(text, names_list):
         line = full_name_pattern.sub(replace_name, line)
         processed_lines.append(line)
 
-    return replaced_names, '\n'.join(processed_lines)
+    new_text = '\n'.join(processed_lines)
+
+    # Remove leading whitespaces from all lines as a final step
+    new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
+
+    return replaced_names, new_text
 
 #Name Corrector UI
 
