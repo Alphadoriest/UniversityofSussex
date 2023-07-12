@@ -21,6 +21,8 @@ def extract_middle_column_text(doc):
                     line = line.strip()
                     line = re.sub(r'\(.*?\)', '', line)
                     line = re.sub(r'\[.*?\]', '', line)
+                    line = re.sub(r'\(.*', '', line)
+                    line = re.sub(r'\[.*', '', line)
                     if line:
                         desired_text = line
                 middle_column_texts.append(desired_text)
