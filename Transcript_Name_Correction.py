@@ -19,10 +19,15 @@ def extract_middle_column_text(doc):
                 desired_text = ''
                 for line in lines:
                     line = line.strip()
+                    
+                    # Ignore lines that start or end with a bracket
+                    if line.startswith('(') or line.endswith(')'):
+                        continue
+
+                    # Ignore lines that contain full bracketed phrases
                     line = re.sub(r'\(.*?\)', '', line)
                     line = re.sub(r'\[.*?\]', '', line)
-                    line = re.sub(r'\(.*', '', line)
-                    line = re.sub(r'\[.*', '', line)
+                    
                     if line:
                         desired_text = line
                 middle_column_texts.append(desired_text)
