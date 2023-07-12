@@ -45,14 +45,16 @@ def decapitalize(text):
             new_word_parts = []
 
             for part in word.split('-'):
-                new_word_parts.append(part[0].upper() + part[1:].lower())
+                if part:  # Check if the part is not an empty string
+                    new_word_parts.append(part[0].upper() + part[1:].lower())
 
             new_word = '-'.join(new_word_parts)
 
             new_word_parts = []
 
             for part in new_word.split("'"):
-                new_word_parts.append(part[0].upper() + part[1:].lower())
+                if part:  # Check if the part is not an empty string
+                    new_word_parts.append(part[0].upper() + part[1:].lower())
 
             words[i] = "'".join(new_word_parts)
 
