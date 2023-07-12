@@ -105,7 +105,7 @@ def replace_similar_names(text, names_list):
             if sim > max_similarity:
                 max_similarity = sim
                 most_similar_name = name
-    
+
         if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
             replaced_names.append((full_name, most_similar_name))
             parts = full_name.split('-')
@@ -128,23 +128,25 @@ def replace_similar_names(text, names_list):
             return most_similar_name
         else:
             return full_name
-        for line in lines:
-            # Skip timecode lines
-            if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line):
-                processed_lines.append(line)
-                processed_lines.append('')
-                continue
-        
-            line = full_name_pattern.sub(replace_name, line)
+
+    for line in lines:
+        # Skip timecode lines
+        if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line):
             processed_lines.append(line)
-        
-        new_text = '\n'.join(processed_lines)
-        
+            processed_lines.append('')
+            continue
+
+        line = full_name_pattern.sub(replace_name, line)
+        processed_lines.append(line)
+
+    new_text = '\n'.join(processed_lines)
+
+    if replaced_names:
         # Remove leading whitespaces from all lines as a final step
         new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
-        
-        # Outdent the return statement to ensure it always runs
         return replaced_names, new_text
+    else:
+        return [], ''
 
 #Name Corrector UI
 
