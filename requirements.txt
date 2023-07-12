@@ -1,7 +1,2 @@
 streamlit
-nltk
-beautifulsoup4
-PyPDF2
 python-docx
-requests
-pillow
