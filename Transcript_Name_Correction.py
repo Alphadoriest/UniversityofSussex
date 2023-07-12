@@ -97,53 +97,53 @@ def replace_similar_names(text, names_list):
     processed_lines = []
 
     def replace_name(match):
-    full_name = match.group(0)
-    max_similarity = 0
-    most_similar_name = None
-    for name in names_list:
-        sim = similarity(full_name, name)
-        if sim > max_similarity:
-            max_similarity = sim
-            most_similar_name = name
-
-    if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
-        replaced_names.append((full_name, most_similar_name))
-        parts = full_name.split('-')
-        new_parts = []
-        for part in parts:
-            max_similarity = 0
-            most_similar_part = None
-            for name in names_list:
-                name_parts = name.split('-')
-                for name_part in name_parts:
-                    sim = similarity(part, name_part)
-                    if sim > max_similarity:
-                        max_similarity = sim
-                        most_similar_part = name_part
-            if max_similarity >= 0.65:
-                new_parts.append(most_similar_part)
-            else:
-                new_parts.append(part)
-        most_similar_name = '-'.join(new_parts).replace('"', '').replace(',', '')
-        return most_similar_name
-    else:
-        return full_name
-    for line in lines:
-        # Skip timecode lines
-        if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line):
+        full_name = match.group(0)
+        max_similarity = 0
+        most_similar_name = None
+        for name in names_list:
+            sim = similarity(full_name, name)
+            if sim > max_similarity:
+                max_similarity = sim
+                most_similar_name = name
+    
+        if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
+            replaced_names.append((full_name, most_similar_name))
+            parts = full_name.split('-')
+            new_parts = []
+            for part in parts:
+                max_similarity = 0
+                most_similar_part = None
+                for name in names_list:
+                    name_parts = name.split('-')
+                    for name_part in name_parts:
+                        sim = similarity(part, name_part)
+                        if sim > max_similarity:
+                            max_similarity = sim
+                            most_similar_part = name_part
+                if max_similarity >= 0.65:
+                    new_parts.append(most_similar_part)
+                else:
+                    new_parts.append(part)
+            most_similar_name = '-'.join(new_parts).replace('"', '').replace(',', '')
+            return most_similar_name
+        else:
+            return full_name
+        for line in lines:
+            # Skip timecode lines
+            if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line):
+                processed_lines.append(line)
+                processed_lines.append('')
+                continue
+    
+            line = full_name_pattern.sub(replace_name, line)
             processed_lines.append(line)
-            processed_lines.append('')
-            continue
-
-        line = full_name_pattern.sub(replace_name, line)
-        processed_lines.append(line)
-
-    new_text = '\n'.join(processed_lines)
-
-    # Remove leading whitespaces from all lines as a final step
-    new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
-
-    return replaced_names, new_text
+    
+        new_text = '\n'.join(processed_lines)
+    
+        # Remove leading whitespaces from all lines as a final step
+        new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
+    
+        return replaced_names, new_text
 
 #Name Corrector UI
 
