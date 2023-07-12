@@ -21,9 +21,9 @@ def extract_middle_column_text(doc):
                 desired_text = ''
                 for line in lines:
                     line = line.strip()
-                    # If line contains bracketed text or starts with a bracket, break the loop
-                    if line.startswith('(') or re.search(r'\[.*\]', line):
-                        break
+                    # If line contains bracketed text, remove it
+                    line = re.sub(r'\(.*?\)', '', line)
+                    line = re.sub(r'\[.*?\]', '', line)
                     # If line is non-empty, update the desired text
                     if line:
                         desired_text = line
