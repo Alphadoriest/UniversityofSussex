@@ -54,7 +54,7 @@ st.header('Graduation Transcription Workflow Web Tool')
 # Add the banner image at the top of the app
 st.image("banner.jpg")
 
-#Name Extractor UI
+# Name Extractor UI
 st.title('Name Extractor for Graduation Ceremony In-Person Lists')
 
 uploaded_file = st.file_uploader("Choose a Word document", type="docx")
