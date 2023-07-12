@@ -107,15 +107,14 @@ def replace_name(match, replaced_names):
             most_similar_name = name
 
     if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
-        # Check if the most similar name is already part of the full name or vice versa
-        if most_similar_name in full_name or full_name in most_similar_name:
-            # Check if the full name from the transcript is a complete match with the name from the names list
-            if full_name == most_similar_name:
-                return full_name
-            else:
-                replaced_names.append((full_name, most_similar_name))
-                return most_similar_name
-
+        # Check if the most similar name is already part of the full name
+        if most_similar_name in full_name:
+            return full_name
+        # Check if the full name is a substring of the most similar name
+        elif full_name in most_similar_name:
+            replaced_names.append((full_name, most_similar_name))
+            return most_similar_name
+      
     return full_name
 
 def replace_similar_names(text, names_list):
