@@ -55,7 +55,7 @@ if uploaded_file is not None:
     if st.button("Extract Names"):
         document = Document(io.BytesIO(uploaded_file.read()))
         extracted_text = extract_middle_column_text(document)
-        names_list = st.text_area("Enter names (separate names with commas):", extracted_text).split(',')
+        names_list = st.text_area("Enter names (separate names with commas):", extracted_text, key='names_list').split(',')
 
 # Use the extracted_text as the default value for the names_list text_area
 names_list = st.text_area("Enter names (separate names with commas):", extracted_text).split(',')
@@ -116,7 +116,7 @@ if uploaded_transcript_file is not None:
         transcript_text = uploaded_transcript_file.read().decode()
 
 # Use the transcript_text as the default value for the transcript text_area
-text = st.text_area("Enter graduation transcript text:", transcript_text)
+text = st.text_area("Enter graduation transcript text:", transcript_text, key='transcript_text')
 
 replaced_names, new_text = replace_similar_names(text, names_list)
 
