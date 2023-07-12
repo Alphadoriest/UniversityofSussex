@@ -97,22 +97,37 @@ def replace_similar_names(text, names_list):
     processed_lines = []
 
     def replace_name(match):
-        full_name = match.group(0)
-        max_similarity = 0
-        most_similar_name = None
-        for name in names_list:
-            sim = similarity(full_name, name)
-            if sim > max_similarity:
-                max_similarity = sim
-                most_similar_name = name
+    full_name = match.group(0)
+    max_similarity = 0
+    most_similar_name = None
+    for name in names_list:
+        sim = similarity(full_name, name)
+        if sim > max_similarity:
+            max_similarity = sim
+            most_similar_name = name
 
-        if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
-            replaced_names.append((full_name, most_similar_name))
-            most_similar_name = most_similar_name.replace('"', '').replace(',', '')
-            return most_similar_name
-        else:
-            return full_name
-
+    if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
+        replaced_names.append((full_name, most_similar_name))
+        parts = full_name.split('-')
+        new_parts = []
+        for part in parts:
+            max_similarity = 0
+            most_similar_part = None
+            for name in names_list:
+                name_parts = name.split('-')
+                for name_part in name_parts:
+                    sim = similarity(part, name_part)
+                    if sim > max_similarity:
+                        max_similarity = sim
+                        most_similar_part = name_part
+            if max_similarity >= 0.65:
+                new_parts.append(most_similar_part)
+            else:
+                new_parts.append(part)
+        most_similar_name = '-'.join(new_parts).replace('"', '').replace(',', '')
+        return most_similar_name
+    else:
+        return full_name
     for line in lines:
         # Skip timecode lines
         if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line):
