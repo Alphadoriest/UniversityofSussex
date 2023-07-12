@@ -122,12 +122,23 @@ def replace_similar_names(text, names_list):
                 most_similar_name = name
     
         if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
-            # Check if the full name is part of a hyphenated name in the transcript
-            hyphenated_name = re.search(f'{full_name}-\w+', text)
-            if hyphenated_name is None:
-                replaced_names.append((full_name, most_similar_name))
-                most_similar_name = most_similar_name.replace('"', '').replace(',', '')
-                return most_similar_name
+            # Special handling for hyphenated names
+            full_name_parts = full_name.split('-')
+            most_similar_name_parts = most_similar_name.split('-')
+    
+            if len(full_name_parts) == len(most_similar_name_parts):
+                for i in range(len(full_name_parts)):
+                    if full_name_parts[i] != most_similar_name_parts[i]:
+                        full_name_parts[i] = most_similar_name_parts[i]
+                
+                replaced = '-'.join(full_name_parts)
+    
+                replaced_names.append((full_name, replaced))
+                return replaced
+    
+            replaced_names.append((full_name, most_similar_name))
+            return most_similar_name
+    
         return full_name
 
     for line in lines:
