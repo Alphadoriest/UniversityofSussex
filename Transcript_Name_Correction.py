@@ -106,7 +106,7 @@ def replace_similar_names(text, names_list):
                 max_similarity = sim
                 most_similar_name = name
 
-        if max_similarity >= 0.5:  # Adjust the similarity threshold as needed
+        if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
             replaced_names.append((full_name, most_similar_name))
             most_similar_name = most_similar_name.replace('"', '').replace(',', '')
             return most_similar_name
