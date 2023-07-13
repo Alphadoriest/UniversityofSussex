@@ -90,11 +90,11 @@ def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
 def replace_similar_names(text, names_list):
-    full_name_pattern = re.compile(r'(?<!:)(?:\b\w+(?:\s+\w+){1,4}\b)(?!\d)')
     replaced_names = []
+    pattern = r'([A-Z][a-z]+(?:(?: |-)[A-Z][a-z]+)?)'
+    new_text = re.sub(pattern, replace_name, text)
 
-    lines = text.split('\n')
-    processed_lines = []
+    return replaced_names, new_text
 
     def replace_name(match):
         full_name = match.group(0)
