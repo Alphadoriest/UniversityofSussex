@@ -97,37 +97,31 @@ def replace_similar_names(text, names_list):
     processed_lines = []
 
     def replace_name(match):
-        full_name = match.group(0)
-        max_similarity = 0
-        most_similar_name = None
-        for name in names_list:
-            sim = similarity(full_name, name)
-            if sim > max_similarity:
-                max_similarity = sim
-                most_similar_name = name
+    full_name = match.group(0)
+    max_similarity = 0
+    most_similar_name = None
+    for name in names_list:
+        sim = similarity(full_name, name)
+        if sim > max_similarity:
+            max_similarity = sim
+            most_similar_name = name
 
-        if max_similarity >= 0.7:  # Adjust the similarity threshold as needed
-            replaced_names.append((full_name, most_similar_name))
-            parts = full_name.split('-')
-            new_parts = []
-            for part in parts:
-                max_similarity = 0
-                most_similar_part = None
-                for name in names_list:
-                    name_parts = name.split('-')
-                    for name_part in name_parts:
-                        sim = similarity(part, name_part)
-                        if sim > max_similarity:
-                            max_similarity = sim
-                            most_similar_part = name_part
-                if max_similarity >= 0.65:
-                    new_parts.append(most_similar_part)
-                else:
-                    new_parts.append(part)
-            most_similar_name = '-'.join(new_parts).replace('"', '').replace(',', '')
-            return most_similar_name
-        else:
-            return full_name
+    if max_similarity >= 0.7:  # Adjust the similarity threshold as needed
+        replaced_names.append((full_name, most_similar_name))
+        original_parts = set(full_name.split(' '))
+        most_similar_parts = set(most_similar_name.split('-'))
+
+        # Check if any part of the original name is missing in the most_similar_name
+        missing_parts = original_parts - most_similar_parts
+
+        # If any part is missing, add the missing parts to the most_similar_parts
+        if missing_parts:
+            most_similar_parts.update(missing_parts)
+
+        updated_name = ' '.join(most_similar_parts).replace('"', '').replace(',', '')
+        return updated_name
+    else:
+        return full_name
 
     for line in lines:
         # Skip timecode lines
