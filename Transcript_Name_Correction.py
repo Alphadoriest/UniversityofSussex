@@ -110,18 +110,7 @@ def replace_similar_names(text, names_list):
 
         if max_similarity >= 0.7:  # Adjust the similarity threshold as needed
             replaced_names.append((full_name, most_similar_name))
-            original_parts = set(full_name.split(' '))
-            most_similar_parts = set(most_similar_name.split('-'))
-
-            # Check if any part of the original name is missing in the most_similar_name
-            missing_parts = original_parts - most_similar_parts
-
-            # If any part is missing, add the missing parts to the most_similar_parts
-            if missing_parts:
-                most_similar_parts.update(missing_parts)
-
-            updated_name = ' '.join(most_similar_parts).replace('"', '').replace(',', '')
-            return updated_name
+            return most_similar_name
         else:
             return full_name
 
@@ -147,7 +136,7 @@ def replace_similar_names(text, names_list):
         new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
         return replaced_names, new_text
     else:
-        return [], ''   
+        return [], ''
 
 #Name Corrector UI
 
