@@ -160,6 +160,7 @@ if st.button("Run"):  # Run button added
     if replaced_names and new_text:  # Check if replaced_names and new_text exist
         # Escape newline characters and single quotes in new_text
         escaped_new_text = new_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
+        new_text = decapitalize(new_text)  # Apply decapitalize function to the updated transcript
 
         # Button to copy the replaced text to the clipboard
         copy_button_html = f"""
