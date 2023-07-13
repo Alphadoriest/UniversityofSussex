@@ -89,13 +89,6 @@ if names_list:  # Check if names_list is not empty
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
-def replace_similar_names(text, names_list):
-    replaced_names = []
-    pattern = r'([A-Z][a-z]+(?:(?: |-)[A-Z][a-z]+)?)'
-    new_text = re.sub(pattern, replace_name, text)
-
-    return replaced_names, new_text
-
     def replace_name(match):
         full_name = match.group(0)
         max_similarity = 0
@@ -122,6 +115,13 @@ def replace_similar_names(text, names_list):
             return updated_name
         else:
             return full_name
+
+        def replace_similar_names(text, names_list):
+            replaced_names = []
+            pattern = r'([A-Z][a-z]+(?:(?: |-)[A-Z][a-z]+)?)'
+            new_text = re.sub(pattern, replace_name, text)
+
+            return replaced_names, new_text
     
         for line in lines:
             # Skip timecode lines
