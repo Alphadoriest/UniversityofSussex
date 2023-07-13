@@ -97,50 +97,50 @@ def replace_similar_names(text, names_list):
     processed_lines = []
 
     def replace_name(match):
-    full_name = match.group(0)
-    max_similarity = 0
-    most_similar_name = None
-    for name in names_list:
-        sim = similarity(full_name, name)
-        if sim > max_similarity:
-            max_similarity = sim
-            most_similar_name = name
-
-    if max_similarity >= 0.7:  # Adjust the similarity threshold as needed
-        replaced_names.append((full_name, most_similar_name))
-        original_parts = set(full_name.split(' '))
-        most_similar_parts = set(most_similar_name.split('-'))
-
-        # Check if any part of the original name is missing in the most_similar_name
-        missing_parts = original_parts - most_similar_parts
-
-        # If any part is missing, add the missing parts to the most_similar_parts
-        if missing_parts:
-            most_similar_parts.update(missing_parts)
-
-        updated_name = ' '.join(most_similar_parts).replace('"', '').replace(',', '')
-        return updated_name
-    else:
-        return full_name
-
-    for line in lines:
-        # Skip timecode lines
-        if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line):
+        full_name = match.group(0)
+        max_similarity = 0
+        most_similar_name = None
+        for name in names_list:
+            sim = similarity(full_name, name)
+            if sim > max_similarity:
+                max_similarity = sim
+                most_similar_name = name
+    
+        if max_similarity >= 0.7:  # Adjust the similarity threshold as needed
+            replaced_names.append((full_name, most_similar_name))
+            original_parts = set(full_name.split(' '))
+            most_similar_parts = set(most_similar_name.split('-'))
+    
+            # Check if any part of the original name is missing in the most_similar_name
+            missing_parts = original_parts - most_similar_parts
+    
+            # If any part is missing, add the missing parts to the most_similar_parts
+            if missing_parts:
+                most_similar_parts.update(missing_parts)
+    
+            updated_name = ' '.join(most_similar_parts).replace('"', '').replace(',', '')
+            return updated_name
+        else:
+            return full_name
+    
+        for line in lines:
+            # Skip timecode lines
+            if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line):
+                processed_lines.append(line)
+                processed_lines.append('')
+                continue
+    
+            line = full_name_pattern.sub(replace_name, line)
             processed_lines.append(line)
-            processed_lines.append('')
-            continue
-
-        line = full_name_pattern.sub(replace_name, line)
-        processed_lines.append(line)
-
-    new_text = '\n'.join(processed_lines)
-
-    if replaced_names:
-        # Remove leading whitespaces from all lines as a final step
-        new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
-        return replaced_names, new_text
-    else:
-        return [], ''
+    
+        new_text = '\n'.join(processed_lines)
+    
+        if replaced_names:
+            # Remove leading whitespaces from all lines as a final step
+            new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
+            return replaced_names, new_text
+        else:
+            return [], ''
 
 #Name Corrector UI
 
