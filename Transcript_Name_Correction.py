@@ -119,7 +119,7 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
         most_similar_name = None
         for name in names_list:
             sim = similarity(full_name, name)
-            if sim > max_similarity:
+            if sim > max_similarity and len(full_name.split()) == len(name.split()): # Add condition here
                 max_similarity = sim
                 most_similar_name = name
 
