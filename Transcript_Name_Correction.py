@@ -83,6 +83,7 @@ names_list = st.text_area("Enter names (separate names with commas):", ', '.join
 if names_list:  # Check if names_list is not empty
     names_list = names_list.split(',')
     names_list = [name.strip() for name in names_list]
+    capitalized_names_list = [name.upper() for name in names_list]  # Create capitalized_names_list
 
 #Correct all names in graduation transcript (find and replace) functions
 
@@ -154,7 +155,7 @@ text = st.text_area("Enter graduation transcript text:", transcript_text, key='t
 
 if st.button("Run"):  # Run button added
     if names_list and text:  # Check if both text boxes are populated
-        replaced_names, new_text = replace_similar_names(text, names_list)
+        replaced_names, new_text = replace_similar_names(text, capitalized_names_list)  # Pass capitalized_names_list instead of names_list
 
     if replaced_names and new_text:  # Check if replaced_names and new_text exist
         # Escape newline characters and single quotes in new_text
