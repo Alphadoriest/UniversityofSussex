@@ -123,7 +123,7 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
                 max_similarity = sim
                 most_similar_name = name
 
-        if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
+        if max_similarity >= 0.70:  # Adjust the similarity threshold as needed
             replaced_names.append((full_name, most_similar_name))
             return most_similar_name
         else:
