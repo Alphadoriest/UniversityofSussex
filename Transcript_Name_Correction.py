@@ -131,7 +131,7 @@ def replace_similar_names(text, names_list):
             processed_lines.append('')
             continue
 
-        line = full_name_pattern.sub(replace_name, line)
+        line = re.sub(pattern, replace_name, line)
         processed_lines.append(line)
 
     new_text = '\n'.join(processed_lines)
