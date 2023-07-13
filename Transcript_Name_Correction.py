@@ -173,8 +173,14 @@ if st.button("Run"):  # Run button added
         """
         html(copy_button_html, height=30)
 
-    st.subheader("Names replaced:")
-    for original, replaced in replaced_names:
-        st.write(f"{original} -> {replaced}")
+if replaced_names:
+        st.subheader("Names replaced:")
+        for original, replaced in replaced_names:
+            st.write(f"{original} -> {replaced}")
+    else:
+        st.subheader("No names were replaced.")
 
-    st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
+    if new_text:
+        st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
+    else:
+        st.warning("Please provide a valid transcript and list of names.")
