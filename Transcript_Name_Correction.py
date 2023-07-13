@@ -86,7 +86,7 @@ if names_list:  # Check if names_list is not empty
 
 #Correct all names in graduation transcript (find and replace) functions
 
-ddef similarity(a, b):
+def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
 def replace_name(match):
