@@ -121,26 +121,26 @@ def replace_similar_names(text, names_list):
     pattern = r'([A-Z][a-z]+(?:(?: |-)[A-Z][a-z]+)?)'
     new_text = re.sub(pattern, replace_name, text)
 
-    return replaced_names, new_text
-    
-for line in lines:
- # Skip timecode lines
-            if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line):
-                processed_lines.append(line)
-                processed_lines.append('')
-                continue
-    
-            line = full_name_pattern.sub(replace_name, line)
+    processed_lines = []
+    lines = text.split('\n')
+    for line in lines:
+        # Skip timecode lines
+        if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line):
             processed_lines.append(line)
-    
-        new_text = '\n'.join(processed_lines)
-    
-        if replaced_names:
-            # Remove leading whitespaces from all lines as a final step
-            new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
-            return replaced_names, new_text
-        else:
-            return [], ''           
+            processed_lines.append('')
+            continue
+
+        line = full_name_pattern.sub(replace_name, line)
+        processed_lines.append(line)
+
+    new_text = '\n'.join(processed_lines)
+
+    if replaced_names:
+        # Remove leading whitespaces from all lines as a final step
+        new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
+        return replaced_names, new_text
+    else:
+        return [], ''         
 
 #Name Corrector UI
 
