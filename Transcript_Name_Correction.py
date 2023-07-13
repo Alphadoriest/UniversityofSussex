@@ -174,22 +174,13 @@ if uploaded_transcript_file is not None:
 # Use the transcript_text as the default value for the transcript text_area
 text = st.text_area("Enter graduation transcript text:", transcript_text, key='transcript_text')
 
-# Initialize replaced_names and new_text as empty values
-replaced_names = []
-new_text = ''
-
 if st.button("Run"):  # Run button added
     if names_list and text:  # Check if both text boxes are populated
-        st.write(f"Original names list: {names_list}")  # Debugging: display original names_list
-        st.write(f"Original transcript text: {text}")  # Debugging: display original transcript_text
-        replaced_names, new_text = replace_similar_names(text, capitalized_names_list)  # Pass capitalized_names_list instead of names_list
-        st.write(f"Replaced names: {replaced_names}")  # Debugging: display replaced_names
-        st.write(f"New transcript text: {new_text}")  # Debugging: display new_text
+        replaced_names, new_text = replace_similar_names(text, names_list)
 
     if replaced_names and new_text:  # Check if replaced_names and new_text exist
         # Escape newline characters and single quotes in new_text
         escaped_new_text = new_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
-        new_text = decapitalize(new_text)  # Apply decapitalize function to the updated transcript
 
         # Button to copy the replaced text to the clipboard
         copy_button_html = f"""
@@ -203,14 +194,8 @@ if st.button("Run"):  # Run button added
         """
         html(copy_button_html, height=30)
 
-    if replaced_names:
-        st.subheader("Names replaced:")
-        for original, replaced in replaced_names:
-            st.write(f"{original} -> {replaced}")
-    else:
-        st.subheader("No names were replaced.")
+    st.subheader("Names replaced:")
+    for original, replaced in replaced_names:
+        st.write(f"{original} -> {replaced}")
 
-    if new_text:
-        st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
-    else:
-        st.warning("Please provide a valid transcript and list of names.")
+    st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
