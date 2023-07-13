@@ -90,8 +90,16 @@ if names_list:  # Check if names_list is not empty
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
-def replace_similar_names(text, names_list):
+def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str]], str]:
     replaced_names = []
+    for name in names_list:
+        similar_names = get_similar_names(text, name)
+        for similar_name in similar_names:
+            # Debugging: display similar_name and name
+            st.write(f"Replacing '{similar_name}' with '{name}'")
+            text = text.replace(similar_name, name)
+            replaced_names.append((similar_name, name))
+    return replaced_names, text
 
     def replace_name(match):
         full_name = match.group(0)
