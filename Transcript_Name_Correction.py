@@ -116,7 +116,6 @@ def replace_similar_names(text, names_list):
             return full_name
 
     pattern = r'\b([A-Z][a-z]+(?:(?: |-)[A-Z][a-z]+)?)\b'
-    new_text = re.sub(pattern, replace_name, text)
 
     processed_lines = []
     lines = text.split('\n')
