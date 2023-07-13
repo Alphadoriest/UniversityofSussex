@@ -123,8 +123,8 @@ def replace_similar_names(text, names_list):
 
     return replaced_names, new_text
     
-        for line in lines:
-            # Skip timecode lines
+for line in lines:
+ # Skip timecode lines
             if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line):
                 processed_lines.append(line)
                 processed_lines.append('')
@@ -140,7 +140,7 @@ def replace_similar_names(text, names_list):
             new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
             return replaced_names, new_text
         else:
-            return [], ''
+            return [], ''           
 
 #Name Corrector UI
 
