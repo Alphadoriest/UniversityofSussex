@@ -86,42 +86,42 @@ if names_list:  # Check if names_list is not empty
 
 #Correct all names in graduation transcript (find and replace) functions
 
-def similarity(a, b):
+ddef similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
-    def replace_name(match):
-        full_name = match.group(0)
-        max_similarity = 0
-        most_similar_name = None
-        for name in names_list:
-            sim = similarity(full_name, name)
-            if sim > max_similarity:
-                max_similarity = sim
-                most_similar_name = name
-    
-        if max_similarity >= 0.7:  # Adjust the similarity threshold as needed
-            replaced_names.append((full_name, most_similar_name))
-            original_parts = set(full_name.split(' '))
-            most_similar_parts = set(most_similar_name.split('-'))
-    
-            # Check if any part of the original name is missing in the most_similar_name
-            missing_parts = original_parts - most_similar_parts
-    
-            # If any part is missing, add the missing parts to the most_similar_parts
-            if missing_parts:
-                most_similar_parts.update(missing_parts)
-    
-            updated_name = ' '.join(most_similar_parts).replace('"', '').replace(',', '')
-            return updated_name
-        else:
-            return full_name
+def replace_name(match):
+    full_name = match.group(0)
+    max_similarity = 0
+    most_similar_name = None
+    for name in names_list:
+        sim = similarity(full_name, name)
+        if sim > max_similarity:
+            max_similarity = sim
+            most_similar_name = name
 
-        def replace_similar_names(text, names_list):
-            replaced_names = []
-            pattern = r'([A-Z][a-z]+(?:(?: |-)[A-Z][a-z]+)?)'
-            new_text = re.sub(pattern, replace_name, text)
+    if max_similarity >= 0.7:  # Adjust the similarity threshold as needed
+        replaced_names.append((full_name, most_similar_name))
+        original_parts = set(full_name.split(' '))
+        most_similar_parts = set(most_similar_name.split('-'))
 
-            return replaced_names, new_text
+        # Check if any part of the original name is missing in the most_similar_name
+        missing_parts = original_parts - most_similar_parts
+
+        # If any part is missing, add the missing parts to the most_similar_parts
+        if missing_parts:
+            most_similar_parts.update(missing_parts)
+
+        updated_name = ' '.join(most_similar_parts).replace('"', '').replace(',', '')
+        return updated_name
+    else:
+        return full_name
+
+def replace_similar_names(text, names_list):
+    replaced_names = []
+    pattern = r'([A-Z][a-z]+(?:(?: |-)[A-Z][a-z]+)?)'
+    new_text = re.sub(pattern, replace_name, text)
+
+    return replaced_names, new_text
     
         for line in lines:
             # Skip timecode lines
