@@ -88,6 +88,19 @@ if names_list:  # Check if names_list is not empty
 
 #Correct all names in graduation transcript (find and replace) functions
 
+def get_similar_names(text: str, name: str) -> List[str]:
+    # Split the name into words
+    name_words = name.split()
+
+    # Create a regex pattern to match the name with optional whitespace between words
+    pattern = r'\b' + r'\s*'.join(re.escape(word) for word in name_words) + r'\b'
+
+    # Find all occurrences of the pattern in the text (case-insensitive)
+    similar_names = re.findall(pattern, text, flags=re.IGNORECASE)
+
+    # Remove duplicates and return the result
+    return list(set(similar_names))
+
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
