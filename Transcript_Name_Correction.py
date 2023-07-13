@@ -158,7 +158,11 @@ new_text = ''
 
 if st.button("Run"):  # Run button added
     if names_list and text:  # Check if both text boxes are populated
+        st.write(f"Original names list: {names_list}")  # Debugging: display original names_list
+        st.write(f"Original transcript text: {text}")  # Debugging: display original transcript_text
         replaced_names, new_text = replace_similar_names(text, capitalized_names_list)  # Pass capitalized_names_list instead of names_list
+        st.write(f"Replaced names: {replaced_names}")  # Debugging: display replaced_names
+        st.write(f"New transcript text: {new_text}")  # Debugging: display new_text
 
     if replaced_names and new_text:  # Check if replaced_names and new_text exist
         # Escape newline characters and single quotes in new_text
