@@ -106,12 +106,6 @@ def similarity(a, b):
 
 def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str]], str]:
     replaced_names = []
-    for name in names_list:
-        similar_names = get_similar_names(text, name)
-        for similar_name in similar_names:
-            text = text.replace(similar_name, name)
-            replaced_names.append((similar_name, name))
-    return replaced_names, text
 
     def replace_name(match):
         full_name = match.group(0)
@@ -158,7 +152,7 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
         return replaced_names, new_text
     else:
         return [], ''
-
+        
 #Name Corrector UI
 
 st.title("Graduation Transcript Name Corrector")
