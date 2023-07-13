@@ -152,6 +152,10 @@ if uploaded_transcript_file is not None:
 # Use the transcript_text as the default value for the transcript text_area
 text = st.text_area("Enter graduation transcript text:", transcript_text, key='transcript_text')
 
+# Initialize replaced_names and new_text as empty values
+replaced_names = []
+new_text = ''
+
 if st.button("Run"):  # Run button added
     if names_list and text:  # Check if both text boxes are populated
         replaced_names, new_text = replace_similar_names(text, capitalized_names_list)  # Pass capitalized_names_list instead of names_list
@@ -173,14 +177,14 @@ if st.button("Run"):  # Run button added
         """
         html(copy_button_html, height=30)
 
-if replaced_names:
+    if replaced_names:
         st.subheader("Names replaced:")
         for original, replaced in replaced_names:
             st.write(f"{original} -> {replaced}")
-else:
-    st.subheader("No names were replaced.")
-    
-if new_text:
-    st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
-else:
-    st.warning("Please provide a valid transcript and list of names.")
+    else:
+        st.subheader("No names were replaced.")
+
+    if new_text:
+        st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
+    else:
+        st.warning("Please provide a valid transcript and list of names.")
