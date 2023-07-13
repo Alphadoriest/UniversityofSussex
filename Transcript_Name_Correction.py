@@ -129,13 +129,14 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
                 max_similarity = sim
                 most_similar_name = name
 
-        if max_similarity >= 0.7:  # Adjust the similarity threshold as needed
+        if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
             replaced_names.append((full_name, most_similar_name))
             return most_similar_name
         else:
             return full_name
 
-    pattern = r'\b([A-Z][a-z]+(?:(?: |-)[A-Z][a-z]+)?)\b'
+    # Updated regex pattern
+    pattern = r'\b([A-Z][a-z]+(?:(?: |-)[A-Z][a-z]+)*)\b'
 
     processed_lines = []
     lines = text.split('\n')
