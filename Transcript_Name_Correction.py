@@ -140,6 +140,12 @@ def decapitalize(text):
 st.header('Graduation Transcription Workflow Web Tool')
 
 # Add a slider in the sidebar
+# Default slider values
+DEFAULT_THRESHOLD = 0.65
+DEFAULT_SEQUENCE = 0.33
+DEFAULT_FUZZ = 0.33  
+DEFAULT_METAPHONE = 0.34
+
 st.sidebar.header('Set Overall Similarity Threshold for Combined Methods')
 similarity_threshold = st.sidebar.slider(
     'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. 0.65 or 0.7 recommended at first.',
@@ -159,12 +165,6 @@ metaphone_weight = st.sidebar.slider ('Double Metaphone Weight', 0.0, 1.0, DEFAU
 # Ensure the sum of weights equal to 1
 if sequence_weight + fuzz_weight + metaphone_weight != 1.0:
     st.sidebar.error('Please adjust the weights so their sum equals to 1.0')
-
-# Default slider values
-DEFAULT_THRESHOLD = 0.65
-DEFAULT_SEQUENCE = 0.33
-DEFAULT_FUZZ = 0.33  
-DEFAULT_METAPHONE = 0.34
 
 # Reset button
 if st.sidebar.button("Reset Weights"):
