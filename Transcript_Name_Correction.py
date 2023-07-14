@@ -42,43 +42,6 @@ def extract_middle_column_text(doc):
                 middle_column_texts.append(desired_text)
 
     return [decapitalize(text) for text in middle_column_texts if text != 'VACANT SEAT']
-    
-def decapitalize(text):
-    roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
-    words = text.split()
-    for i, word in enumerate(words):
-        if word not in roman_numerals:
-
-            # Split hyphenated words and capitalize each part
-            hyphen_parts = word.split('-')
-            hyphen_parts = [part.lower().title() for part in hyphen_parts]
-            word = '-'.join(hyphen_parts)
-
-            # Split words with apostrophes and capitalize each part
-            apostrophe_parts = word.split("'")
-            apostrophe_parts = [part.lower().title() for part in apostrophe_parts]
-            words[i] = "'".join(apostrophe_parts)
-
-    return ' '.join(words)
-
-st.header('Graduation Transcription Workflow Web Tool')
-
-# Add a slider in the sidebar
-similarity_threshold = st.sidebar.slider(
-    'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. 0.65 or 0.7 recommended at first.',
-    min_value=0.0,
-    max_value=1.0,
-    value=0.65,
-    step=0.05,
-)
-
-# Add the banner image at the top of the app
-st.image("banner.jpg")
-
-# Name Extractor UI
-st.title('Name Extractor for Graduation Ceremony In-Person Lists')
-
-uploaded_file = st.file_uploader("Choose a Word document", type="docx")
 
 # Initialize names_list as an empty string
 names_list = ''
@@ -161,8 +124,44 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
         return replaced_names, new_text
     else:
         return [], ''
+
+def decapitalize(text):
+    roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
+    words = text.split()
+    for i, word in enumerate(words):
+        if word not in roman_numerals:
+
+            # Split hyphenated words and capitalize each part
+            hyphen_parts = word.split('-')
+            hyphen_parts = [part.lower().title() for part in hyphen_parts]
+            word = '-'.join(hyphen_parts)
+
+            # Split words with apostrophes and capitalize each part
+            apostrophe_parts = word.split("'")
+            apostrophe_parts = [part.lower().title() for part in apostrophe_parts]
+            words[i] = "'".join(apostrophe_parts)
+
+    return ' '.join(words)
         
 #Name Corrector UI
+
+st.header('Graduation Transcription Workflow Web Tool')
+
+# Add a slider in the sidebar
+similarity_threshold = st.sidebar.slider(
+    'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. 0.65 or 0.7 recommended at first.',
+    min_value=0.0,
+    max_value=1.0,
+    value=0.65,
+    step=0.05,
+)
+
+# Add the banner image at the top of the app
+st.image("banner.jpg")
+
+st.title('Name Extractor for Graduation Ceremony In-Person Lists')
+
+uploaded_file = st.file_uploader("Choose a Word document", type="docx")
 
 st.title("Graduation Transcript Name Corrector")
 # Initialize transcript_text as an empty string
