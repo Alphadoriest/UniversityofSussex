@@ -137,7 +137,7 @@ def decapitalize(text):
         
 #Name Corrector UI
 
-st.header('Graduation Transcription Workflow Web Tool')
+st.title('Graduation Transcription Workflow Web Tool')
 
 # Add a slider in the sidebar
 # Default slider values
@@ -146,7 +146,7 @@ DEFAULT_SEQUENCE = 0.33
 DEFAULT_FUZZ = 0.33  
 DEFAULT_METAPHONE = 0.34
 
-st.sidebar.header('Set Overall Similarity Threshold for Combined Methods')
+st.sidebar.title('Set Overall Similarity Threshold for Combined Methods')
 similarity_threshold = st.sidebar.slider(
     'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. 0.65 or 0.7 recommended at first.',
     min_value=0.0,
@@ -156,8 +156,8 @@ similarity_threshold = st.sidebar.slider(
 )
 
 # Slider weights
-st.sidebar.header('Adjust Weights for Comparison Methods')
-st.sidebar.title('Set the relative weights of each method towards the name similarity meatching - experimental.')
+st.sidebar.title('Adjust Weights for Comparison Methods')
+st.sidebar.header('Set the relative weights of each method towards the name similarity meatching - experimental.')
 sequence_weight = st.sidebar.slider ('SequenceMatcher Weight', 0.0, 1.0, DEFAULT_SEQUENCE, 0.01)
 fuzz_weight = st.sidebar.slider ('Fuzz Ratio Weight', 0.0, 1.0, DEFAULT_FUZZ, 0.01)
 metaphone_weight = st.sidebar.slider ('Double Metaphone Weight', 0.0, 1.0, DEFAULT_METAPHONE, 0.01)
@@ -176,7 +176,7 @@ if st.sidebar.button("Reset Weights"):
 # Add the banner image at the top of the app
 st.image("banner.jpg")
 
-st.title('Name Extractor for Graduation Ceremony In-Person Lists')
+st.header('Name Extractor for Graduation Ceremony In-Person Lists')
 
 uploaded_file = st.file_uploader("Choose a Word document", type="docx")
 
@@ -195,7 +195,7 @@ if names_list:  # Check if names_list is not empty
     names_list = [name.strip() for name in names_list]
     capitalized_names_list = [name.upper() for name in names_list]  # Create capitalized_names_list
 
-st.title("Graduation Transcript Name Corrector")
+st.header("Graduation Transcript Name Corrector")
 # Initialize transcript_text as an empty string
 transcript_text = ''
 
