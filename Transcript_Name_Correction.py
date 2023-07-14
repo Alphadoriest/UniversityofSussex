@@ -145,7 +145,7 @@ similarity_threshold = st.sidebar.slider(
     'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. When equally weighted, 0.5 gives acceptable output.',
     min_value=0.0,
     max_value=1.0,
-    value=0.5,
+    value=0.6,
     step=0.01,
 )
 
