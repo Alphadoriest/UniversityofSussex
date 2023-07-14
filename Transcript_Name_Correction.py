@@ -59,28 +59,31 @@ def get_similar_names(text: str, name: str) -> List[str]:
     return list(set(similar_names))
 
 def similarity(a, b):
-    return SequenceMatcher(None, a, b).ratio()
+    sequence_similarity = SequenceMatcher(None, a, b).ratio()
+    fuzz_similarity = fuzz.ratio(a, b) / 100.0  # fuzz.ratio returns a value between 0 and 100
+    # You can adjust the weights here depending on how much importance you want to give to each method
+    return 0.5 * sequence_similarity + 0.5 * fuzz_similarity
 
 def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str]], str]:
     replaced_names = []
 
     def replace_name(match):
         full_name = match.group(0)
-
+    
         # Check if the name is already replaced
         for original, replaced in replaced_names:
             if full_name == replaced:
                 return full_name
-
+    
         max_similarity = 0
         most_similar_name = None
         for name in names_list:
             sim = similarity(full_name, name)
-            if sim > max_similarity and len(full_name.split()) == len(name.split()): # Add condition here
+            if sim > max_similarity and len(full_name.split()) == len(name.split()):
                 max_similarity = sim
                 most_similar_name = name
-
-        if max_similarity >= similarity_threshold:  # Use similarity_threshold here
+    
+        if max_similarity >= similarity_threshold:
             replaced_names.append((full_name, most_similar_name))
             return most_similar_name
         else:
