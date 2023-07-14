@@ -219,11 +219,11 @@ if st.button("Run"):  # Run button added
     
     # Show processing message
     my_bar = st.progress(20)
-    message = html("""
-        <div style="text-align: center">
-            <p style="font-size:18px"><b>Please Wait - Processing</b></p> 
-        </div>
-    """)
+    message = """
+    <div style="text-align: center">
+        <p style="font-size:18px"><b>Please Wait - Processing</b></p>
+    </div>
+"""
     st.info(message, unsafe_allow_html=True)
     
     if names_list and text:
