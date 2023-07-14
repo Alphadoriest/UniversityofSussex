@@ -83,7 +83,7 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
         most_similar_name = None
         for name in names_list:
             sim = similarity(full_name, name)
-            if sim > max_similarity and len(full_name.split()) == len(name.split()):
+            if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(name.split())):
                 max_similarity = sim
                 most_similar_name = name
     
@@ -159,6 +159,10 @@ metaphone_weight = st.sidebar.slider ('Double Metaphone Weight', 0.0, 1.0, 0.34,
 # Ensure the sum of weights equal to 1
 if sequence_weight + fuzz_weight + metaphone_weight != 1.0:
     st.sidebar.error('Please adjust the weights so their sum equals to 1.0')
+
+# Match Word Count UI
+st.sidebar.header('Match Word Count')
+match_word_count = st.sidebar.checkbox('Should the number of words match?', value=True)
 
 # Add the banner image at the top of the app
 st.image("banner.jpg")
