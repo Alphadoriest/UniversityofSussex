@@ -162,7 +162,7 @@ if sequence_weight + fuzz_weight + metaphone_weight != 1.0:
 
 # Match Word Count UI
 st.sidebar.header('Match Word Count')
-match_word_count = st.sidebar.checkbox('Should the number of words match?', value=True)
+match_word_count = st.sidebar.checkbox('Should the number of words match?', value=False)
 
 # Add the banner image at the top of the app
 st.image("banner.jpg")
