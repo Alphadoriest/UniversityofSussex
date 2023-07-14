@@ -152,10 +152,10 @@ similarity_threshold = st.sidebar.slider(
 # Slider weights
 st.sidebar.header('Adjust Weights for Comparison Methods')
 st.sidebar.slider(
-'Set the relative weights of each method towards the name similarity meatching - experimental.')
-sequence_weight = st.sidebar.slider 'SequenceMatcher Weight', 0.0, 1.0, 0.33, 0.01
-fuzz_weight = st.sidebar.slider 'Fuzz Ratio Weight', 0.0, 1.0, 0.33, 0.01
-metaphone_weight = st.sidebar.slider 'Double Metaphone Weight', 0.0, 1.0, 0.34, 0.01
+'Set the relative weights of each method towards the name similarity meatching - experimental.'
+sequence_weight = st.sidebar.slider ('SequenceMatcher Weight', 0.0, 1.0, 0.33, 0.01)
+fuzz_weight = st.sidebar.slider ('Fuzz Ratio Weight', 0.0, 1.0, 0.33, 0.01)
+metaphone_weight = st.sidebar.slider ('Double Metaphone Weight', 0.0, 1.0, 0.34, 0.01)
 )
 
 # Ensure the sum of weights equal to 1
