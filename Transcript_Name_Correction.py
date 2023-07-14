@@ -167,7 +167,7 @@ match_word_count = st.sidebar.checkbox('Should the number of words match?', valu
 # Add the banner image at the top of the app
 st.image("banner.jpg")
 
-st.title('Name Extractor for Graduation Ceremony In-Person Lists')
+st.header('Name Extractor for Graduation Ceremony In-Person Lists')
 
 uploaded_file = st.file_uploader("Choose a Word document", type="docx")
 
@@ -186,7 +186,7 @@ if names_list:  # Check if names_list is not empty
     names_list = [name.strip() for name in names_list]
     capitalized_names_list = [name.upper() for name in names_list]  # Create capitalized_names_list
 
-st.title("Graduation Transcript Name Corrector")
+st.header("Graduation Transcript Name Corrector")
 # Initialize transcript_text as an empty string
 transcript_text = ''
 
