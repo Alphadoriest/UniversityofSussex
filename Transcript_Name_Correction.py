@@ -142,7 +142,7 @@ similarity_threshold = st.sidebar.slider(
     min_value=0.0,
     max_value=1.0,
     value=0.65,
-    step=0.05,
+    step=0.01,
 )
 
 # Add the banner image at the top of the app
