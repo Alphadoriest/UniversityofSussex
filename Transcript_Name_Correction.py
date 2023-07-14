@@ -7,6 +7,7 @@ from streamlit.components.v1 import html
 from docx import Document
 from typing import List, Tuple
 from fuzzywuzzy import fuzz
+metaphone import doublemetaphone
 
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
@@ -61,9 +62,11 @@ def get_similar_names(text: str, name: str) -> List[str]:
 
 def similarity(a, b):
     sequence_similarity = SequenceMatcher(None, a, b).ratio()
-    fuzz_similarity = fuzz.ratio(a, b) / 100.0  # fuzz.ratio returns a value between 0 and 100
+    fuzz_similarity = fuzz.ratio(a, b) / 100.0
+    metaphone_similarity = doublemetaphone(a) == doublemetaphone(b)
+
     # You can adjust the weights here depending on how much importance you want to give to each method
-    return 0.5 * sequence_similarity + 0.5 * fuzz_similarity
+    return 0.33 * sequence_similarity + 0.33 * fuzz_similarity + 0.34 * metaphone_similarity
 
 def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str]], str]:
     replaced_names = []
