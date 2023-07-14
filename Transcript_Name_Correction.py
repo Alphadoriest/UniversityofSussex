@@ -65,7 +65,7 @@ st.header('Graduation Transcription Workflow Web Tool')
 
 # Add a slider in the sidebar
 similarity_threshold = st.sidebar.slider(
-    'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter.',
+    'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. 0.65 or 0.7 recommended at first.',
     min_value=0.0,
     max_value=1.0,
     value=0.65,
