@@ -6,6 +6,7 @@ import streamlit as st
 from streamlit.components.v1 import html
 from docx import Document
 from typing import List, Tuple
+from fuzzywuzzy import fuzz
 
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
