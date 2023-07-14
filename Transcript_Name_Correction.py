@@ -142,10 +142,10 @@ st.title('Graduation Transcription Workflow Web Tool')
 # Add a slider in the sidebar
 st.sidebar.header('Set Overall Similarity Threshold for Combined Methods')
 similarity_threshold = st.sidebar.slider(
-    'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. 0.65 or 0.7 recommended at first.',
+    'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. When equally weighted, 0.5 gives acceptable output.',
     min_value=0.0,
     max_value=1.0,
-    value=0.65,
+    value=0.5,
     step=0.01,
 )
 
@@ -162,6 +162,7 @@ if sequence_weight + fuzz_weight + metaphone_weight != 1.0:
 
 # Match Word Count UI
 st.sidebar.header('Match Word Count')
+st.sidebar.text('Turning on ensures less mismatching, but more necessary if only relying on SequenceMatcher.')
 match_word_count = st.sidebar.checkbox('Should the number of words match?', value=False)
 
 # Add the banner image at the top of the app
