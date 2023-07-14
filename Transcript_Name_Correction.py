@@ -145,20 +145,33 @@ similarity_threshold = st.sidebar.slider(
     'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. 0.65 or 0.7 recommended at first.',
     min_value=0.0,
     max_value=1.0,
-    value=0.65,
+    value=DEFAULT_THRESHOLD,
     step=0.01,
 )
 
 # Slider weights
 st.sidebar.header('Adjust Weights for Comparison Methods')
 st.sidebar.title('Set the relative weights of each method towards the name similarity meatching - experimental.')
-sequence_weight = st.sidebar.slider ('SequenceMatcher Weight', 0.0, 1.0, 0.33, 0.01)
-fuzz_weight = st.sidebar.slider ('Fuzz Ratio Weight', 0.0, 1.0, 0.33, 0.01)
-metaphone_weight = st.sidebar.slider ('Double Metaphone Weight', 0.0, 1.0, 0.34, 0.01)
+sequence_weight = st.sidebar.slider ('SequenceMatcher Weight', 0.0, 1.0, DEFAULT_SEQUENCE, 0.01)
+fuzz_weight = st.sidebar.slider ('Fuzz Ratio Weight', 0.0, 1.0, DEFAULT_FUZZ, 0.01)
+metaphone_weight = st.sidebar.slider ('Double Metaphone Weight', 0.0, 1.0, DEFAULT_METAPHONE, 0.01)
 
 # Ensure the sum of weights equal to 1
 if sequence_weight + fuzz_weight + metaphone_weight != 1.0:
     st.sidebar.error('Please adjust the weights so their sum equals to 1.0')
+
+# Default slider values
+DEFAULT_THRESHOLD = 0.65
+DEFAULT_SEQUENCE = 0.33
+DEFAULT_FUZZ = 0.33  
+DEFAULT_METAPHONE = 0.34
+
+# Reset button
+if st.sidebar.button("Reset Weights"):
+    similarity_threshold.value = DEFAULT_THRESHOLD
+    sequence_weight.value = DEFAULT_SEQUENCE
+    fuzz_weight.value = DEFAULT_FUZZ
+    metaphone_weight.value = DEFAULT_METAPHONE
 
 # Add the banner image at the top of the app
 st.image("banner.jpg")
