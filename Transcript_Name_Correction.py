@@ -147,12 +147,12 @@ DEFAULT_FUZZ = 0.33
 DEFAULT_METAPHONE = 0.34
 
 st.sidebar.title('Set Overall Similarity Threshold for Combined Methods')
-similarity_threshold = st.sidebar.slider(
-    'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. 0.65 or 0.7 recommended at first.',
-    min_value=0.0,
-    max_value=1.0,
-    value=DEFAULT_THRESHOLD,
-    step=0.01,
+similarity_threshold_slider = st.sidebar.slider(
+  "Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. 0.65 or 0.7 recommended at first.",
+  min_value=0.0,
+  max_value=1.0,
+  value=DEFAULT_THRESHOLD,
+  step=0.01
 )
 
 # Slider weights
@@ -168,7 +168,7 @@ if sequence_weight + fuzz_weight + metaphone_weight != 1.0:
 
 # Reset button
 if st.sidebar.button("Reset Weights"):
-    similarity_threshold.value = DEFAULT_THRESHOLD
+  similarity_threshold_slider.value = DEFAULT_THRESHOLD
     sequence_weight.value = DEFAULT_SEQUENCE
     fuzz_weight.value = DEFAULT_FUZZ
     metaphone_weight.value = DEFAULT_METAPHONE
