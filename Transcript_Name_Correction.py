@@ -147,7 +147,7 @@ DEFAULT_FUZZ = 0.33
 DEFAULT_METAPHONE = 0.34
 
 st.sidebar.title('Set Overall Similarity Threshold for Combined Methods')
-similarity_threshold_slider.value = st.sidebar.slider(
+similarity_threshold_slider = st.sidebar.slider(
   "Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. 0.65 or 0.7 recommended at first.",
   min_value=0.0,
   max_value=1.0,
