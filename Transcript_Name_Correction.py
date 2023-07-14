@@ -8,6 +8,11 @@ from docx import Document
 from typing import List, Tuple
 from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
+import time
+
+# Add these near the top 
+is_running = False 
+progress_bar = st.progress(0) 
 
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
@@ -208,6 +213,33 @@ if uploaded_transcript_file is not None:
 text = st.text_area("Enter graduation transcript text:", transcript_text, key='transcript_text')
 
 if st.button("Run"):  # Run button added
+    is_running = True
+    
+    progress_bar.progress(10)
+    
+    # Show processing message
+    my_bar = st.progress(20)
+    message = html("""
+        <div style="text-align: center">
+            <p style="font-size:18px"><b>Please Wait - Processing</b></p> 
+        </div>
+    """)
+    st.info(message, unsafe_allow_html=True)
+    
+    if names_list and text:
+        # Actual processing code
+        replaced_names, new_text = replace_similar_names(text, names_list)
+        
+        # Increment progress bar
+        progress_bar.progress(50)
+        time.sleep(1) 
+        
+        if replaced_names and new_text:
+            # Rest of code
+            progress_bar.progress(100)
+
+    is_running = False
+    
     if names_list and text:  # Check if both text boxes are populated
         replaced_names, new_text = replace_similar_names(text, names_list)
 
