@@ -168,7 +168,7 @@ if sequence_weight + fuzz_weight + metaphone_weight != 1.0:
 
 # Reset button
 if st.sidebar.button("Reset Weights"):
-  similarity_threshold_slider.value = DEFAULT_THRESHOLD
+    similarity_threshold_slider.value = DEFAULT_THRESHOLD
     sequence_weight.value = DEFAULT_SEQUENCE
     fuzz_weight.value = DEFAULT_FUZZ
     metaphone_weight.value = DEFAULT_METAPHONE
