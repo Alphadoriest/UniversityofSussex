@@ -65,8 +65,8 @@ def similarity(a, b):
     fuzz_similarity = fuzz.ratio(a, b) / 100.0
     metaphone_similarity = doublemetaphone(a) == doublemetaphone(b)
 
-    # You can adjust the weights here depending on how much importance you want to give to each method
-    return 0.33 * sequence_similarity + 0.33 * fuzz_similarity + 0.34 * metaphone_similarity
+    # Adjust the weights here depending on the slider values
+    return sequence_weight * sequence_similarity + fuzz_weight * fuzz_similarity + metaphone_weight * metaphone_similarity
 
 def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str]], str]:
     replaced_names = []
@@ -140,6 +140,7 @@ def decapitalize(text):
 st.header('Graduation Transcription Workflow Web Tool')
 
 # Add a slider in the sidebar
+st.sidebar.header('Set Overall Similarity Threshold for Combined Methods')
 similarity_threshold = st.sidebar.slider(
     'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. 0.65 or 0.7 recommended at first.',
     min_value=0.0,
@@ -147,6 +148,16 @@ similarity_threshold = st.sidebar.slider(
     value=0.65,
     step=0.01,
 )
+
+# Slider weights
+st.sidebar.header('Adjust Weights for Comparison Methods')
+sequence_weight = st.sidebar.slider('SequenceMatcher Weight', 0.0, 1.0, 0.33, 0.01)
+fuzz_weight = st.sidebar.slider('Fuzz Ratio Weight', 0.0, 1.0, 0.33, 0.01)
+metaphone_weight = st.sidebar.slider('Double Metaphone Weight', 0.0, 1.0, 0.34, 0.01)
+
+# Ensure the sum of weights equal to 1
+if sequence_weight + fuzz_weight + metaphone_weight != 1.0:
+    st.sidebar.error('Please adjust the weights so their sum equals to 1.0')
 
 # Add the banner image at the top of the app
 st.image("banner.jpg")
