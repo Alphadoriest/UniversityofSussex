@@ -63,6 +63,15 @@ def decapitalize(text):
 
 st.header('Graduation Transcription Workflow Web Tool')
 
+# Add a slider in the sidebar
+similarity_threshold = st.sidebar.slider(
+    'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter.',
+    min_value=0.0,
+    max_value=1.0,
+    value=0.65,
+    step=0.05,
+)
+
 # Add the banner image at the top of the app
 st.image("banner.jpg")
 
@@ -123,7 +132,7 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
                 max_similarity = sim
                 most_similar_name = name
 
-        if max_similarity >= 0.65:  # Adjust the similarity threshold as needed
+        if max_similarity >= similarity_threshold:  # Use similarity_threshold here
             replaced_names.append((full_name, most_similar_name))
             return most_similar_name
         else:
