@@ -43,17 +43,6 @@ def extract_middle_column_text(doc):
 
     return [decapitalize(text) for text in middle_column_texts if text != 'VACANT SEAT']
 
-# Initialize names_list as an empty string
-names_list = ''
-
-# Use names_list as the default value for the names_list text_area
-names_list = st.text_area("Enter names (separate names with commas):", ', '.join(names_list), key='names_list')
-
-if names_list:  # Check if names_list is not empty
-    names_list = names_list.split(',')
-    names_list = [name.strip() for name in names_list]
-    capitalized_names_list = [name.upper() for name in names_list]  # Create capitalized_names_list
-
 #Correct all names in graduation transcript (find and replace) functions
 
 def get_similar_names(text: str, name: str) -> List[str]:
@@ -162,6 +151,17 @@ uploaded_file = st.file_uploader("Choose a Word document", type="docx")
 if uploaded_file is not None:
     document = Document(io.BytesIO(uploaded_file.read()))
     names_list = extract_middle_column_text(document)  # Keep names_list as a list
+
+# Initialize names_list as an empty string
+names_list = ''
+
+# Use names_list as the default value for the names_list text_area
+names_list = st.text_area("Enter names (separate names with commas):", ', '.join(names_list), key='names_list')
+
+if names_list:  # Check if names_list is not empty
+    names_list = names_list.split(',')
+    names_list = [name.strip() for name in names_list]
+    capitalized_names_list = [name.upper() for name in names_list]  # Create capitalized_names_list
 
 st.title("Graduation Transcript Name Corrector")
 # Initialize transcript_text as an empty string
