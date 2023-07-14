@@ -137,7 +137,7 @@ def decapitalize(text):
         
 #Name Corrector UI
 
-st.header('Graduation Transcription Workflow Web Tool')
+st.title('Graduation Transcription Workflow Web Tool')
 
 # Add a slider in the sidebar
 st.sidebar.header('Set Overall Similarity Threshold for Combined Methods')
@@ -151,7 +151,7 @@ similarity_threshold = st.sidebar.slider(
 
 # Slider weights
 st.sidebar.header('Adjust Weights for Comparison Methods')
-st.sidebar.title('Set the relative weights of each method towards the name similarity matching - experimental.')
+st.sidebar.text('Set the relative weights of each method towards the name similarity matching - experimental.')
 sequence_weight = st.sidebar.slider ('SequenceMatcher Weight', 0.0, 1.0, 0.33, 0.01)
 fuzz_weight = st.sidebar.slider ('Fuzz Ratio Weight', 0.0, 1.0, 0.33, 0.01)
 metaphone_weight = st.sidebar.slider ('Double Metaphone Weight', 0.0, 1.0, 0.34, 0.01)
