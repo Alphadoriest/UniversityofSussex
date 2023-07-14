@@ -87,7 +87,7 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
                 max_similarity = sim
                 most_similar_name = name
     
-        if max_similarity >= similarity_threshold:
+        if max_similarity >= similarity_threshold_slider.value:
             replaced_names.append((full_name, most_similar_name))
             return most_similar_name
         else:
@@ -147,7 +147,7 @@ DEFAULT_FUZZ = 0.33
 DEFAULT_METAPHONE = 0.34
 
 st.sidebar.title('Set Overall Similarity Threshold for Combined Methods')
-similarity_threshold_slider = st.sidebar.slider(
+similarity_threshold_slider.value = st.sidebar.slider(
   "Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. 0.65 or 0.7 recommended at first.",
   min_value=0.0,
   max_value=1.0,
