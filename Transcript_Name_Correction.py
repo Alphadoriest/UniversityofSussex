@@ -226,7 +226,7 @@ formatted_names = format_names(names_list)
 html_names = '<div style="height: 1200px; overflow-y: auto;">' + ''.join([f'<span style="color:{color}; margin-right: 10px;">{name}</span>' for name, color in formatted_names]) + '</div>'
     
 # Display the HTML
-components.html(html_names, height=1200)
+components.v1.html(html_names, height=1200)
 
 st.header("Graduation Transcript Name Corrector")
 # Initialize transcript_text as an empty string
