@@ -10,8 +10,6 @@ from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 
 # Name Extractor for graduation ceremony in-person lists functions
-import re
-
 def extract_middle_column_text(doc):
     middle_column_texts = []
 
@@ -20,18 +18,32 @@ def extract_middle_column_text(doc):
             cells = row.cells
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
-                middle_column_texts.append(middle_cell.text.strip())
+                lines = middle_cell.text.split('\n')
+                desired_text = ''
+                inside_brackets = False  # Initialize bracket flag
+                for line in lines:
+                    line = line.strip()
 
-    # Join all the texts and remove all bracketed phrases
-    all_text = '\n'.join(middle_column_texts)
-    text_without_brackets = re.sub(r'\(.*?\)', '', all_text, flags=re.DOTALL)
-    text_without_brackets = re.sub(r'\[.*?\]', '', text_without_brackets, flags=re.DOTALL)
+                    # Update bracket flag
+                    if line.startswith('('):
+                        inside_brackets = True
+                    if line.endswith(')'):
+                        inside_brackets = False
+                        continue
 
-    # Split the text back into lines and filter out unwanted lines
-    lines = text_without_brackets.split('\n')
-    filtered_lines = [decapitalize(line) for line in lines if line and line not in ['VACANT SEAT', "Carer's seat"]]
+                    # Ignore lines inside brackets
+                    if inside_brackets:
+                        continue
 
-    return filtered_lines
+                    # Ignore lines that contain full bracketed phrases
+                    line = re.sub(r'\(.*?\)', '', line)
+                    line = re.sub(r'\[.*?\]', '', line)
+
+                    if line:
+                        desired_text = line
+                middle_column_texts.append(desired_text)
+
+    return [decapitalize(text) for text in middle_column_texts if text not in ['VACANT SEAT', "Carer's seat"]]
 
 #Correct all names in graduation transcript (find and replace) functions
 
