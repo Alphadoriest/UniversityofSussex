@@ -102,7 +102,6 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
         # Skip timecode lines
         if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line):
             processed_lines.append(line)
-            processed_lines.append('')
             continue
 
         line = re.sub(pattern, replace_name, line)
