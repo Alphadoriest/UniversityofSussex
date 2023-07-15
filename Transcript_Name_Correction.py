@@ -133,6 +133,27 @@ def decapitalize(text):
             words[i] = "'".join(apostrophe_parts)
 
     return ' '.join(words)
+
+def reformat_vtt(text: str) -> str:
+    # Split the text into lines
+    lines = text.split('\n')
+    
+    # Initialize the new lines list
+    new_lines = []
+
+    # Iterate through each line
+    for line in lines:
+        # Add a full stop after replaced names
+        if not line.startswith('00') and not line.startswith('['):
+            line = line + '.'
+
+        # Add the line to the new lines list
+        new_lines.append(line)
+
+    # Join the new lines with single paragraph breaks between each line
+    reformatted_text = '\n'.join(new_lines)
+
+    return reformatted_text
         
 #Name Corrector UI
 
@@ -206,6 +227,44 @@ if st.button("Run"):  # Run button added
         # Escape newline characters and single quotes in new_text
         escaped_new_text = new_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
 
+st.header('VTT Reformatter')
+
+# Add a file uploader to upload a VTT file
+uploaded_vtt_file = st.file_uploader("Upload a VTT file", type="vtt")
+
+# Initialize reformatted_text as an empty string
+reformatted_text = ''
+
+if uploaded_vtt_file is not None:
+    vtt_text = uploaded_vtt_file.read().decode()
+    reformatted_text = reformat_vtt(vtt_text)
+
+# Add a text area to paste in text
+pasted_text = st.text_area("Or paste in text:", key='pasted_text')
+
+if pasted_text:  # Check if pasted_text is not empty
+    reformatted_text = reformat_vtt(pasted_text)
+
+# Add a text area to display the reformatted text
+st.text_area("Reformatted text:", reformatted_text, key='reformatted_text')
+
+# Add a button to copy the reformatted text to the clipboard
+if reformatted_text:  # Check if reformatted_text exists
+    # Escape newline characters and single quotes in reformatted_text
+    escaped_reformatted_text = reformatted_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
+
+    # Button to copy the reformatted text to the clipboard
+    copy_reformatted_text_button_html = f"""
+    <button onclick="copyReformattedText()">Copy Corrected + Reformatted Transcript</button>
+    <script>
+    function copyReformattedText() {{
+        let text = '{escaped_reformatted_text}';
+        navigator.clipboard.writeText(text);
+    }}
+    </script>
+    """
+    html(copy_reformatted_text_button_html, height=30)
+        
         # Button to copy the replaced text to the clipboard
         copy_button_html = f"""
         <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
