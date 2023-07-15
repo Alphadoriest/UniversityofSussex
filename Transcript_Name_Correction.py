@@ -214,8 +214,8 @@ if uploaded_file is not None:
 # Use names_list as the default value for the names_list text_area
 names_list = st.text_area("Enter names, separated by commas:", ', '.join(names_list), key='names_list')
 
-if names_text:  # Check if names_text is not empty
-    names_list = names_text.split(',')
+if names_list:  # Check if names_list is not empty
+    names_list = names_list.split(',')
     names_list = [name.strip() for name in names_list]
 
     # Format and display names
