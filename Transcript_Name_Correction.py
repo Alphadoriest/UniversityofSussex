@@ -254,7 +254,7 @@ if reformatted_text:  # Check if reformatted_text exists
     escaped_reformatted_text = reformatted_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
 
     # Button to copy the reformatted text to the clipboard
-    copy_reformatted_text_button_html = f"""
+    copy_button_html = f"""
     <button onclick="copyReformattedText()">Copy Corrected + Reformatted Transcript</button>
     <script>
     function copyReformattedText() {{
