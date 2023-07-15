@@ -51,7 +51,7 @@ def format_names(names_list):
     formatted_names = []
     for i, name in enumerate(names_list):
         color = colors[i % len(colors)]
-        formatted_name = f'<span style="background-color:{color}; margin:2px; padding:2px;">{name}</span>'
+        formatted_names = '<div style="height: 1200px; overflow-y: auto;">' + formatted_names + '</div>'
         formatted_names.append(formatted_name)
     return ''.join(formatted_names)
 
