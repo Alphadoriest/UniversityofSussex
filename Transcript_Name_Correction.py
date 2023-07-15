@@ -45,6 +45,15 @@ def extract_middle_column_text(doc):
 
     return [decapitalize(text) for text in middle_column_texts if text not in ['VACANT SEAT', "Carer's seat"]]
 
+def format_names(names_list):
+    colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
+    formatted_names = []
+    for i, name in enumerate(names_list):
+        color = colors[i % len(colors)]
+        formatted_name = f'<p style="background-color:{color};">{name}</p>'
+        formatted_names.append(formatted_name)
+    return formatted_names
+
 #Correct all names in graduation transcript (find and replace) functions
 
 def get_similar_names(text: str, name: str) -> List[str]:
@@ -208,6 +217,10 @@ if names_list:  # Check if names_list is not empty
     names_list = names_list.split(',')
     names_list = [name.strip() for name in names_list]
     capitalized_names_list = [name.upper() for name in names_list]  # Create capitalized_names_list
+
+    formatted_names = format_names(names_list)
+    formatted_names_str = ' '.join(formatted_names)
+    html(formatted_names_str)
 
 st.header("Graduation Transcript Name Corrector")
 # Initialize transcript_text as an empty string
