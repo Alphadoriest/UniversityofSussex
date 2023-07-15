@@ -164,8 +164,8 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
         formatted_line = ' '.join(words)
         formatted_lines.append(formatted_line)
 
-    # Join the formatted lines with single newlines to get single line breaks
-    return '\n'.join(formatted_lines)
+    # Join the formatted lines with two newlines to get a blank line between each line
+    return '\n\n'.join(formatted_lines)
         
 #Name Corrector UI
 
