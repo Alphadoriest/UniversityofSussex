@@ -8,6 +8,7 @@ from docx import Document
 from typing import List, Tuple
 from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
+from streamlit import components
 
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
@@ -52,7 +53,7 @@ def format_names(names_list):
         color = colors[i % len(colors)]
         formatted_name = f'<p style="background-color:{color};">{name}</p>'
         formatted_names.append(formatted_name)
-    return formatted_names
+    return ''.join(formatted_names)
 
 #Correct all names in graduation transcript (find and replace) functions
 
@@ -218,9 +219,9 @@ if names_list:  # Check if names_list is not empty
     names_list = [name.strip() for name in names_list]
     capitalized_names_list = [name.upper() for name in names_list]  # Create capitalized_names_list
 
+  # Format and display names
     formatted_names = format_names(names_list)
-    formatted_names_str = ' '.join(formatted_names)
-    html(formatted_names_str)
+    components.v1.html(formatted_names, height=600)
 
 st.header("Graduation Transcript Name Corrector")
 # Initialize transcript_text as an empty string
