@@ -10,6 +10,8 @@ from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 
 # Name Extractor for graduation ceremony in-person lists functions
+import re
+
 def extract_middle_column_text(doc):
     middle_column_texts = []
 
@@ -18,31 +20,19 @@ def extract_middle_column_text(doc):
             cells = row.cells
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
-                lines = middle_cell.text.split('\n')
+                # Remove all bracketed phrases
+                text_without_brackets = re.sub(r'\(.*?\)', '', middle_cell.text, flags=re.DOTALL)
+                text_without_brackets = re.sub(r'\[.*?\]', '', text_without_brackets, flags=re.DOTALL)
+                lines = text_without_brackets.split('\n')
                 desired_text = ''
-                inside_brackets = False  # Initialize bracket flag
                 for line in lines:
                     line = line.strip()
-
-                    # Update bracket flag
-                    if '(' in line:
-                        inside_brackets = True
-                    if ')' in line:
-                        inside_brackets = False
-
-                    # Ignore lines inside brackets
-                    if inside_brackets:
-                        continue
-
-                    # Ignore lines that contain full bracketed phrases
-                    line = re.sub(r'\(.*?\)', '', line)
-                    line = re.sub(r'\[.*?\]', '', line)
 
                     if line:
                         desired_text = line
                 middle_column_texts.append(desired_text)
 
-    return [decapitalize(text) for text in middle_column_texts if text != 'VACANT SEAT']
+    return [decapitalize(text) for text in middle_column_texts if text not in ['VACANT SEAT', "Carer's seat"]]
 
 #Correct all names in graduation transcript (find and replace) functions
 
