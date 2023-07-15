@@ -44,7 +44,7 @@ def extract_middle_column_text(doc):
                         desired_text = line
                 middle_column_texts.append(desired_text)
 
-    return [decapitalize(text) for text in middle_column_texts if text not in ['VACANT SEAT', "Carer's seat"]]
+    return [decapitalize(text) for text in middle_column_texts if text not in ['VACANT SEAT', 'Carer's seat', 'Child']]
 
 def format_names(names_list):
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
@@ -223,7 +223,7 @@ formatted_names = format_names(names_list)
     
 # Convert the list of tuples to a single string with HTML tags 
 # Create the HTML div and set its height
-html_names = '<div style="height: 1200px; overflow-y: auto;">' + ''.join([f'<span style="color:{color}; margin-right: 10px;"><strong><u>{name}</u></strong></span>' if len(name.split()) > 4 or len(name.split()) < 2 else f'<span style="color:{color}; margin-right: 10px;">{name}</span>' for name, color in formatted_names]) + '</div>'
+html_names = '<div style="height: 500px; overflow-y: auto;">' + ''.join([f'<span style="color:{color}; margin-right: 10px;"><strong><u>{name}</u></strong></span>' if len(name.split()) > 4 or len(name.split()) < 2 else f'<span style="color:{color}; margin-right: 10px;">{name}</span>' for name, color in formatted_names]) + '</div>'
     
 # Display the HTML
 components.v1.html(html_names, height=1200)
