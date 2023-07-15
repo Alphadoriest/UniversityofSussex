@@ -51,9 +51,8 @@ def format_names(names_list):
     formatted_names = []
     for i, name in enumerate(names_list):
         color = colors[i % len(colors)]
-        formatted_name = f'<p style="color:{color};">{name}</p>'
+        formatted_name = (name, color)
         formatted_names.append(formatted_name)
-    formatted_names = '<div style="height: 1200px; overflow-y: auto;">' + ''.join(formatted_names) + '</div>'
     return formatted_names
 
 #Correct all names in graduation transcript (find and replace) functions
@@ -223,13 +222,13 @@ if names_list:  # Check if names_list is not empty
     formatted_names = format_names(names_list)
     
     # Convert the list of tuples to a single string with HTML tags
-    formatted_names = ''.join([f'<p style="color:{color};">{name}</p>' for name, color in formatted_names])
+    html_names = ''.join([f'<p style="color:{color};">{name}</p>' for name, color in formatted_names])
     
     # Create the HTML div and set its height
-    formatted_names = f'<div style="height: 1200px; overflow-y: auto;">{formatted_names}</div>'
+   html_names = f'<div style="height: 1200px; overflow-y: auto;">{html_names}</div>'
     
     # Display the HTML
-    components.v1.html(formatted_names, height=1200)
+    components.v1.html(html_names, height=1200)
 
 st.header("Graduation Transcript Name Corrector")
 # Initialize transcript_text as an empty string
