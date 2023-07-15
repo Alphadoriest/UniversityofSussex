@@ -51,9 +51,20 @@ def format_names(names_list):
     formatted_names = []
     for i, name in enumerate(names_list):
         color = colors[i % len(colors)]
-        formatted_name = f'<p style="background-color:{color};">{name}</p>'
+        formatted_name = f'<span style="background-color:{color}; margin:2px; padding:2px;">{name}</span>'
         formatted_names.append(formatted_name)
     return ''.join(formatted_names)
+
+# Input text area
+names_text = st.text_area('Enter names, separated by commas')
+
+if names_text:  # Check if names_text is not empty
+    names_list = names_text.split(',')
+    names_list = [name.strip() for name in names_list]
+
+    # Format and display names
+    formatted_names = format_names(names_list)
+    components.v1.html(formatted_names, height=600)
 
 #Correct all names in graduation transcript (find and replace) functions
 
