@@ -20,19 +20,18 @@ def extract_middle_column_text(doc):
             cells = row.cells
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
-                # Remove all bracketed phrases
-                text_without_brackets = re.sub(r'\(.*?\)', '', middle_cell.text, flags=re.DOTALL)
-                text_without_brackets = re.sub(r'\[.*?\]', '', text_without_brackets, flags=re.DOTALL)
-                lines = text_without_brackets.split('\n')
-                desired_text = ''
-                for line in lines:
-                    line = line.strip()
+                middle_column_texts.append(middle_cell.text.strip())
 
-                    if line:
-                        desired_text = line
-                middle_column_texts.append(desired_text)
+    # Join all the texts and remove all bracketed phrases
+    all_text = '\n'.join(middle_column_texts)
+    text_without_brackets = re.sub(r'\(.*?\)', '', all_text, flags=re.DOTALL)
+    text_without_brackets = re.sub(r'\[.*?\]', '', text_without_brackets, flags=re.DOTALL)
 
-    return [decapitalize(text) for text in middle_column_texts if text not in ['VACANT SEAT', "Carer's seat"]]
+    # Split the text back into lines and filter out unwanted lines
+    lines = text_without_brackets.split('\n')
+    filtered_lines = [decapitalize(line) for line in lines if line and line not in ['VACANT SEAT', "Carer's seat"]]
+
+    return filtered_lines
 
 #Correct all names in graduation transcript (find and replace) functions
 
