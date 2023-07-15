@@ -25,11 +25,10 @@ def extract_middle_column_text(doc):
                     line = line.strip()
 
                     # Update bracket flag
-                    if line.startswith('('):
+                    if '(' in line:
                         inside_brackets = True
-                    if line.endswith(')'):
+                    if ')' in line:
                         inside_brackets = False
-                        continue
 
                     # Ignore lines inside brackets
                     if inside_brackets:
