@@ -256,8 +256,7 @@ copy_button_html = f"""
 <button onclick="copyReformattedText()">Copy Corrected + Reformatted Transcript</button>
 <script>
 function copyReformattedText() {{
-let text = '{escaped_reformatted_text}';
-navigator.clipboard.writeText(text);
+navigator.clipboard.writeText(escaped_reformatted_text);
 }}
 </script>
 """
