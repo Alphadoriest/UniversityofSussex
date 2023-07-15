@@ -221,14 +221,12 @@ if names_list:  # Check if names_list is not empty
 # Assuming format_names now returns a list of tuples like [(name, color), ...]
 formatted_names = format_names(names_list)
     
-# Convert the list of tuples to a single string with HTML tags
-html_names = ''.join([f'<p style="color:{color};">{name}</p>' for name, color in formatted_names])
-    
+# Convert the list of tuples to a single string with HTML tags 
 # Create the HTML div and set its height
-html_names = f'<div style="height: 1200px; overflow-y: auto;">{html_names}</div>'
+html_names = '<div style="height: 1200px; overflow-y: auto;">' + ''.join([f'<span style="color:{color}; margin-right: 10px;">{name}</span>' for name, color in formatted_names]) + '</div>'
     
 # Display the HTML
-components.v1.html(html_names, height=1200)
+components.html(html_names, height=1200)
 
 st.header("Graduation Transcript Name Corrector")
 # Initialize transcript_text as an empty string
