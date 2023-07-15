@@ -253,29 +253,29 @@ if reformatted_text:  # Check if reformatted_text exists
     # Escape newline characters and single quotes in reformatted_text
     escaped_reformatted_text = reformatted_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
 
-    # Button to copy the reformatted text to the clipboard
-    copy_button_html = f"""
-    <button onclick="copyReformattedText()">Copy Corrected + Reformatted Transcript</button>
-    <script>
-    function copyReformattedText() {{
-        let text = '{escaped_reformatted_text}';
-        navigator.clipboard.writeText(text);
-    }}
-    </script>
-    """
-    html(copy_reformatted_text_button_html, height=30)
+# Button to copy the reformatted text to the clipboard
+copy_button_html = f"""
+<button onclick="copyReformattedText()">Copy Corrected + Reformatted Transcript</button>
+<script>
+function copyReformattedText() {{
+let text = '{escaped_reformatted_text}';
+navigator.clipboard.writeText(text);
+}}
+</script>
+"""
+html(copy_reformatted_text_button_html, height=30)
         
-     # Button to copy the replaced text to the clipboard
-     copy_button_html = f"""
-     <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
-     <script>
-     function copyReplacedText() {{
-         let text = '{escaped_new_text}';
-         navigator.clipboard.writeText(text);
-    }}
-    </script>
-    """
-    html(copy_button_html, height=30)
+# Button to copy the replaced text to the clipboard
+copy_button_html = f"""
+<button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
+<script>
+function copyReplacedText() {{
+let text = '{escaped_new_text}';
+navigator.clipboard.writeText(text);
+}}
+</script>
+"""
+html(copy_button_html, height=30)
 
     st.subheader("Names replaced:")
     for original, replaced in replaced_names:
