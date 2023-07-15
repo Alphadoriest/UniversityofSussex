@@ -55,17 +55,6 @@ def format_names(names_list):
         formatted_names.append(formatted_name)
     return ''.join(formatted_names)
 
-# Input text area
-names_text = st.text_area('Enter names, separated by commas')
-
-if names_text:  # Check if names_text is not empty
-    names_list = names_text.split(',')
-    names_list = [name.strip() for name in names_list]
-
-    # Format and display names
-    formatted_names = format_names(names_list)
-    components.v1.html(formatted_names, height=600)
-
 #Correct all names in graduation transcript (find and replace) functions
 
 def get_similar_names(text: str, name: str) -> List[str]:
@@ -223,16 +212,16 @@ if uploaded_file is not None:
     names_list = extract_middle_column_text(document)  # Keep names_list as a list
 
 # Use names_list as the default value for the names_list text_area
-names_list = st.text_area("Enter names (separate names with commas):", ', '.join(names_list), key='names_list')
+names_list = st.text_area("Enter names, separated by commas:", ', '.join(names_list), key='names_list')
 
-if names_list:  # Check if names_list is not empty
-    names_list = names_list.split(',')
+if names_text:  # Check if names_text is not empty
+    names_list = names_text.split(',')
     names_list = [name.strip() for name in names_list]
-    capitalized_names_list = [name.upper() for name in names_list]  # Create capitalized_names_list
 
-  # Format and display names
+    # Format and display names
     formatted_names = format_names(names_list)
-    components.v1.html(formatted_names, height=600)
+    formatted_names = '<div style="height: 600px; overflow-y: auto;">' + formatted_names + '</div>'
+    components.v1.html(formatted_names)
 
 st.header("Graduation Transcript Name Corrector")
 # Initialize transcript_text as an empty string
