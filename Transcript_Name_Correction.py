@@ -135,21 +135,15 @@ def decapitalize(text):
     return ' '.join(words)
 
 def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
-    # Create a dictionary for faster lookup
     replaced_names_dict = {original: replaced for original, replaced in replaced_names}
     
     lines = text.split('\n')
     formatted_lines = []
     for line in lines:
-        # If line is a timestamp or applause, just add it to the formatted_lines
-        if re.match(r'\d\d:\d\d:\d\d\.\d\d\d\s*-->', line) or '[APPLAUSE]' in line:
-            formatted_lines.append(line)
-            continue
-
         words = line.split()
+        # If line is not empty
         if words:
             last_word = words[-1]
-
             # If the last word is a replaced name and it doesn't end with a full stop, add it
             if last_word in replaced_names_dict and not last_word.endswith('.'):
                 words[-1] = last_word + '.'
@@ -157,8 +151,8 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
         formatted_line = ' '.join(words)
         formatted_lines.append(formatted_line)
 
-    # Join the formatted lines with double newlines to get single paragraph breaks
-    return '\n\n'.join(formatted_lines)
+    # Join the formatted lines with single newlines to get single line breaks
+    return '\n'.join(formatted_lines)
         
 #Name Corrector UI
 
