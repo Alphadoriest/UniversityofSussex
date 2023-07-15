@@ -265,17 +265,17 @@ if reformatted_text:  # Check if reformatted_text exists
     """
     html(copy_reformatted_text_button_html, height=30)
         
-        # Button to copy the replaced text to the clipboard
-        copy_button_html = f"""
-        <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
-        <script>
-        function copyReplacedText() {{
-            let text = '{escaped_new_text}';
-            navigator.clipboard.writeText(text);
-        }}
-        </script>
-        """
-        html(copy_button_html, height=30)
+     # Button to copy the replaced text to the clipboard
+     copy_button_html = f"""
+     <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
+     <script>
+     function copyReplacedText() {{
+         let text = '{escaped_new_text}';
+         navigator.clipboard.writeText(text);
+    }}
+    </script>
+    """
+    html(copy_button_html, height=30)
 
     st.subheader("Names replaced:")
     for original, replaced in replaced_names:
