@@ -217,6 +217,8 @@ names_list = st.text_area("Enter names, separated by commas:", ', '.join(names_l
 if names_list:  # Check if names_list is not empty
     names_list = names_list.split(',')
     names_list = [name.strip() for name in names_list]
+    # Check if names_list contains meaningful entries
+    if any(name for name in names_list):
 
 # Assuming format_names now returns a list of tuples like [(name, color), ...]
 formatted_names = format_names(names_list)
