@@ -267,10 +267,10 @@ if st.button("Run"):  # Run button added
 # Initialize replaced_names as an empty list
 replaced_names = []
 
-st.subheader("Names replaced:")
-for original, replaced in replaced_names:
-    original_words = original.split()
-    replaced_words = replaced.split()
+        st.subheader("Names replaced:")
+        for original, replaced in replaced_names:
+            original_words = original.split()
+            replaced_words = replaced.split()
 
     # Check if the original and replaced names have a different number of words
     if len(original_words) != len(replaced_words):
