@@ -211,8 +211,8 @@ if uploaded_file is not None:
     document = Document(io.BytesIO(uploaded_file.read()))
     names_list = extract_middle_column_text(document)  # Keep names_list as a list
 
-    # Use names_list as the default value for the names_list text_area
-    names_list = st.text_area("Enter names, separated by commas:", ', '.join(names_list), key='names_list')
+# Use names_list as the default value for the names_list text_area
+names_list = st.text_area("Enter names, separated by commas:", ', '.join(names_list), key='names_list')
 
 if names_list:  # Check if names_list is not empty
     names_list = names_list.split(',')
