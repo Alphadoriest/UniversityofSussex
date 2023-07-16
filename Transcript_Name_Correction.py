@@ -223,10 +223,10 @@ formatted_names = format_names(names_list)
     
 # Convert the list of tuples to a single string with HTML tags 
 # Create the HTML div and set its height
-html_names = '<div style="height: 500px; overflow-y: auto;">' + ''.join([f'<span style="color:{color}; margin-right: 10px;"><strong><u>{name}</u></strong></span>' if len(name.split()) > 4 or len(name.split()) < 2 else f'<span style="color:{color}; margin-right: 10px;">{name}</span>' for name, color in formatted_names]) + '</div>'
+html_names = '<div style="height: 200px; overflow-y: auto;">' + ''.join([f'<span style="color:{color}; margin-right: 10px;"><strong><u>{name}</u></strong></span>' if len(name.split()) > 4 or len(name.split()) < 2 else f'<span style="color:{color}; margin-right: 10px;">{name}</span>' for name, color in formatted_names]) + '</div>'
     
 # Display the HTML
-components.v1.html(html_names, height=500)
+components.v1.html(html_names, height=200)
 st.text("Visualise potential errors. Number of names <2 or >4 = bold and underlined.")
 
 st.header("Graduation Transcript Name Corrector")
