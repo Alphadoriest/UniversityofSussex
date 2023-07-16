@@ -265,7 +265,15 @@ if st.button("Run"):  # Run button added
         html(copy_button_html, height=30)
 
     st.subheader("Names replaced:")
-    for original, replaced in replaced_names:
+for original, replaced in replaced_names:
+    original_words = original.split()
+    replaced_words = replaced.split()
+
+    # Check if the original and replaced names have a different number of words
+    if len(original_words) != len(replaced_words):
+        # If they do, make the text bold
+        st.markdown(f"**{original} -> {replaced}**")
+    else:
         st.write(f"{original} -> {replaced}")
 
     st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
