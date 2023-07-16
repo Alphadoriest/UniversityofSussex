@@ -227,7 +227,7 @@ html_names = '<div style="height: 100px; overflow-y: auto;">' + ''.join([f'<span
     
 # Display the HTML
 components.v1.html(html_names, height=100)
-    st.text("Visualise potential errors. Number of names <2 or >4 = bold and underlined.")
+st.text("Visualise potential errors. Number of names <2 or >4 = bold and underlined.")
 
 st.header("Graduation Transcript Name Corrector")
 # Initialize transcript_text as an empty string
