@@ -264,6 +264,9 @@ if st.button("Run"):  # Run button added
         """
         html(copy_button_html, height=30)
 
+# Initialize replaced_names as an empty list
+replaced_names = []
+
     st.subheader("Names replaced:")
 for original, replaced in replaced_names:
     original_words = original.split()
