@@ -173,7 +173,7 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
         formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
         # Capitalize the 'a' of all cases of '[applause]'
         formatted_line = re.sub(r'\[applause\]', '[Applause]', formatted_line, flags=re.IGNORECASE)
-        # Change '(applause)' or '(Applause)' into ['Applause']
+        # Change '(applause)' or '(Applause)' into '[Applause]'
         formatted_line = re.sub(r'\((applause|Applause)\)', '[Applause]', formatted_line)
         formatted_lines.append(formatted_line)
 
