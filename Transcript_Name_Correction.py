@@ -159,13 +159,13 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
         text = text.replace('WEBVTT', 'WEBVTT\n', 1)
 
     # Split the text into blocks based on time codes, and preserve the time codes
-    blocks = re.split(r'(\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d\n)', text)
+    blocks = re.split(r'(\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d)', text)
 
     formatted_blocks = []
     for block in blocks:
         # If the block is a time code, add it to the formatted blocks directly
-        if re.match(r'\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d\n', block):
-            formatted_blocks.append(block)
+        if re.match(r'\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d', block):
+            formatted_blocks.append(block.strip())
             continue
 
         lines = block.split('\n')
@@ -197,7 +197,7 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
         # Join the formatted lines of a block with a single newline
         formatted_block = '\n'.join(formatted_lines)
         # Add a newline at the end of each block of text only if it's not the last block
-        formatted_block += '\n\n' if formatted_block and block != blocks[-1] else ''
+        formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
         formatted_blocks.append(formatted_block)
 
     # Join the formatted blocks without newlines to keep the original structure
@@ -210,7 +210,7 @@ st.title('Graduation Transcription Workflow Web Tool')
 # Add a slider in the sidebar
 st.sidebar.header('Set Overall Similarity Threshold for Combined Methods')
 similarity_threshold = st.sidebar.slider(
-    'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. When equally weighted, 0.6 gives acceptable output.',
+    'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. When equally weighted, 0.45-0.6 gives acceptable output.',
     min_value=0.0,
     max_value=1.0,
     value=0.6,
