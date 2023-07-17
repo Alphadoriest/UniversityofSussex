@@ -75,8 +75,15 @@ def similarity(a, b):
     fuzz_similarity = fuzz.ratio(a, b) / 100.0
     metaphone_similarity = doublemetaphone(a) == doublemetaphone(b)
 
-    # Adjust the weights here depending on the slider values
-    return sequence_weight * sequence_similarity + fuzz_weight * fuzz_similarity + metaphone_weight * metaphone_similarity
+    # Calculate overall similarity
+    overall_similarity = sequence_weight * sequence_similarity + fuzz_weight * fuzz_similarity + metaphone_weight * metaphone_similarity
+
+    # Apply penalty if one name is a single word and the other is multi-word
+    if (len(a.split()) == 1 and len(b.split()) > 1) or (len(a.split()) > 1 and len(b.split()) == 1):
+        penalty_factor = 0.75  # Adjust this value to increase or decrease the penalty
+        overall_similarity *= penalty_factor
+
+    return overall_similarity
 
 def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str]], str]:
     replaced_names = []
