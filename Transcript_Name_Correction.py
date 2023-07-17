@@ -162,6 +162,8 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
                 words[-1] = last_word + '.'
         
         formatted_line = ' '.join(words)
+        # Remove '[no audio]' from line
+        formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
         formatted_lines.append(formatted_line)
 
     # Join the formatted lines with two newlines to get a blank line between each line
