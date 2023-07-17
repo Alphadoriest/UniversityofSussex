@@ -151,6 +151,8 @@ def decapitalize(text):
 
     return ' '.join(words)
 
+import re
+
 def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
 
@@ -192,8 +194,8 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
 
         # Join the formatted lines of a block with a single newline
         formatted_block = '\n'.join(formatted_lines)
-        # Add a newline at the end of each block of text
-        formatted_block += '\n' if formatted_block else ''
+        # Add a newline at the end of each block of text only if it's not the last block
+        formatted_block += '\n' if formatted_block and block != blocks[-1] else ''
         formatted_blocks.append(formatted_block)
 
     # Join the formatted blocks without newlines to keep the original structure
