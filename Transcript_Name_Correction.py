@@ -191,7 +191,7 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
             # Capitalize the 'a' of all cases of '[applause]'
             formatted_line = re.sub(r'\[applause\]', '[Applause]', formatted_line, flags=re.IGNORECASE)
             # Change '(applause)' or '(Applause)' into '[Applause]'
-            formatted_line = re.sub(r'\((applause|Applause)\)', '[Applause]', formatted_line)
+            formatted_line = re.sub(r'\((applause|Applause|APPLAUSE)\)', '[Applause]', formatted_line)
             formatted_lines.append(formatted_line)
 
         # Join the formatted lines of a block with a single newline
