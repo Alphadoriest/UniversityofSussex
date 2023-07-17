@@ -154,34 +154,43 @@ def decapitalize(text):
 def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
 
-    lines = text.split('\n')
-    # Remove empty lines
-    lines = [line for line in lines if line.strip()]
+    # Split the text into blocks based on time codes
+    blocks = re.split(r'(\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d)', text)
 
-    formatted_lines = []
-    for line in lines:
-        words = line.split()
-        # If line is not empty
-        if words:
-            # Check the last few words based on the length of the replaced names
-            for replaced in replaced_names_dict.keys():
-                replaced_words = replaced.split()
-                if len(words) >= len(replaced_words):
-                    last_words = words[-len(replaced_words):]
-                    if ' '.join(last_words) == replaced and not last_words[-1].endswith('.'):
-                        words[-1] = words[-1] + '.'
+    formatted_blocks = []
+    for block in blocks:
+        lines = block.split('\n')
+        # Remove empty lines
+        lines = [line for line in lines if line.strip()]
 
-        formatted_line = ' '.join(words)
-        # Remove '[no audio]' from line
-        formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
-        # Capitalize the 'a' of all cases of '[applause]'
-        formatted_line = re.sub(r'\[applause\]', '[Applause]', formatted_line, flags=re.IGNORECASE)
-        # Change '(applause)' or '(Applause)' into '[Applause]'
-        formatted_line = re.sub(r'\((applause|Applause)\)', '[Applause]', formatted_line)
-        formatted_lines.append(formatted_line)
+        formatted_lines = []
+        for line in lines:
+            words = line.split()
+            # If line is not empty
+            if words:
+                # Check the last few words based on the length of the replaced names
+                for replaced in replaced_names_dict.keys():
+                    replaced_words = replaced.split()
+                    if len(words) >= len(replaced_words):
+                        last_words = words[-len(replaced_words):]
+                        if ' '.join(last_words) == replaced and not last_words[-1].endswith('.'):
+                            words[-1] = words[-1] + '.'
 
-    # Join the formatted lines with two newlines to get a blank line between each line
-    return '\n\n'.join(formatted_lines)
+            formatted_line = ' '.join(words)
+            # Remove '[no audio]' from line
+            formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
+            # Capitalize the 'a' of all cases of '[applause]'
+            formatted_line = re.sub(r'\[applause\]', '[Applause]', formatted_line, flags=re.IGNORECASE)
+            # Change '(applause)' or '(Applause)' into '[Applause]'
+            formatted_line = re.sub(r'\((applause|Applause)\)', '[Applause]', formatted_line)
+            formatted_lines.append(formatted_line)
+
+        # Join the formatted lines of a block with a single newline
+        formatted_block = '\n'.join(formatted_lines)
+        formatted_blocks.append(formatted_block)
+
+    # Join the formatted blocks with two newlines to keep the original structure
+    return '\n\n'.join(formatted_blocks)
         
 #Name Corrector UI
 
