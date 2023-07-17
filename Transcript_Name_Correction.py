@@ -154,11 +154,16 @@ def decapitalize(text):
 def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
 
-    # Split the text into blocks based on time codes
-    blocks = re.split(r'(\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d)', text)
+    # Split the text into blocks based on time codes, and preserve the time codes
+    blocks = re.split(r'(\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d\n)', text)
 
     formatted_blocks = []
     for block in blocks:
+        # If the block is a time code, add it to the formatted blocks directly
+        if re.match(r'\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d\n', block):
+            formatted_blocks.append(block)
+            continue
+
         lines = block.split('\n')
         # Remove empty lines
         lines = [line for line in lines if line.strip()]
@@ -189,8 +194,8 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
         formatted_block = '\n'.join(formatted_lines)
         formatted_blocks.append(formatted_block)
 
-    # Join the formatted blocks with two newlines to keep the original structure
-    return '\n\n'.join(formatted_blocks)
+    # Join the formatted blocks without newlines to keep the original structure
+    return ''.join(formatted_blocks)
         
 #Name Corrector UI
 
