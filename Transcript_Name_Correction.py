@@ -152,7 +152,7 @@ def decapitalize(text):
     return ' '.join(words)
 
 def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
-    replaced_names_dict = {original: replaced for original, replaced in replaced_names}
+    replaced_names_dict = {replaced: original for original, replaced in replaced_names}
     
     lines = text.split('\n')
     # Remove empty lines
