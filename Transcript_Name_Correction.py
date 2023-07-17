@@ -152,30 +152,31 @@ def decapitalize(text):
     return ' '.join(words)
 
 def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
-    replaced_names_dict = {replaced: original for original, replaced in replaced_names}
-    
+    replaced_names_dict = {original: replaced for original, replaced in replaced_names}
+
     lines = text.split('\n')
     # Remove empty lines
     lines = [line for line in lines if line.strip()]
-    
+
     formatted_lines = []
     for line in lines:
+        # Remove trailing punctuation for last word comparison
         words = line.split()
-        # If line is not empty
-        if words:
-            last_word = words[-1]
-            # If the last word is a replaced name and it doesn't end with a full stop, add it
-            if last_word in replaced_names_dict and not last_word.endswith('.'):
-                words[-1] = last_word + '.'
-        
-        formatted_line = ' '.join(words)
+        last_word = re.sub(r'[^\w\s]', '', words[-1]) if words else ""
+
+        # If the last word is a replaced name, add a full stop if it's not there
+        if last_word in replaced_names_dict:
+            line = line.rstrip('.')
+            line += '.'
+
         # Remove '[no audio]' from line
-        formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
+        line = re.sub(r'\[no audio\]', '', line, flags=re.IGNORECASE)
         # Capitalize the 'a' of all cases of '[applause]'
-        formatted_line = re.sub(r'\[applause\]', '[Applause]', formatted_line, flags=re.IGNORECASE)
+        line = re.sub(r'\[applause\]', '[Applause]', line, flags=re.IGNORECASE)
         # Change '(applause)' or '(Applause)' into '[Applause]'
-        formatted_line = re.sub(r'\((applause|Applause)\)', '[Applause]', formatted_line)
-        formatted_lines.append(formatted_line)
+        line = re.sub(r'\((applause|Applause)\)', '[Applause]', line)
+
+        formatted_lines.append(line)
 
     # Join the formatted lines with two newlines to get a blank line between each line
     return '\n\n'.join(formatted_lines)
