@@ -154,7 +154,7 @@ def decapitalize(text):
 def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
 
-    # If the text starts 'WEBVTT', keep it followed by a newline
+    # If the text starts with 'WEBVTT', keep it followed by a newline
     if text.startswith('WEBVTT'):
         text = text.replace('WEBVTT', 'WEBVTT\n', 1)
 
@@ -165,7 +165,7 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
     for block in blocks:
         # If the block is a time code, add it to the formatted blocks directly
         if re.match(r'\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d', block):
-            formatted_blocks.append(block.strip())
+            formatted_blocks.append(block.strip() + '\n')
             continue
 
         lines = block.split('\n')
@@ -196,7 +196,7 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
 
         # Join the formatted lines of a block with a single newline
         formatted_block = '\n'.join(formatted_lines)
-        # Add a newline at the end of each block of text only if it's not the last block
+        # Add two newlines at the end of each block of text only if it's not the last block
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
         formatted_blocks.append(formatted_block)
 
