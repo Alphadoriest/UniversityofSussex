@@ -153,21 +153,24 @@ def decapitalize(text):
 
 def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
-    
+
     lines = text.split('\n')
     # Remove empty lines
     lines = [line for line in lines if line.strip()]
-    
+
     formatted_lines = []
     for line in lines:
         words = line.split()
         # If line is not empty
         if words:
-            last_word = words[-1].rstrip('.,;')  # Remove trailing punctuation for last word comparison
-            # If the last word is a replaced name and it doesn't end with a full stop, add it
-            if last_word in replaced_names_dict and not last_word.endswith('.'):
-                words[-1] = words[-1].rstrip('.') + '.'
-        
+            # Check the last few words based on the length of the replaced names
+            for replaced in replaced_names_dict.keys():
+                replaced_words = replaced.split()
+                if len(words) >= len(replaced_words):
+                    last_words = words[-len(replaced_words):]
+                    if ' '.join(last_words) == replaced and not last_words[-1].endswith('.'):
+                        words[-1] = words[-1] + '.'
+
         formatted_line = ' '.join(words)
         # Remove '[no audio]' from line
         formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
