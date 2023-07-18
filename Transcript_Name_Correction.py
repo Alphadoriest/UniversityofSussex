@@ -50,7 +50,8 @@ def extract_middle_column_text(doc):
                             desired_text = line
                 middle_column_texts.append(desired_text)
 
-    return [decapitalize(text) for text in middle_column_texts if text not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD"]]
+    # Join the text with ', ', then replace ', ,' with ', ', and finally split again by ', '
+    return [decapitalize(text) for text in ', '.join(middle_column_texts).replace(', ,', ',').split(', ') if text not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD"]]
 
 def format_names(names_list):
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
