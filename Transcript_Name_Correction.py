@@ -95,6 +95,7 @@ def similarity(a, b):
 
 def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str]], str]:
     replaced_names = []
+    unmatched_names = names_list[:]  # Make a copy of names_list
 
     def replace_name(match):
         full_name = match.group(0)
@@ -114,6 +115,9 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
     
         if max_similarity >= similarity_threshold:
             replaced_names.append((full_name, most_similar_name))
+            # Remove the name from unmatched_names if it was matched
+            if most_similar_name in unmatched_names:
+                unmatched_names.remove(most_similar_name)
             return most_similar_name
         else:
             return full_name
@@ -137,9 +141,9 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
     if replaced_names:
         # Remove leading whitespaces from all lines as a final step
         new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
-        return replaced_names, new_text
+        return replaced_names, new_text, unmatched_names  # Return unmatched_names as well
     else:
-        return [], ''
+        return [], '', unmatched_names  # Return unmatched_names as well
 
 def decapitalize(text):
     roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
@@ -280,7 +284,7 @@ text = st.text_area("Enter graduation transcript text:", transcript_text, key='t
 
 if st.button("Run"):  # Run button added
     if names_list and text:  # Check if both text boxes are populated
-        replaced_names, new_text = replace_similar_names(text, names_list)
+        replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
 
     if replaced_names and new_text:  # Check if replaced_names and new_text exist
         # Reformat the new_text
@@ -311,5 +315,9 @@ if st.button("Run"):  # Run button added
                 st.markdown(f"**{original} -> {replaced}**")
             else:
                 st.write(f"{original} -> {replaced}")
+
+        st.subheader("Names not matched:")
+        for name in unmatched_names:
+            st.write(name)
 
         st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
