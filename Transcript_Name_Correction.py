@@ -93,18 +93,18 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text: str, names_list: List[str], similarity_threshold: float) -> Tuple[List[Tuple[str, str]], str]:
+def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str]], str, List[str]]:
     replaced_names = []
-    unmatched_names = names_list[:]  # Make a copy of names_list
+    unmatched_names = names_list[:]
 
     def replace_name(match):
         full_name = match.group(0)
-    
+
         # Check if the name is already replaced
         for original, replaced in replaced_names:
             if full_name == replaced:
                 return full_name
-    
+
         max_similarity = 0
         most_similar_name = None
         for name in names_list:
@@ -112,7 +112,7 @@ def replace_similar_names(text: str, names_list: List[str], similarity_threshold
             if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(name.split())):
                 max_similarity = sim
                 most_similar_name = name
-    
+
         if max_similarity >= similarity_threshold:
             replaced_names.append((full_name, most_similar_name))
             # Remove the name from unmatched_names if it was matched
@@ -138,10 +138,8 @@ def replace_similar_names(text: str, names_list: List[str], similarity_threshold
 
     new_text = '\n'.join(processed_lines)
 
-    if replaced_names:
-        # Remove leading whitespaces from all lines as a final step
-        new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
-        return replaced_names, new_text, unmatched_names  # Return unmatched_names as well
+    # Ensure that all code paths return three values
+    return replaced_names, new_text, unmatched_names
     else:
         return [], '', unmatched_names  # Return unmatched_names as well
 
