@@ -193,7 +193,7 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
                         if ' '.join(last_words) == replaced and not last_words[-1].endswith('.'):
                             words[-1] = words[-1] + '.'
 
-           formatted_line = ' '.join(words)
+    formatted_line = ' '.join(words)
 # Remove '[no audio]' from line
 formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
 # Capitalize the 'a' of all cases of '[applause]'
