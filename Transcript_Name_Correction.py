@@ -19,33 +19,29 @@ def extract_middle_column_text(doc):
             cells = row.cells
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
-                paragraphs = middle_cell.paragraphs
+                lines = middle_cell.text.split('\n')
                 desired_text = ''
                 inside_brackets = False  # Initialize bracket flag
-                for paragraph in paragraphs:
-                    for run in paragraph.runs:
-                        if not run.font.strike:  # If the text is not strikethrough
-                            lines = run.text.split('\n')
-                            for line in lines:
-                                line = line.strip()
+                for line in lines:
+                    line = line.strip()
 
-                                # Update bracket flag
-                                if line.startswith('('):
-                                    inside_brackets = True
-                                if line.endswith(')'):
-                                    inside_brackets = False
-                                    continue
+                    # Update bracket flag
+                    if line.startswith('('):
+                        inside_brackets = True
+                    if line.endswith(')'):
+                        inside_brackets = False
+                        continue
 
-                                # Ignore lines inside brackets
-                                if inside_brackets:
-                                    continue
+                    # Ignore lines inside brackets
+                    if inside_brackets:
+                        continue
 
-                                # Ignore lines that contain full bracketed phrases
-                                line = re.sub(r'\(.*?\)', '', line)
-                                line = re.sub(r'\[.*?\]', '', line)
+                    # Ignore lines that contain full bracketed phrases
+                    line = re.sub(r'\(.*?\)', '', line)
+                    line = re.sub(r'\[.*?\]', '', line)
 
-                                if line:
-                                    desired_text = line
+                    if line:
+                        desired_text = line
                 middle_column_texts.append(desired_text)
 
     return [decapitalize(text) for text in middle_column_texts if text not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD"]]
