@@ -27,28 +27,28 @@ def extract_middle_column_text(doc):
                     for run in paragraph.runs:
                         if not run.font.strike:  # If the text is not strikethrough
                             clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
-                    lines = clean_paragraph_text.split('\n')
-                    for line in lines:
-                        line = line.strip()
+                    names = clean_paragraph_text.split(',')  # Split the cleaned text into names by comma
+                    for name in names:
+                        name = name.strip()
 
                         # Update bracket flag
-                        if line.startswith('('):
+                        if name.startswith('('):
                             inside_brackets = True
-                        if line.endswith(')'):
+                        if name.endswith(')'):
                             inside_brackets = False
                             continue
 
-                        # Ignore lines inside brackets
+                        # Ignore names inside brackets
                         if inside_brackets:
                             continue
 
-                        # Ignore lines that contain full bracketed phrases
-                        line = re.sub(r'\(.*?\)', '', line)
-                        line = re.sub(r'\[.*?\]', '', line)
+                        # Ignore names that contain full bracketed phrases
+                        name = re.sub(r'\(.*?\)', '', name)
+                        name = re.sub(r'\[.*?\]', '', name)
 
-                        if line:
-                            desired_text = line
-                middle_column_texts.append(desired_text)
+                        if name:
+                            desired_text = name
+                        middle_column_texts.append(desired_text)
 
     # Filter out the unwanted names, decapitalize the remaining ones
     filtered_texts = [decapitalize(text) for text in middle_column_texts if text not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD"]]
