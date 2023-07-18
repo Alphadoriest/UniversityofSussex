@@ -139,9 +139,10 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
     new_text = '\n'.join(processed_lines)
 
     # Ensure that all code paths return three values
-    return replaced_names, new_text, unmatched_names
+    if replaced_names:
+        return replaced_names, new_text, unmatched_names
     else:
-        return [], '', unmatched_names  # Return unmatched_names as well
+        return [], new_text, unmatched_names  # Return unmatched_names as well
 
 def decapitalize(text):
     roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
