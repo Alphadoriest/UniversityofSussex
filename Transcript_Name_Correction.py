@@ -219,6 +219,7 @@ similarity_threshold = st.sidebar.slider(
     value=0.45,
     step=0.01,
 )
+new_similarity_threshold = similarity_threshold - 0.1
 
 # Slider weights
 st.sidebar.header('Adjust Weights for Comparison Methods')
@@ -289,7 +290,7 @@ if st.button("Run"):  # Run button added
         if unmatched_names:
             st.subheader("Trying second pass with lower threshold...")
             lower_similarity_threshold = 0.3  # or any value lower than the original threshold
-            replaced_names_second_pass, new_text, unmatched_names = replace_similar_names(new_text, unmatched_names, similarity_threshold-1)
+            replaced_names_second_pass, new_text, unmatched_names = replace_similar_names(new_text, unmatched_names, new_similarity_threshold)
 
             # Merge the lists of replaced names from the first and second passes
             replaced_names += replaced_names_second_pass
