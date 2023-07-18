@@ -93,7 +93,7 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str]], str]:
+def replace_similar_names(text: str, names_list: List[str], similarity_threshold: float) -> Tuple[List[Tuple[str, str]], str]:
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
 
@@ -285,6 +285,15 @@ text = st.text_area("Enter graduation transcript text:", transcript_text, key='t
 if st.button("Run"):  # Run button added
     if names_list and text:  # Check if both text boxes are populated
         replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
+
+        # If there are unmatched names, run replace_similar_names again with a lower threshold
+        if unmatched_names:
+            st.subheader("Trying second pass with lower threshold...")
+            lower_similarity_threshold = 0.3  # or any value lower than the original threshold
+            replaced_names_second_pass, new_text, unmatched_names = replace_similar_names(new_text, unmatched_names, lower_similarity_threshold)
+
+            # Merge the lists of replaced names from the first and second passes
+            replaced_names += replaced_names_second_pass
 
     if replaced_names and new_text:  # Check if replaced_names and new_text exist
         # Reformat the new_text
