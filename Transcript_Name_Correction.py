@@ -193,25 +193,25 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
                         if ' '.join(last_words) == replaced and not last_words[-1].endswith('.'):
                             words[-1] = words[-1] + '.'
 
-            formatted_line = ' '.join(words)
-            # Remove '[no audio]' from line
-            formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
-            # Capitalize the 'a' of all cases of '[applause]'
-            formatted_line = re.sub(r'\[applause\]', '[Applause]', formatted_line, flags=re.IGNORECASE)
-            # Change '(applause)' or '(Applause)' into '[Applause]'
-            formatted_line = re.sub(r'\((applause|Applause|APPLAUSE)\)', '[Applause]', formatted_line)
-            formatted_line = re.sub(r'\((Music)|(MUSIC)|(MUSIC PLAYING)|\[Music|MUSIC|MUSIC PLAYING]\)', '[Music Playing]', formatted_line)
-            formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE, formatted line)
-            formatted_lines.append(formatted_line)
+           formatted_line = ' '.join(words)
+# Remove '[no audio]' from line
+formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
+# Capitalize the 'a' of all cases of '[applause]'
+formatted_line = re.sub(r'\[applause\]', '[Applause]', formatted_line, flags=re.IGNORECASE)
+# Change '(applause)' or '(Applause)' into '[Applause]'
+formatted_line = re.sub(r'\((applause)\)', '[Applause]', formatted_line, flags=re.IGNORECASE)
+formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING)\)|\[(Music|MUSIC|MUSIC PLAYING)\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
+formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
+formatted_lines.append(formatted_line)
 
-        # Join the formatted lines of a block with a single newline
-        formatted_block = '\n'.join(formatted_lines)
-        # Add two newlines at the end of each block of text only if it's not the last block
-        formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
-        formatted_blocks.append(formatted_block)
+# Join the formatted lines of a block with a single newline
+formatted_block = '\n'.join(formatted_lines)
+# Add two newlines at the end of each block of text only if it's not the last block
+formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
+formatted_blocks.append(formatted_block)
 
-    # Join the formatted blocks without newlines to keep the original structure
-    return ''.join(formatted_blocks)
+# Join the formatted blocks without newlines to keep the original structure
+return ''.join(formatted_blocks)
         
 #Name Corrector UI
 
