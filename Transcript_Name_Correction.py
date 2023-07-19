@@ -165,7 +165,7 @@ def decapitalize(text):
     return ' '.join(words)
 
 def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
-    replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
+    replaced_names_dict = {replaced: original for original, replaced, _ in replaced_names}  # reversed mapping
 
     if text.startswith('WEBVTT'):
         text = text.replace('WEBVTT', 'WEBVTT\n', 1)
