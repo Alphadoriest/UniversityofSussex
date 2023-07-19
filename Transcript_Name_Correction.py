@@ -289,10 +289,10 @@ if st.button("Run"):  # Run button added
 
         # If there are unmatched names, run replace_similar_names again with a lower threshold
         if unmatched_names:
-        st.subheader("Trying second pass with lower threshold...")
-        current_similarity_threshold = similarity_threshold
-        lower_similarity_threshold = (current_similarity_threshold - 0.1)
-        replaced_names_second_pass, new_text, unmatched_names = replace_similar_names(new_text, unmatched_names, lower_similarity_threshold, second_pass=True)
+            st.subheader("Trying second pass with lower threshold...")
+            current_similarity_threshold = similarity_threshold
+            lower_similarity_threshold = (current_similarity_threshold - 0.1)
+            replaced_names_second_pass, new_text, unmatched_names = replace_similar_names(new_text, unmatched_names, lower_similarity_threshold, second_pass=True)
     
         # Merge the lists of replaced names from the first and second passes
         replaced_names += replaced_names_second_pass
