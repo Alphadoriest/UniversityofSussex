@@ -206,25 +206,6 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
         formatted_blocks.append(formatted_block)
 
     return ''.join(formatted_blocks)
-
-def find_best_match(transcript, preceding, succeeding):
-    # Get the positions of preceding and succeeding names
-    preceding_position = transcript.find(preceding)
-    succeeding_position = transcript.find(succeeding)
-
-    if preceding_position != -1 and succeeding_position != -1:
-        # Extract the text between the two positions
-        between_text = transcript[preceding_position + len(preceding):succeeding_position]
-
-        # Split the text into words
-        words = between_text.split()
-
-        # Find the word with the maximum similarity to the unmatched name
-        best_match = max(words, key=lambda word: similarity(word, unmatched))
-
-        return best_match
-    else:
-        return None
         
 #Name Corrector UI
 
@@ -301,10 +282,6 @@ if uploaded_transcript_file is not None:
 # Use the transcript_text as the default value for the transcript text_area
 text = st.text_area("Alternatively, Enter Text From a Transcript:", transcript_text, key='transcript_text')
 
-# Initialize preceding_names and succeeding_names as empty lists
-preceding_names = []
-succeeding_names = []
-
 # Add a separate button for the name replacement process
 if st.button("Press to Replace Names"):  
     if names_list and text:  # Check if both text boxes are populated
@@ -315,14 +292,13 @@ if st.button("Press to Replace Names"):
         st.session_state.replaced_names = replaced_names
         st.session_state.unmatched_names = unmatched_names
 
-        # Get the indices of unmatched names in names_list
-        unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
-
-        # Get the names that precede the unmatched names
-        preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
-
-        # Get the names that succeed the unmatched names
-        succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
+# Ensure new_text, replaced_names, and unmatched_names are in session state
+if 'new_text' not in st.session_state:
+    st.session_state.new_text = ""
+if 'replaced_names' not in st.session_state:
+    st.session_state.replaced_names = []
+if 'unmatched_names' not in st.session_state:
+    st.session_state.unmatched_names = []
 
 # Display replaced and unmatched names from session state
 st.subheader("Names replaced:")
@@ -336,13 +312,6 @@ for original, replaced in st.session_state.replaced_names:
         st.markdown(f"**{original} -> {replaced}**")
     else:
         st.write(f"{original} -> {replaced}")
-
-for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
-    best_match = find_best_match(st.session_state.new_text, preceding, succeeding)
-    if best_match is not None:
-        st.write(f"Best match for {unmatched} is {best_match}")
-    else:
-        st.write(f"No match found for {unmatched}")
 
 st.subheader("Names not matched:")
 st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated transcript text box. The app will reset after each addition, but all progress is saved.")
