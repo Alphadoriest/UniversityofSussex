@@ -282,28 +282,13 @@ if uploaded_transcript_file is not None:
 # Use the transcript_text as the default value for the transcript text_area
 text = st.text_area("Enter graduation transcript text:", transcript_text, key='transcript_text')
 
-if st.button("Run"):  # Run button added
+# Add a separate button for the name replacement process
+if st.button("Replace Names"):  
     if names_list and text:  # Check if both text boxes are populated
         replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
+        st.session_state.new_text = new_text  # Store the resultant text in session state
 
-    if replaced_names and new_text:  # Check if replaced_names and new_text exist
-        # Reformat the new_text
-        new_text = reformat_transcript(new_text, replaced_names)
-        # Escape newline characters and single quotes in new_text
-        escaped_new_text = new_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
-
-        # Button to copy the replaced text to the clipboard
-        copy_button_html = f"""
-            <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
-            <script>
-            function copyReplacedText() {{
-                let text = document.getElementById('updated_transcript_text').value;
-                navigator.clipboard.writeText(text);
-            }}
-            </script>
-            """
-        components.v1.html(copy_button_html, height=30)
-
+        # Display replaced and unmatched names
         st.subheader("Names replaced:")
         for original, replaced in replaced_names:
             original_words = original.split()
@@ -319,7 +304,25 @@ if st.button("Run"):  # Run button added
         st.subheader("Names not matched:")
         for name in unmatched_names:
             st.write(name)
-    
-        st.session_state.new_text = new_text  # Assign new_text to the session state variable
-        new_text = st.text_area("Updated Transcript:", st.session_state.new_text, key='updated_transcript_text')
-        st.session_state.new_text = new_text
+
+# Ensure new_text is in session state
+if 'new_text' not in st.session_state:
+    st.session_state.new_text = ""
+
+# Display the text area for the transcript
+new_text = st.text_area("Updated Transcript:", st.session_state.new_text, key='updated_transcript_text')
+
+# Update session state with any changes made in the text area
+st.session_state.new_text = new_text
+
+# Button to copy the replaced text to the clipboard
+copy_button_html = f"""
+    <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
+    <script>
+    function copyReplacedText() {{
+        let text = document.getElementById('updated_transcript_text').value;
+        navigator.clipboard.writeText(text);
+    }}
+    </script>
+    """
+components.v1.html(copy_button_html, height=30)
