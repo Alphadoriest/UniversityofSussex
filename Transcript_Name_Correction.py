@@ -9,6 +9,7 @@ from typing import List, Tuple
 from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 from streamlit import components
+from tweaker import st_tweaker
 
 american_to_british_dict = {
   'honored': 'honoured',
@@ -377,15 +378,15 @@ for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, s
 def update_transcript_text():
     st.session_state.updated_transcript_text = st.text_input('updated_transcript_text')
 
-# Display the text area for the transcript
-# First check if the updated_transcript_text is in the session state
+# Display the text area for the transcript with a custom HTML id
 if 'updated_transcript_text' not in st.session_state:
     st.session_state.updated_transcript_text = st.session_state.new_text
 
-new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", 
-                        st.session_state.updated_transcript_text, 
-                        key='updated_transcript_text',
-                        on_change=update_transcript_text)
+new_text = st_tweaker.text_input("Updated Transcript Text to Copy Into VTT/TXT File:", 
+                                 st.session_state.updated_transcript_text, 
+                                 id='updated_transcript_text',  # set the custom HTML id
+                                 key='updated_transcript_text',
+                                 on_change=update_transcript_text)
 
 copy_button_html = f"""
     <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
@@ -394,7 +395,7 @@ copy_button_html = f"""
 copy_script = f"""
     <script>
     function copyReplacedText() {{
-      let text = document.getElementById('{new_text_element_id}').value;
+      let text = document.getElementById('updated_transcript_text').value;  // use the custom HTML id
       navigator.clipboard.writeText(text);
     }}
     </script>
