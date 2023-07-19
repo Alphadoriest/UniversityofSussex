@@ -315,16 +315,6 @@ if st.button("Press to Replace Names"):
         st.session_state.replaced_names = replaced_names
         st.session_state.unmatched_names = unmatched_names
 
-        # Get the indices of unmatched names in names_list
-        if 'unmatched_names' in st.session_state:
-            unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
-
-        # Get the names that precede the unmatched names
-        preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
-
-        # Get the names that succeed the unmatched names
-        succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
-
 # Display replaced and unmatched names from session state
 if 'replaced_names' in st.session_state and st.session_state.replaced_names:
     st.subheader("Names replaced:")
@@ -367,14 +357,16 @@ if 'unmatched_names' in st.session_state:
     components.v1.html(copy_unmatched_names_button_html, height=30)
 
 # Get the indices of unmatched names in names_list
-unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
+if 'unmatched_names' in st.session_state:
+    unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
 
 # Get the names that precede the unmatched names
-preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
-
 # Get the names that succeed the unmatched names
-succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
+if 'unmatched_names' in st.session_state:
+    preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
+    succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
 
+if 'unmatched_names' in st.session_state:
 st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Transcript Box:")
 for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
     st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
