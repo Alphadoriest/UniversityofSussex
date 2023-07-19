@@ -11,10 +11,12 @@ from metaphone import doublemetaphone
 from streamlit import components
 import json
 
-def load_american_british_dict(filepath):
-    with open(filepath, 'american_british_dict.JSON') as f:
+def load_american_british_dict(filename):
+    with open(american_british_dict.json, 'r') as f:
         data = json.load(f)
     return data
+
+american_british_dict = load_american_british_dict('american_british_dict.json')
 
 # Load the dictionary at the start of your script
 american_british_dict = load_american_british_dict('american_british_dict.json')
