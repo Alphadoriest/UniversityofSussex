@@ -384,18 +384,3 @@ if st.button('Save Changes'):
 # Button to copy the replaced text to the clipboard
 if st.button('Copy replaced text to clipboard'):
     st.clipboard.write(st.session_state.new_text)
-
-copy_button_html = f"""
-    <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
-"""
-
-copy_script = f"""
-    <script>
-    function copyReplacedText() {{
-      let text = document.getElementById('{new_text_element_id}').value;
-      navigator.clipboard.writeText(text);
-    }}
-    </script>
-"""
-
-components.v1.html(copy_button_html + copy_script, height=30)
