@@ -361,7 +361,7 @@ components.v1.html(copy_unmatched_names_button_html, height=30)
 
 # Get the indices of unmatched names in names_list
 
-    unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
+unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
 
 # Get the names that precede the unmatched names
 # Get the names that succeed the unmatched names
