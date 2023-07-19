@@ -314,7 +314,7 @@ for original, replaced in st.session_state.replaced_names:
         st.write(f"{original} -> {replaced}")
 
 st.subheader("Names not matched:")
-st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated transcript text box (the app will reset after each addition, but all progress is saved.")
+st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated transcript text box (the app will reset after each addition, but all progress is saved).")
 unmatched_names_str = ', '.join(st.session_state.unmatched_names)
 st.write(unmatched_names_str)
 
