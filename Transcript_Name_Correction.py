@@ -97,7 +97,7 @@ def replace_similar_names(text: str, names_list: List[str], similarity_threshold
     replaced_names = []
     unmatched_names = names_list[:]
 
-    def replace_name(match):
+    def replace_name(match, second_pass=False):
         full_name = match.group(0)
 
         # Check if the name is already replaced
@@ -114,7 +114,7 @@ def replace_similar_names(text: str, names_list: List[str], similarity_threshold
                 most_similar_name = name
 
         if max_similarity >= similarity_threshold:
-            replaced_names.append((full_name, most_similar_name))
+            replaced_names.append((full_name, most_similar_name, second_pass))
             # Remove the name from unmatched_names if it was matched
             if most_similar_name in unmatched_names:
                 unmatched_names.remove(most_similar_name)
@@ -133,7 +133,7 @@ def replace_similar_names(text: str, names_list: List[str], similarity_threshold
             processed_lines.append(line)
             continue
 
-        line = re.sub(pattern, replace_name, line)
+        line = re.sub(pattern, lambda match: replace_name(match, second_pass=False), line)
         processed_lines.append(line)
 
     new_text = '\n'.join(processed_lines)
@@ -290,7 +290,7 @@ if st.button("Run"):  # Run button added
             st.subheader("Trying second pass with lower threshold...")
             current_similarity_threshold = similarity_threshold
             lower_similarity_threshold = (current_similarity_threshold - 0.1)
-            replaced_names_second_pass, new_text, unmatched_names = replace_similar_names(new_text, unmatched_names, lower_similarity_threshold)
+            replaced_names_second_pass, new_text, unmatched_names = replace_similar_names(new_text, unmatched_names, lower_similarity_threshold, replace_name=lambda match: replace_name(match, second_pass=True))
 
             # Merge the lists of replaced names from the first and second passes
             replaced_names += replaced_names_second_pass
@@ -314,19 +314,20 @@ if st.button("Run"):  # Run button added
         html(copy_button_html, height=30)
 
         st.subheader("Names replaced:")
-        for original, replaced in replaced_names:
+        for original, replaced, second_pass in replaced_names:
             original_words = original.split()
             replaced_words = replaced.split()
+            second_pass_indicator = " (second pass)" if second_pass else ""
 
-            # Check if the original and replaced names have a different number of words
-            if len(original_words) != len(replaced_words):
-                # If they do, make the text bold
-                st.markdown(f"**{original} -> {replaced}**")
-            else:
-                st.write(f"{original} -> {replaced}")
+        # Check if the original and replaced names have a different number of words
+        if len(original_words) != len(replaced_words):
+            # If they do, make the text bold
+            st.markdown(f"**{original} -> {replaced}{second_pass_indicator}**")
+        else:
+            st.write(f"{original} -> {replaced}{second_pass_indicator}")
 
-        st.subheader("Names not matched:")
-        for name in unmatched_names:
-            st.write(name)
-
-        st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
+            st.subheader("Names not matched:")
+            for name in unmatched_names:
+                st.write(name)
+    
+            st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
