@@ -181,7 +181,8 @@ def american_to_british(text: str) -> Tuple[str, List[Tuple[str, str]]]:
             replacements_made.append((american, british))
     return text, replacements_made
 
-def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
+def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> Tuple[str, List[Tuple[str, str]]]:
+    replacements_made = []
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
 
     if text.startswith('WEBVTT'):
@@ -228,9 +229,8 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
         formatted_blocks.append(formatted_block)
 
-    return ''.join(formatted_blocks)
-    return new_text, replacements_made
-        
+    return ''.join(formatted_blocks), replacements_made
+    
 #Name Corrector UI
 
 st.title('Graduation Transcription Workflow Web Tool')
