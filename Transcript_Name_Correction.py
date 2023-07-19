@@ -184,9 +184,10 @@ def american_to_british(text: str) -> Tuple[str, List[Tuple[str, str]]]:
             replacements_made.append((american, british))
     return text, replacements_made
 
-def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> Tuple[str, List[Tuple[str, str]]]:
+def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> Tuple[str, List[Tuple[str, str]], List[Tuple[str, str]]]:
     replacements_made = []
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
+    american_british_replacements = []  # List to store American to British replacements.
 
     if text.startswith('WEBVTT'):
         text = text.replace('WEBVTT', 'WEBVTT\n', 1)
@@ -217,22 +218,16 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> Tup
                 formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\[applause\]', '[Applause]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((applause)\)', '[Applause]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING)\)|\[(Music|MUSIC|MUSIC PLAYING)\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
                 
-                # Add this line to convert American English to British English
-                formatted_line, replacements = american_to_british(formatted_line)
-                replacements_made.extend(replacements)
-                
-                formatted_lines.append(formatted_line)
+                # Apply American to British replacements here
+                formatted_line, local_replacements = american_to_british(formatted_line)
+                american_british_replacements.extend(local_replacements)
 
-        formatted_block = '\n'.join(formatted_lines)
-        formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
-        formatted_blocks.append(formatted_block)
+            formatted_lines.append(formatted_line.strip())
 
-    return ''.join(formatted_blocks), replacements_made
+        formatted_blocks.append('\n'.join(formatted_lines) + '\n')
+
+    return '\n'.join(formatted_blocks).strip(), replacements_made, american_british_replacements
     
 #Name Corrector UI
 
@@ -387,9 +382,7 @@ copy_button_html = f"""
     """
 components.v1.html(copy_button_html, height=30)
 
-replaced_names, new_text, unmatched_names, american_british_replacements = replace_similar_names(text, names_list)
-new_text, replacements_made = reformat_transcript(new_text, replaced_names)  # Use new_text here
+reformatted_text, name_replacements, american_british_replacements = reformat_transcript(text, replaced_names)
 
-print("List of American to British replacements made in the transcript:")
-for american, british in american_british_replacements:  # Use american_british_replacements here
-    print(f"'{american}' replaced with '{british}'")
+# Print or display the American to British replacements:
+print(american_british_replacements)
