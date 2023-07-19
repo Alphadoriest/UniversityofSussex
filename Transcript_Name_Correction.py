@@ -229,6 +229,7 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
         formatted_blocks.append(formatted_block)
 
     return ''.join(formatted_blocks)
+    return new_text, replacements_made
         
 #Name Corrector UI
 
@@ -383,6 +384,7 @@ copy_button_html = f"""
     """
 components.v1.html(copy_button_html, height=30)
 
+new_text, replacements_made = reformat_transcript(text, replaced_names)
 print("List of replacements made in the transcript:")
 for american, british in replacements_made:
     print(f"'{american}' replaced with '{british}'")
