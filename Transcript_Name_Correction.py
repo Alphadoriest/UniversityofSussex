@@ -381,6 +381,4 @@ if st.button('Save Changes'):
     # Update session state with any changes made in the text area
     st.session_state.new_text = new_text
 
-# Button to copy the replaced text to the clipboard
-if st.button('Copy replaced text to clipboard'):
-    st.clipboard.write(st.session_state.new_text)
+st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")
