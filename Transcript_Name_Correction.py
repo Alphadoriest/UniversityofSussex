@@ -242,7 +242,7 @@ st.image("banner.jpg")
 
 st.header('Name Extractor for Graduation Ceremony In-Person Lists')
 
-uploaded_file = st.file_uploader("Choose a Word document", type="docx")
+uploaded_file = st.file_uploader("Choose a Ceremony In-Person List Word document", type="docx")
 
 # Initialize names_list as an empty string
 names_list = ''
@@ -252,7 +252,7 @@ if uploaded_file is not None:
     names_list = extract_middle_column_text(document)  # Keep names_list as a list
 
 # Use names_list as the default value for the names_list text_area
-names_list = st.text_area("Enter names, separated by commas:", ', '.join(names_list), key='names_list')
+names_list = st.text_area("Alternatively, enter names, separated by commas:", ', '.join(names_list), key='names_list')
 
 if names_list:  # Check if names_list is not empty
     names_list = names_list.split(',')
@@ -275,42 +275,61 @@ st.header("Graduation Transcript Name Corrector")
 # Initialize transcript_text as an empty string
 transcript_text = ''
 
-uploaded_transcript_file = st.file_uploader("Choose a VTT or text document for transcript", type=["vtt", "txt"])
+uploaded_transcript_file = st.file_uploader("Choose a VTT or TXT Transcript File ", type=["vtt", "txt"])
 if uploaded_transcript_file is not None:
     transcript_text = uploaded_transcript_file.read().decode()
 
 # Use the transcript_text as the default value for the transcript text_area
-text = st.text_area("Enter graduation transcript text:", transcript_text, key='transcript_text')
+text = st.text_area("Alternatively, Enter Text From a Transcript:", transcript_text, key='transcript_text')
 
 # Add a separate button for the name replacement process
-if st.button("Replace Names"):  
+if st.button("Press to Replace Names"):  
     if names_list and text:  # Check if both text boxes are populated
         replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
-        st.session_state.new_text = new_text  # Store the resultant text in session state
+        
+        # Store the resultant text and replaced_names and unmatched_names in session state
+        st.session_state.new_text = new_text  
+        st.session_state.replaced_names = replaced_names
+        st.session_state.unmatched_names = unmatched_names
 
-        # Display replaced and unmatched names
-        st.subheader("Names replaced:")
-        for original, replaced in replaced_names:
-            original_words = original.split()
-            replaced_words = replaced.split()
-
-            # Check if the original and replaced names have a different number of words
-            if len(original_words) != len(replaced_words):
-                # If they do, make the text bold
-                st.markdown(f"**{original} -> {replaced}**")
-            else:
-                st.write(f"{original} -> {replaced}")
-
-        st.subheader("Names not matched:")
-        for name in unmatched_names:
-            st.write(name)
-
-# Ensure new_text is in session state
+# Ensure new_text, replaced_names, and unmatched_names are in session state
 if 'new_text' not in st.session_state:
     st.session_state.new_text = ""
+if 'replaced_names' not in st.session_state:
+    st.session_state.replaced_names = []
+if 'unmatched_names' not in st.session_state:
+    st.session_state.unmatched_names = []
+
+# Display replaced and unmatched names from session state
+st.subheader("Names replaced:")
+for original, replaced in st.session_state.replaced_names:
+    original_words = original.split()
+    replaced_words = replaced.split()
+
+    # Check if the original and replaced names have a different number of words
+    if len(original_words) != len(replaced_words):
+        # If they do, make the text bold
+        st.markdown(f"**{original} -> {replaced}**")
+    else:
+        st.write(f"{original} -> {replaced}")
+
+st.subheader("Names not matched:")
+unmatched_names_str = ', '.join(st.session_state.unmatched_names)
+st.write(unmatched_names_str)
+
+# Button to copy unmatched names to clipboard
+copy_unmatched_names_button_html = f"""
+    <button onclick="copyUnmatchedNames()">Copy unmatched names to clipboard</button>
+    <script>
+    function copyUnmatchedNames() {{
+        navigator.clipboard.writeText("{unmatched_names_str}");
+    }}
+    </script>
+    """
+components.v1.html(copy_unmatched_names_button_html, height=30)
 
 # Display the text area for the transcript
-new_text = st.text_area("Updated Transcript:", st.session_state.new_text, key='updated_transcript_text')
+new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", st.session_state.new_text, key='updated_transcript_text')
 
 # Update session state with any changes made in the text area
 st.session_state.new_text = new_text
