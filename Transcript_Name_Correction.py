@@ -373,13 +373,9 @@ for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, s
     st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
 
 # Add CSS to set height 
-st.markdown(f"""
-<style>
-#updated_transcript_text {{
-  height: 400px;
-}}
-</style>
-""", unsafe_allow_html=True)
+style_id = "my-style"
+
+st.markdown(f'<style id="{style_id}">...</style>', unsafe_allow_html=True)
 
 # Function to update state
 def update_transcript_text():
