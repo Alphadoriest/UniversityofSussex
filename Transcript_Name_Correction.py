@@ -9,6 +9,15 @@ from typing import List, Tuple
 from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 from streamlit import components
+import json
+
+def load_american_british_dict(filepath):
+    with open(filepath, 'r') as f:
+        data = json.load(f)
+    return data
+
+# Load the dictionary at the start of your script
+american_british_dict = load_american_british_dict('american_british_dict.json')
 
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
@@ -163,6 +172,12 @@ def decapitalize(text):
 
     return ' '.join(words)
 
+def american_to_british(text: str) -> str:
+    # Replace each American English word with its British English counterpart
+    for american, british in american_british_dict.items():
+        text = re.sub(fr'\b{american}\b', british, text, flags=re.IGNORECASE)
+    return text
+
 def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
 
@@ -199,6 +214,10 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
                 formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
+                
+                # Add this line to convert American English to British English
+                formatted_line = american_to_british(formatted_line)
+                
                 formatted_lines.append(formatted_line)
 
         formatted_block = '\n'.join(formatted_lines)
