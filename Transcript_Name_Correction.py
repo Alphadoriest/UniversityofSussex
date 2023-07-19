@@ -373,16 +373,19 @@ for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, s
     st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
 
 
+# Function to update state
 def update_transcript_text():
-    st.session_state.updated_transcript_text = st.text_input('updated_transcript_text')
+  st.session_state.updated_transcript_text = new_text
 
-# Display the text area for the transcript with a custom HTML id
+# Check for the right state key
 if 'updated_transcript_text' not in st.session_state:
-    st.session_state.updated_transcript_text = st.session_state.new_text
-
+  st.session_state.updated_transcript_text = st.session_state.new_text
+  
+# Call with height parameter  
 new_text = st_tweaker.text_input("Updated Transcript Text to Copy Into VTT/TXT File:", 
-                                 st.session_state.updated_transcript_text, 
-                                 id='updated_transcript_text',  # set the custom HTML id
+                                 st.session_state.updated_transcript_text,
+                                 height=400,
+                                 id='updated_transcript_text',  
                                  key='updated_transcript_text',
                                  on_change=update_transcript_text)
 
