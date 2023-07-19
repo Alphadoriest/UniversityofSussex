@@ -226,8 +226,8 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
           # Lowercase line to match dictionary
           line = line.lower() 
         
-            for american, british in american_to_british_dict.items():
-              line = line.replace(american, british)
+          for american, british in american_to_british_dict.items():
+            line = line.replace(american, british)
     
             formatted_line = re.sub(r'\[(.*?)\]', '[\\1]', line)        
             formatted_lines.append(formatted_line)          
