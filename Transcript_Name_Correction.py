@@ -328,6 +328,16 @@ copy_unmatched_names_button_html = f"""
     """
 components.v1.html(copy_unmatched_names_button_html, height=30)
 
+# Get the indices of unmatched names in names_list
+unmatched_indices = [names_list.index(name) for name in unmatched_names if name in names_list]
+
+# Get the names that precede the unmatched names
+preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
+
+st.subheader("Preceding Names for Easy Look Up of Unmatched Name for Addition to Updated Transcript Box:")
+preceding_names_str = ', '.join(name if name is not None else 'N/A' for name in preceding_names)
+st.write(preceding_names_str)
+
 # Display the text area for the transcript
 new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", st.session_state.new_text, key='updated_transcript_text')
 
