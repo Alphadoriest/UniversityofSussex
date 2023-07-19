@@ -9,15 +9,6 @@ from typing import List, Tuple
 from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 from streamlit import components
-import json
-
-def load_american_british_dict(filename):
-    with open(filename, 'r') as f:
-        data = json.load(f)
-    return data
-
-# Load the dictionary at the start of your script
-american_british_dict = load_american_british_dict('american_british_dict.json')
 
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
@@ -102,12 +93,9 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text, names_list):
+def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str]], str]:
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
-
-    # Add this line to convert American English to British English and record the replacements
-    text, american_british_replacements = american_to_british(text)
 
     def replace_name(match):
         full_name = match.group(0)
@@ -153,9 +141,9 @@ def replace_similar_names(text, names_list):
     if replaced_names:
         # Remove leading whitespaces from all lines as a final step
         new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
-        return replaced_names, new_text, unmatched_names, american_british_replacements  # Return unmatched_names and american_british_replacements as well
+        return replaced_names, new_text, unmatched_names  # Return unmatched_names as well
     else:
-        return replaced_names, new_text
+        return [], '', unmatched_names  # Return unmatched_names as well
 
 def decapitalize(text):
     roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
@@ -175,19 +163,8 @@ def decapitalize(text):
 
     return ' '.join(words)
 
-def american_to_british(text: str) -> Tuple[str, List[Tuple[str, str]]]:
-    replacements_made = []
-    # Replace each American English word with its British English counterpart
-    for american, british in american_british_dict.items():
-        if re.search(fr'\b{american}\b', text, flags=re.IGNORECASE):
-            text = re.sub(fr'\b{american}\b', british, text, flags=re.IGNORECASE)
-            replacements_made.append((american, british))
-    return text, replacements_made
-
-def reformat_transcript(text, replaced_names):
-    replacements_made = []
+def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
-    american_british_replacements = []  # List to store American to British replacements.
 
     if text.startswith('WEBVTT'):
         text = text.replace('WEBVTT', 'WEBVTT\n', 1)
@@ -218,17 +195,18 @@ def reformat_transcript(text, replaced_names):
                 formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\[applause\]', '[Applause]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((applause)\)', '[Applause]', formatted_line, flags=re.IGNORECASE)
-                
-                # Apply American to British replacements here
-                formatted_line, local_replacements = american_to_british(formatted_line) 
-                american_british_replacements.extend(local_replacements)
+                formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING)\)|\[(Music|MUSIC|MUSIC PLAYING)\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
+                formatted_lines.append(formatted_line)
 
-            formatted_lines.append(formatted_line.strip())
+        formatted_block = '\n'.join(formatted_lines)
+        formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
+        formatted_blocks.append(formatted_block)
 
-        formatted_blocks.append('\n'.join(formatted_lines) + '\n')
-
-    return '\n'.join(formatted_blocks).strip(), reformatted_text, american_british_replacements
-    
+    return ''.join(formatted_blocks)
+        
 #Name Corrector UI
 
 st.title('Graduation Transcription Workflow Web Tool')
@@ -381,11 +359,3 @@ copy_button_html = f"""
     </script>
     """
 components.v1.html(copy_button_html, height=30)
-
-replaced_names, new_text = replace_similar_names(text, names_list)
-
-reformatted_text, american_british_replacements = reformat_transcript(text, replaced_names)
-
-st.subheader("American to British Conversions:")
-for original, replacement in american_british_replacements:
-  st.write(f"{original} -> {replacement}")
