@@ -9,6 +9,7 @@ from typing import List, Tuple
 from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 from streamlit import components
+import streamlit.components.v1 as components
 
 american_to_british_dict = {
   'honored': 'honoured',
@@ -381,7 +382,8 @@ if st.button('Save Changes'):
     st.session_state.new_text = new_text
 
 # Button to copy the replaced text to the clipboard
-new_text_element_id = 'updated_transcript_text'
+if st.button('Copy replaced text to clipboard'):
+    st.clipboard.write(st.session_state.new_text)
 
 copy_button_html = f"""
     <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
