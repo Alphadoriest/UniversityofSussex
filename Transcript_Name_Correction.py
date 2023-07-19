@@ -349,13 +349,20 @@ new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", st
 st.session_state.new_text = new_text
 
 # Button to copy the replaced text to the clipboard
+new_text_element_id = 'updated_transcript_text'
+
 copy_button_html = f"""
     <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
+"""
+
+copy_script = f"""
     <script>
     function copyReplacedText() {{
-        let text = document.getElementById('updated_transcript_text').value;
-        navigator.clipboard.writeText(text);
+      let text = document.getElementById('{new_text_element_id}').value;
+      navigator.clipboard.writeText(text);
     }}
     </script>
-    """
+"""
+
+components.v1.html(copy_button_html + copy_script, height=30)
 components.v1.html(copy_button_html, height=30)
