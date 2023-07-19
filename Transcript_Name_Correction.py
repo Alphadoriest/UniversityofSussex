@@ -370,7 +370,7 @@ succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i i
 
 st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Transcript Box:")
 for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
-st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
+    st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
 
 # Display the text area for the transcript
 new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", st.session_state.new_text, key='updated_transcript_text')
