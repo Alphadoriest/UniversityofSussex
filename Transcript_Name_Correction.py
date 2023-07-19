@@ -382,7 +382,9 @@ copy_button_html = f"""
     """
 components.v1.html(copy_button_html, height=30)
 
-reformatted_text, name_replacements, american_british_replacements = reformat_transcript(text, replaced_names)
+# Assuming `text` and `names_list` are already defined
+replaced_names, new_text, unmatched_names, american_british_replacements = replace_similar_names(text, names_list)
+reformatted_text, name_replacements, american_british_replacements = reformat_transcript(new_text, replaced_names)
 
 # Print or display the American to British replacements:
 print(american_british_replacements)
