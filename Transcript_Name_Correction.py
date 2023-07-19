@@ -378,13 +378,15 @@ for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, s
 # First check if the updated_transcript_text is in the session state
 if 'updated_transcript_text' not in st.session_state:
     st.session_state.updated_transcript_text = st.session_state.new_text
-new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", st.session_state.updated_transcript_text, key='updated_transcript_text')
 
-# Update session state with any changes made in the text area
-st.session_state.updated_transcript_text = new_text
+new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", 
+                        st.session_state.updated_transcript_text, 
+                        key='updated_transcript_text',
+                        on_change=update_transcript_text,
+                        args=(st.session_state,))
 
-# Button to copy the replaced text to the clipboard
-new_text_element_id = 'updated_transcript_text'
+def update_transcript_text(session_state):
+    session_state.updated_transcript_text = st.session_state.updated_transcript_text
 
 copy_button_html = f"""
     <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
