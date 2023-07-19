@@ -10,6 +10,16 @@ from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 from streamlit import components
 
+# Initialize session state variables
+if 'new_text' not in st.session_state:
+    st.session_state.new_text = ''
+
+if 'replaced_names' not in st.session_state:
+    st.session_state.replaced_names = []
+
+if 'unmatched_names' not in st.session_state:
+    st.session_state.unmatched_names = []
+
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
     middle_column_texts = []
@@ -145,6 +155,15 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
     else:
         return [], '', unmatched_names  # Return unmatched_names as well
 
+# Initialize unmatched_names if it doesn't exist in session state
+if 'unmatched_names' not in st.session_state:
+    st.session_state.unmatched_names = []
+
+# Store the updated session state variables
+st.session_state.new_text = new_text
+st.session_state.replaced_names = replaced_names
+st.session_state.unmatched_names = unmatched_names
+
 def decapitalize(text):
     roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
     words = text.split()
@@ -226,7 +245,7 @@ def find_best_match(transcript, preceding, succeeding):
     else:
         return None
         
-#Name Corrector UI
+# Name Corrector UI
 if 'new_text' not in st.session_state:
     st.session_state.new_text = ''
 
@@ -248,11 +267,11 @@ similarity_threshold = st.sidebar.slider(
 # Slider weights
 st.sidebar.header('Adjust Weights for Comparison Methods')
 st.sidebar.text('Set the relative weights of each method towards the name similarity matching - experimental.')
-sequence_weight = st.sidebar.slider ('SequenceMatcher Weight', 0.0, 1.0, 0.33, 0.01)
-fuzz_weight = st.sidebar.slider ('Fuzz Ratio Weight', 0.0, 1.0, 0.33, 0.01)
-metaphone_weight = st.sidebar.slider ('Double Metaphone Weight', 0.0, 1.0, 0.34, 0.01)
+sequence_weight = st.sidebar.slider('SequenceMatcher Weight', 0.0, 1.0, 0.33, 0.01)
+fuzz_weight = st.sidebar.slider('Fuzz Ratio Weight', 0.0, 1.0, 0.33, 0.01)
+metaphone_weight = st.sidebar.slider('Double Metaphone Weight', 0.0, 1.0, 0.34, 0.01)
 
-# Ensure the sum of weights equal to 1
+# Ensure the sum of weights equals 1
 if sequence_weight + fuzz_weight + metaphone_weight != 1.0:
     st.sidebar.error('Please adjust the weights so their sum equals to 1.0')
 
