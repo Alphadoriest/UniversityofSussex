@@ -387,8 +387,9 @@ copy_button_html = f"""
     """
 components.v1.html(copy_button_html, height=30)
 
-replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)
-new_text, replacements_made = reformat_transcript(text, replaced_names)
-print("List of replacements made in the transcript:")
-for american, british in replacements_made:
+replaced_names, new_text, unmatched_names, american_british_replacements = replace_similar_names(text, names_list)
+new_text, replacements_made = reformat_transcript(new_text, replaced_names)  # Use new_text here
+
+print("List of American to British replacements made in the transcript:")
+for american, british in american_british_replacements:  # Use american_british_replacements here
     print(f"'{american}' replaced with '{british}'")
