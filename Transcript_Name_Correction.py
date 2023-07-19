@@ -227,12 +227,6 @@ def find_best_match(transcript, preceding, succeeding):
         return None
         
 #Name Corrector UI
-if 'new_text' not in st.session_state:
-    st.session_state.new_text = ''
-
-if unmatched_name not in st.session_state:
-    st.session_state.unmatched_name = ''
-
 st.title('Graduation Transcription Workflow Web Tool')
 
 # Add a slider in the sidebar
@@ -389,3 +383,9 @@ copy_button_html = f"""
     </script>
     """
 components.v1.html(copy_button_html, height=30)
+
+if 'new_text' not in st.session_state:
+    st.session_state.new_text = ''
+
+if unmatched_name not in st.session_state:
+    st.session_state.unmatched_name = ''
