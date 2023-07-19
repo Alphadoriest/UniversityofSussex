@@ -227,7 +227,7 @@ def reformat_transcript(text, replaced_names):
 
         formatted_blocks.append('\n'.join(formatted_lines) + '\n')
 
-    return '\n'.join(formatted_blocks).strip(), replacements_made, american_british_replacements
+    return '\n'.join(formatted_blocks).strip(), reformatted_text, american_british_replacements
     
 #Name Corrector UI
 
