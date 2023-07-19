@@ -97,13 +97,13 @@ def replace_similar_names(text: str, names_list: List[str], similarity_threshold
     replaced_names = []
     unmatched_names = names_list[:]
 
-def replace_name(match, second_pass=False):
-    full_name = match.group(0)
+    def replace_name(match, second_pass=False):
+        full_name = match.group(0)
 
-    # Check if the name is already replaced
-    for original, replaced, second_pass in replaced_names:
-        if full_name == replaced:
-            return full_name
+        # Check if the name is already replaced
+        for original, replaced, _ in replaced_names:
+            if full_name == replaced:
+                return full_name
 
         max_similarity = 0
         most_similar_name = None
