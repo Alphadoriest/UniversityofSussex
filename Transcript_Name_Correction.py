@@ -219,8 +219,8 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
                 formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
                 formatted_lines.append(formatted_line)    
-      lines = text.split('\n')
-  
+      
+      lines = text.split('\n')        
       for line in lines:
     
         # Lowercase line to match dictionary
