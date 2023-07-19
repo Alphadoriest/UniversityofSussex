@@ -374,6 +374,9 @@ for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, s
     st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
 
 
+def update_transcript_text():
+    st.session_state.updated_transcript_text = st.text_input('updated_transcript_text')
+
 # Display the text area for the transcript
 # First check if the updated_transcript_text is in the session state
 if 'updated_transcript_text' not in st.session_state:
@@ -382,11 +385,7 @@ if 'updated_transcript_text' not in st.session_state:
 new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", 
                         st.session_state.updated_transcript_text, 
                         key='updated_transcript_text',
-                        on_change=update_transcript_text,
-                        args=(st.session_state,))
-
-def update_transcript_text(session_state):
-    session_state.updated_transcript_text = st.session_state.updated_transcript_text
+                        on_change=update_transcript_text)
 
 copy_button_html = f"""
     <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
