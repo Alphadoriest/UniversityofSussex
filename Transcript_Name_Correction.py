@@ -380,11 +380,11 @@ st.markdown(f'<style id="{style_id}">...</style>', unsafe_allow_html=True)
 
 # Function to update state
 def update_transcript_text():
-  st.session_state.updated_transcript_text = new_text 
+  st.session_state.new_text = new_text
 
 # Check for the right state key
-if 'updated_transcript_text' not in st.session_state:
-  st.session_state.updated_transcript_text = st.session_state.new_text 
+if "updated_transcript_text" not in st.session_state:
+   st.session_state.updated_transcript_text = st.session_state.new_text 
 
 # Remove height parameter  
 new_text = st_tweaker.text_input("Updated Transcript Text to Copy Into VTT/TXT File:",
