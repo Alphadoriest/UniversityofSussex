@@ -10,6 +10,12 @@ from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 from streamlit import components
 
+if 'new_text' not in st.session_state:
+    st.session_state.new_text = ''
+
+if unmatched_name not in st.session_state:
+    st.session_state.unmatched_name = ''
+
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
     middle_column_texts = []
@@ -383,9 +389,3 @@ copy_button_html = f"""
     </script>
     """
 components.v1.html(copy_button_html, height=30)
-
-if 'new_text' not in st.session_state:
-    st.session_state.new_text = ''
-
-if unmatched_name not in st.session_state:
-    st.session_state.unmatched_name = ''
