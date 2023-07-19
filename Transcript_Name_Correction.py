@@ -9,7 +9,6 @@ from typing import List, Tuple
 from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 from streamlit import components
-from Tweaker import st_tweaker
 
 american_to_british_dict = {
   'honored': 'honoured',
@@ -291,6 +290,8 @@ if names_list:  # Check if names_list is not empty
     names_list = [name.strip() for name in names_list]
     # Check if names_list contains meaningful entries
     if any(name for name in names_list):
+
+# Assuming format_names now returns a list of tuples like [(name, color), ...]
         formatted_names = format_names(names_list)
     
 # Convert the list of tuples to a single string with HTML tags 
@@ -316,9 +317,8 @@ text = st.text_area("Alternatively, Enter Text From a Transcript:", transcript_t
 if st.button("Press to Replace Names"):  
     if names_list and text:  # Check if both text boxes are populated
         replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
-        print(new_text)
         
-# Store the resultant text and replaced_names and unmatched_names in session state
+        # Store the resultant text and replaced_names and unmatched_names in session state
         st.session_state.new_text = new_text  
         st.session_state.replaced_names = replaced_names
         st.session_state.unmatched_names = unmatched_names
@@ -373,24 +373,15 @@ st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name 
 for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
     st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
 
-# Add CSS to set height 
-style_id = "my-style"
+# Display the text area for the transcript
+new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", st.session_state.new_text, key='updated_transcript_text')
 
-st.markdown(f'<style id="{style_id}">...</style>', unsafe_allow_html=True)
+# Update session state with any changes made in the text area
+st.session_state.new_text = new_text
 
-# Function to update state
-def update_transcript_text():
-  st.session_state.new_text = new_text
+# Button to copy the replaced text to the clipboard
+new_text_element_id = 'updated_transcript_text'
 
-# Check for the right state key
-if "updated_transcript_text" not in st.session_state:
-   st.session_state.updated_transcript_text = st.session_state.new_text 
-
-# Remove height parameter  
-new_text = st_tweaker.text_input("Updated Transcript Text to Copy Into VTT/TXT File:",
-    st.session_state.updated_transcript_text,
-    on_change=update_transcript_text)
-                               
 copy_button_html = f"""
     <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
 """
@@ -398,7 +389,7 @@ copy_button_html = f"""
 copy_script = f"""
     <script>
     function copyReplacedText() {{
-      let text = document.getElementById('updated_transcript_text').value;  // use the custom HTML id
+      let text = document.getElementById('{new_text_element_id}').value;
       navigator.clipboard.writeText(text);
     }}
     </script>
