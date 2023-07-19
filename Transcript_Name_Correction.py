@@ -10,12 +10,6 @@ from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 from streamlit import components
 
-if 'new_text' not in st.session_state:
-    st.session_state.new_text = ''
-
-if unmatched_name not in st.session_state:
-    st.session_state.unmatched_name = ''
-
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
     middle_column_texts = []
@@ -233,6 +227,12 @@ def find_best_match(transcript, preceding, succeeding):
         return None
         
 #Name Corrector UI
+if 'new_text' not in st.session_state:
+    st.session_state.new_text = ''
+
+if 'unmatched_name' not in st.session_state:
+    st.session_state.unmatched_name = ''
+
 st.title('Graduation Transcription Workflow Web Tool')
 
 # Add a slider in the sidebar
