@@ -440,4 +440,12 @@ copy_button_html = f"""
 
 copy_script = f"""
     <script>
-    function copy
+    function copyReplacedText() {{
+        var copyText = document.getElementById('{new_text_element_id}');
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        document.execCommand('copy');
+        alert('Replaced text copied to clipboard!');
+    }}
+    </script>
+"""
