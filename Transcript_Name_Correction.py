@@ -220,17 +220,17 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
                 formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
                 formatted_lines.append(formatted_line)    
       
-      lines = text.split('\n')        
-      for line in lines:
+        lines = text.split('\n')        
+        for line in lines:
     
-        # Lowercase line to match dictionary
-        line = line.lower() 
+          # Lowercase line to match dictionary
+          line = line.lower() 
         
-        for american, british in american_to_british_dict.items():
-          line = line.replace(american, british)
+            for american, british in american_to_british_dict.items():
+              line = line.replace(american, british)
     
-        formatted_line = re.sub(r'\[(.*?)\]', '[\\1]', line)        
-        formatted_lines.append(formatted_line)          
+            formatted_line = re.sub(r'\[(.*?)\]', '[\\1]', line)        
+            formatted_lines.append(formatted_line)          
             
         formatted_block = '\n'.join(formatted_lines)
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
