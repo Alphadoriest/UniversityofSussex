@@ -9,7 +9,6 @@ from typing import List, Tuple
 from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 from streamlit import components
-from tweaker import st_tweaker
 
 american_to_british_dict = {
   'honored': 'honoured',
