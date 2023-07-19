@@ -292,8 +292,6 @@ if st.button("Run"):  # Run button added
         # Escape newline characters and single quotes in new_text
         escaped_new_text = new_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
 
-        new_text = st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
-
         if 'new_text' not in st.session_state:
             st.session_state.new_text = ""
 
