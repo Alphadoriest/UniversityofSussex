@@ -364,4 +364,3 @@ copy_script = f"""
 """
 
 components.v1.html(copy_button_html + copy_script, height=30)
-components.v1.html(copy_button_html, height=30)
