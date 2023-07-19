@@ -292,17 +292,26 @@ if st.button("Run"):  # Run button added
         # Escape newline characters and single quotes in new_text
         escaped_new_text = new_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
 
+        new_text = st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
+
+        if 'new_text' not in st.session_state:
+            st.session_state.new_text = ""
+
+        new_text = st.text_area("Updated Transcript:", st.session_state.new_text, key='updated_transcript_text')
+
+        st.session_state.new_text = new_text
+
         # Button to copy the replaced text to the clipboard
         copy_button_html = f"""
-        <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
-        <script>
-        function copyReplacedText() {{
-            let text = '{escaped_new_text}';
-            navigator.clipboard.writeText(text);
-        }}
-        </script>
-        """
-        html(copy_button_html, height=30)
+            <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
+            <script>
+            function copyReplacedText() {{
+                let text = document.getElementById('updated_transcript_text').value;
+                navigator.clipboard.writeText(text);
+            }}
+            </script>
+            """
+        components.v1.html(copy_button_html, height=30)
 
         st.subheader("Names replaced:")
         for original, replaced in replaced_names:
