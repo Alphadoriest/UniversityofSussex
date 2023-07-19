@@ -283,7 +283,7 @@ text = st.text_area("Enter graduation transcript text:", transcript_text, key='t
 
 if st.button("Run"):  # Run button added
     if names_list and text:  # Check if both text boxes are populated
-        replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
+        replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, similarity_threshold)  # Unpack unmatched_names
 
         # If there are unmatched names, run replace_similar_names again with a lower threshold
         if unmatched_names:
