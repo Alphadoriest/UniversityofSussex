@@ -317,10 +317,10 @@ if st.button("Press to Replace Names"):
     if names_list and text:  # Check if both text boxes are populated
         replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
         
-        # Store the resultant text and replaced_names and unmatched_names in session state
-        st.session_state.new_text = new_text  
-        st.session_state.replaced_names = replaced_names
-        st.session_state.unmatched_names = unmatched_names
+# Store the resultant text and replaced_names and unmatched_names in session state
+   st.session_state.new_text = new_text  
+   st.session_state.replaced_names = replaced_names
+   st.session_state.unmatched_names = unmatched_names
 
 # Ensure new_text, replaced_names, and unmatched_names are in session state
 if 'new_text' not in st.session_state:
@@ -383,14 +383,15 @@ def update_transcript_text():
 
 # Check for the right state key
 if 'updated_transcript_text' not in st.session_state:
-  st.session_state.updated_transcript_text = st.session_state.new_text
+  st.session_state.updated_transcript_text = st.session_state.new_text 
 
 # Remove height parameter  
 new_text = st_tweaker.text_input("Updated Transcript Text to Copy Into VTT/TXT File:",
                                st.session_state.updated_transcript_text,
                                id='updated_transcript_text',
                                key='updated_transcript_text',
-                               on_change=update_transcript_text)
+                               on_change=update_transcript_text,
+                               value=st.session_state.updated_transcript_text)
 
 # Rest of code
 
