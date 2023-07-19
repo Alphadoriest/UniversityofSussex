@@ -206,6 +206,25 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
         formatted_blocks.append(formatted_block)
 
     return ''.join(formatted_blocks)
+
+def find_best_match(transcript, preceding, succeeding):
+    # Get the positions of preceding and succeeding names
+    preceding_position = transcript.find(preceding)
+    succeeding_position = transcript.find(succeeding)
+
+    if preceding_position != -1 and succeeding_position != -1:
+        # Extract the text between the two positions
+        between_text = transcript[preceding_position + len(preceding):succeeding_position]
+
+        # Split the text into words
+        words = between_text.split()
+
+        # Find the word with the maximum similarity to the unmatched name
+        best_match = max(words, key=lambda word: similarity(word, unmatched))
+
+        return best_match
+    else:
+        return None
         
 #Name Corrector UI
 
@@ -312,6 +331,13 @@ for original, replaced in st.session_state.replaced_names:
         st.markdown(f"**{original} -> {replaced}**")
     else:
         st.write(f"{original} -> {replaced}")
+
+for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
+    best_match = find_best_match(st.session_state.new_text, preceding, succeeding)
+    if best_match is not None:
+        st.write(f"Best match for {unmatched} is {best_match}")
+    else:
+        st.write(f"No match found for {unmatched}")
 
 st.subheader("Names not matched:")
 st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated transcript text box. The app will reset after each addition, but all progress is saved.")
