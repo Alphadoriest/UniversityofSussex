@@ -325,24 +325,26 @@ if st.button("Press to Replace Names"):
         succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
 
 # Display replaced and unmatched names from session state
-st.subheader("Names replaced:")
-for original, replaced in st.session_state.replaced_names:
-    original_words = original.split()
-    replaced_words = replaced.split()
+if 'replaced_names' in st.session_state and st.session_state.replaced_names:
+    st.subheader("Names replaced:")
+    for original, replaced in st.session_state.replaced_names:
+        original_words = original.split()
+        replaced_words = replaced.split()
 
-    # Check if the original and replaced names have a different number of words
-    if len(original_words) != len(replaced_words):
-        # If they do, make the text bold
-        st.markdown(f"**{original} -> {replaced}**")
-    else:
-        st.write(f"{original} -> {replaced}")
+        # Check if the original and replaced names have a different number of words
+        if len(original_words) != len(replaced_words):
+            # If they do, make the text bold
+            st.markdown(f"**{original} -> {replaced}**")
+        else:
+            st.write(f"{original} -> {replaced}")
 
-for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
-    best_match = find_best_match(st.session_state.new_text, preceding, succeeding)
-    if best_match is not None:
-        st.write(f"Best match for {unmatched} is {best_match}")
-    else:
-        st.write(f"No match found for {unmatched}")
+if 'unmatched_names' in st.session_state and st.session_state.unmatched_names:
+    for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
+        best_match = find_best_match(st.session_state.new_text, preceding, succeeding)
+        if best_match is not None:
+            st.write(f"Best match for {unmatched} is {best_match}")
+        else:
+            st.write(f"No match found for {unmatched}")
 
 st.subheader("Names not matched:")
 st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated transcript text box. The app will reset after each addition, but all progress is saved.")
