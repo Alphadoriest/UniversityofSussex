@@ -301,6 +301,10 @@ if uploaded_transcript_file is not None:
 # Use the transcript_text as the default value for the transcript text_area
 text = st.text_area("Alternatively, Enter Text From a Transcript:", transcript_text, key='transcript_text')
 
+# Initialize preceding_names and succeeding_names as empty lists
+preceding_names = []
+succeeding_names = []
+
 # Add a separate button for the name replacement process
 if st.button("Press to Replace Names"):  
     if names_list and text:  # Check if both text boxes are populated
@@ -311,13 +315,14 @@ if st.button("Press to Replace Names"):
         st.session_state.replaced_names = replaced_names
         st.session_state.unmatched_names = unmatched_names
 
-# Ensure new_text, replaced_names, and unmatched_names are in session state
-if 'new_text' not in st.session_state:
-    st.session_state.new_text = ""
-if 'replaced_names' not in st.session_state:
-    st.session_state.replaced_names = []
-if 'unmatched_names' not in st.session_state:
-    st.session_state.unmatched_names = []
+        # Get the indices of unmatched names in names_list
+        unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
+
+        # Get the names that precede the unmatched names
+        preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
+
+        # Get the names that succeed the unmatched names
+        succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
 
 # Display replaced and unmatched names from session state
 st.subheader("Names replaced:")
