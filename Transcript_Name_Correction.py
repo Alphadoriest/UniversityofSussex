@@ -164,7 +164,7 @@ def format_names(names_list):
         formatted_names.append(formatted_name)
     return formatted_names
 
-#Correct all names in graduation transcript (find and replace) functions
+#Correct all names in graduation subtitles (find and replace) functions
 
 def get_similar_names(text: str, name: str) -> List[str]:
     # Split the name into words
@@ -264,7 +264,7 @@ def decapitalize(text):
 
     return ' '.join(words)
 
-def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
+def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
 
     if text.startswith('WEBVTT'):
@@ -314,6 +314,37 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
         formatted_blocks.append(formatted_block)
 
     return ''.join(formatted_blocks)
+
+def reformat_transcript(text: str, filename: str):
+    # Remove timestamps, and empty lines
+    text = re.sub(r'\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d\n|\n$', '', text)
+    
+    # Remove all newline characters and extra whitespace
+    formatted_text = text.replace('\n', ' ')
+    formatted_text = re.sub(r'\s{2,}', ' ', formatted_text)
+    
+    # Remove bracketed captions
+    formatted_text = re.sub(r'\[.*?\]', '', formatted_text)
+
+    # Write to Word file
+    doc = Document()
+    
+    # Add initial text
+    p = doc.add_paragraph()
+    p.add_run('[‘Trumpet Fanfare’ music playing] (A procession of University senior academics and staff in ceremonial robes enter the auditorium, walk down the aisles betwixt the audience of seated graduands and guests, ascend the stage via staircases on the left and right respectively, and take their seats. At the end of the procession are two academics/staff with ceremonial torches who on stage bow to each other, the rows of academics/staff, and then place the torches on a small, raised table with a cloth at the very front of the stage.)').italic = True
+    doc.add_paragraph()  # Add paragraph break
+    
+    # Add the formatted transcript
+    doc.add_paragraph(formatted_text)
+    
+    # Add final text
+    p = doc.add_paragraph()
+    p.add_run('[Music playing] (Senior academics and staff on stage tip their hats as two academics/staff walk across the stage to pick up the ceremonial torches from the small, raised table. They bow to one another before bowing to the rest of the academics/staff. Both lead lines single file of all the professors in separate directions down the staircases on the left and right. The academics and staff walk down the aisles betwixt the audience of seated graduates and guests and exit at the back of the auditorium.)').italic = True
+
+    # Save the document
+    doc.save(filename)
+
+    return reformatted_transcript
         
 #Name Corrector UI
 
@@ -379,16 +410,16 @@ if names_list:  # Check if names_list is not empty
         components.v1.html(html_names, height=600)
         st.text("Visualise potential errors. Number of names <2 or >4 = bold and underlined.")
 
-st.header("Graduation Transcript Name Corrector")
-# Initialize transcript_text as an empty string
-transcript_text = ''
+st.header("Graduation Subtitles Name Corrector")
+# Initialize subtitles_text as an empty string
+subtitles_text = ''
 
-uploaded_transcript_file = st.file_uploader("Choose a VTT or TXT Transcript File ", type=["vtt", "txt"])
-if uploaded_transcript_file is not None:
-    transcript_text = uploaded_transcript_file.read().decode()
+uploaded_subtitles_file = st.file_uploader("Choose a VTT or TXT Subtitles File ", type=["vtt", "txt"])
+if uploaded_subtitles_file is not None:
+    subtitles_text = uploaded_subtitles_file.read().decode()
 
-# Use the transcript_text as the default value for the transcript text_area
-text = st.text_area("Alternatively, Enter Text From a Transcript:", transcript_text, key='transcript_text')
+# Use the subtitles_text as the default value for the subtitles text_area
+text = st.text_area("Alternatively, Enter Text From a Subtitles:", subtitles_text, key='subtitles_text')
 
 # Add a separate button for the name replacement process
 if st.button("Press to Replace Names"):  
@@ -422,7 +453,7 @@ for original, replaced in st.session_state.replaced_names:
         st.write(f"{original} -> {replaced}")
 
 st.subheader("Names not matched:")
-st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated transcript text box. The app will reset after each addition, but all progress is saved.")
+st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
 unmatched_names_str = ', '.join(st.session_state.unmatched_names)
 st.write(unmatched_names_str)
 
@@ -446,12 +477,12 @@ preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices
 # Get the names that succeed the unmatched names
 succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
 
-st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Transcript Box:")
+st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Subtitles Box:")
 for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
     st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
 
 # Get the text from the text area
-new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", st.session_state.get('new_text', ''), key='updated_transcript_text')
+new_text = st.text_area("Updated Subtitles Text to Copy Into VTT/TXT File:", st.session_state.get('new_text', ''), key='updated_subtitles_text')
 
 # Save changes button
 if st.button('Save Changes'):
@@ -459,3 +490,24 @@ if st.button('Save Changes'):
     st.session_state.new_text = new_text
 
 st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")
+
+st.header("Reformat Your VTT Into a Word Transcript")
+
+# Initialize transcript_text as an empty string
+transcript_text = ''
+
+uploaded_transcript_file = st.file_uploader("Choose a Transcript VTT or TXT File ", type=["vtt", "txt"])
+if uploaded_transcript_file is not None:
+    transcript_text = uploaded_transcript_file.read().decode()
+
+# Use the transcript_text as the default value for the transcript text_area
+transcript_text = st.text_area("Alternatively, Enter VTT/TXT Text:", transcript_text, key='transcript_text')
+
+# Reformat the transcript when a button is pressed
+if st.button("Reformat VTT/TXT Into Transcript"):
+    if transcript_text:  # Check if transcript_text is not empty
+        reformatted_transcript = reformat_transcript(transcript_text)
+        transcript_text = reformatted_transcript  # Overwrite transcript_text with the reformatted transcript
+
+    # Display the reformatted transcript
+    st.text_area("Reformatted Transcript:", transcript_text, key='reformatted_transcript')
