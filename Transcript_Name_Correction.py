@@ -9,7 +9,6 @@ from typing import List, Tuple
 from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 from streamlit import components
-from Tweaker import st_tweaker
 
 american_to_british_dict = {
   'honored': 'honoured',
@@ -367,38 +366,19 @@ unmatched_indices = [names_list.index(name) for name in st.session_state.unmatch
 # Get the names that precede the unmatched names
 preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
 
+# Get the names that succeed the unmatched names
+succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
+
+st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Transcript Box:")
+for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
+    st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
+
 # Get the text from the text area
-new_text = st_tweaker.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", st.session_state.get('new_text', ''), key='updated_transcript_text', id='updated_text')
+new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", st.session_state.get('new_text', ''), key='updated_transcript_text')
 
 # Save changes button
 if st.button('Save Changes'):
     # Update session state with any changes made in the text area
     st.session_state.new_text = new_text
 
-# Add a button that copies the text to the clipboard
-st_tweaker.button('Copy to clipboard', id="copy-button", css="""
-    #copy-button button {
-        position: relative;
-    }
-    #copy-button button:after {
-        content: "Copied!";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        padding: 0.5em;
-        background: white;
-        border: 1px solid #ccc;
-        border-radius: 0.5em;
-        opacity: 0;
-        transition: opacity 0.3s ease-in-out;
-    }
-    #copy-button button:active:after {
-        opacity: 1;
-    }
-""", js="""
-    document.getElementById('copy-button').addEventListener('click', function() {
-        let text = document.getElementById('updated_text').value;
-        navigator.clipboard.writeText(text);
-    });
-""")
+st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")
