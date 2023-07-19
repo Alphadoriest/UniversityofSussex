@@ -227,6 +227,11 @@ def find_best_match(transcript, preceding, succeeding):
         return None
         
 #Name Corrector UI
+if 'new_text' not in st.session_state:
+    st.session_state.new_text = ''
+
+if unmatched_name not in st.session_state:
+    st.session_state.unmatched_name = ''
 
 st.title('Graduation Transcription Workflow Web Tool')
 
@@ -329,7 +334,6 @@ if 'replaced_names' in st.session_state and st.session_state.replaced_names:
         else:
             st.write(f"{original} -> {replaced}")
 
-if 'unmatched_names' in st.session_state:
     for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
         best_match = find_best_match(st.session_state.new_text, preceding, succeeding)
         if best_match is not None:
@@ -339,12 +343,11 @@ if 'unmatched_names' in st.session_state:
 
 st.subheader("Names not matched:")
 st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated transcript text box. The app will reset after each addition, but all progress is saved.")
-if 'unmatched_names' in st.session_state:
+
     unmatched_names_str = ', '.join(st.session_state.unmatched_names)
     st.write(unmatched_names_str)
 
 # Button to copy unmatched names to clipboard
-if 'unmatched_names' in st.session_state:
     unmatched_names_str = ', '.join(st.session_state.unmatched_names)
     copy_unmatched_names_button_html = f"""
         <button onclick="copyUnmatchedNames()">Copy unmatched names to clipboard</button>
@@ -357,16 +360,14 @@ if 'unmatched_names' in st.session_state:
     components.v1.html(copy_unmatched_names_button_html, height=30)
 
 # Get the indices of unmatched names in names_list
-if 'unmatched_names' in st.session_state:
+
     unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
 
 # Get the names that precede the unmatched names
 # Get the names that succeed the unmatched names
-if 'unmatched_names' in st.session_state:
     preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
     succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
 
-if 'unmatched_names' in st.session_state:
         st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Transcript Box:")
         for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
             st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
