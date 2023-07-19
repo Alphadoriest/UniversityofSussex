@@ -334,9 +334,12 @@ unmatched_indices = [names_list.index(name) for name in st.session_state.unmatch
 # Get the names that precede the unmatched names
 preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
 
-st.subheader("Preceding Names for Easy Look Up of Unmatched Name for Addition to Updated Transcript Box:")
-preceding_names_str = ', '.join(name if name is not None else 'N/A' for name in preceding_names)
-st.write(preceding_names_str)
+# Get the names that succeed the unmatched names
+succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
+
+st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Transcript Box:")
+for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
+    st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
 
 # Display the text area for the transcript
 new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", st.session_state.new_text, key='updated_transcript_text')
