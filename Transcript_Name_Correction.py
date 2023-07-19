@@ -374,10 +374,11 @@ for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, s
     st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
 
 # Display the text area for the transcript
-new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", st.session_state.new_text, key='updated_transcript_text')
+new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", st.session_state.get('new_text', ''), key='updated_transcript_text')
 
-# Update session state with any changes made in the text area
-st.session_state.new_text = new_text
+if st.button('Save Changes'):
+    # Update session state with any changes made in the text area
+    st.session_state.new_text = new_text
 
 # Button to copy the replaced text to the clipboard
 new_text_element_id = 'updated_transcript_text'
