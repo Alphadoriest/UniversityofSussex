@@ -318,9 +318,9 @@ if st.button("Press to Replace Names"):
         replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
         
 # Store the resultant text and replaced_names and unmatched_names in session state
-     st.session_state.new_text = new_text  
-     st.session_state.replaced_names = replaced_names
-     st.session_state.unmatched_names = unmatched_names
+       st.session_state.new_text = new_text  
+       st.session_state.replaced_names = replaced_names
+       st.session_state.unmatched_names = unmatched_names
 
 # Ensure new_text, replaced_names, and unmatched_names are in session state
 if 'new_text' not in st.session_state:
