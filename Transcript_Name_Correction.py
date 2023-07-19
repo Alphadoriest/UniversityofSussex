@@ -387,14 +387,9 @@ if 'updated_transcript_text' not in st.session_state:
 
 # Remove height parameter  
 new_text = st_tweaker.text_input("Updated Transcript Text to Copy Into VTT/TXT File:",
-                               st.session_state.updated_transcript_text,
-                               id='updated_transcript_text',
-                               key='updated_transcript_text',
-                               on_change=update_transcript_text,
-                               value=st.session_state.updated_transcript_text)
-
-# Rest of code
-
+    st.session_state.updated_transcript_text,
+    on_change=update_transcript_text)
+                               
 copy_button_html = f"""
     <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
 """
