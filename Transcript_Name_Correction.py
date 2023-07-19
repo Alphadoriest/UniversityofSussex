@@ -9,13 +9,11 @@ from typing import List, Tuple
 from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 from streamlit import components
-from streamlit.hashing import _CodeHasher
 from collections.abc import MutableMapping
 
 # Define SessionState class to store values persistently
 class SessionState(MutableMapping):
     def __init__(self, **kwargs):
-        self.hasher = _CodeHasher()
         self.data = {}
         self.update(kwargs)
     
