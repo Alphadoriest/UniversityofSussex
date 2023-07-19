@@ -151,12 +151,12 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
 
     def replace_name(match):
         full_name = match.group(0)
-    
+
         # Check if the name is already replaced
         for original, replaced in replaced_names:
             if full_name == replaced:
                 return full_name
-    
+
         max_similarity = 0
         most_similar_name = None
         for name in names_list:
@@ -164,7 +164,7 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
             if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(name.split())):
                 max_similarity = sim
                 most_similar_name = name
-    
+
         if max_similarity >= similarity_threshold:
             replaced_names.append((full_name, most_similar_name))
             # Remove the name from unmatched_names if it was matched
@@ -191,8 +191,12 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
     new_text = '\n'.join(processed_lines)
 
     if replaced_names:
+        # Set the value of new_text to the updated transcript
+        new_text = reformat_transcript(new_text, replaced_names)
+
         # Remove leading whitespaces from all lines as a final step
         new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
+
         return replaced_names, new_text, unmatched_names  # Return unmatched_names as well
     else:
         return [], '', unmatched_names  # Return unmatched_names as well
@@ -424,7 +428,10 @@ for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, s
     st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
 
 # Display the text area for the transcript
-new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", session_state.new_text, key='updated_transcript_text')
+new_text = st.text_input("Updated Transcript Text to Copy Into VTT/TXT File:", session_state.new_text, key='updated_transcript_text')
+
+# Update session state with any changes made in the text input
+session_state.new_text = new_text
 
 # Update session state with any changes made in the text area
 session_state.new_text = new_text
