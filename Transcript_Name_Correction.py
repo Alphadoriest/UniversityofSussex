@@ -11,12 +11,22 @@ from metaphone import doublemetaphone
 from streamlit import components
 
 american_to_british_dict = {
-  'elevator': 'lift',
-  'truck': 'lorry',
-  'cookie': 'biscuit',
-  'soccer': 'football',
-  # Add more mappings
+  'honored': 'honoured',
+  'honor': 'honour',
+  'realizing': 'realising',
+  'realize': 'realise',
+  'color': 'colour',
+  'colored': 'coloured',
+  'recognize': 'recognise',
+  'recognized': 'recognised',
+  'humor': 'humour',
+  'humored': 'humoured',
+  'organize': 'organise',
+  'organized': 'organised',
 }
+
+# Convert dictionary keys/values to lowercase 
+american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
 
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
@@ -206,14 +216,20 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
                 formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
-                
-                
-            for american, british in american_to_british_dict.items():
-                line = line.replace(american, british)
-                
-            formatted_line = re.sub(r'\[(.*?)\]', '[\\1]', line) # Format [] brackets
-            formatted_lines.append(formatted_line)    
-      
+                formatted_lines.append(formatted_line)    
+      lines = text.split('\n')
+  
+      for line in lines:
+    
+        # Lowercase line to match dictionary
+        line = line.lower() 
+        
+        for american, british in american_to_british_dict.items():
+          line = line.replace(american, british)
+    
+        formatted_line = re.sub(r'\[(.*?)\]', '[\\1]', line)        
+        formatted_lines.append(formatted_line)          
+            
         formatted_block = '\n'.join(formatted_lines)
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
         formatted_blocks.append(formatted_block)
