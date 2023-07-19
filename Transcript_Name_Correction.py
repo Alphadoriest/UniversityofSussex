@@ -316,6 +316,7 @@ text = st.text_area("Alternatively, Enter Text From a Transcript:", transcript_t
 if st.button("Press to Replace Names"):  
     if names_list and text:  # Check if both text boxes are populated
         replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
+        print(new_text)
         
 # Store the resultant text and replaced_names and unmatched_names in session state
         st.session_state.new_text = new_text  
