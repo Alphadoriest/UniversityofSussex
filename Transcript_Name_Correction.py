@@ -292,13 +292,6 @@ if st.button("Run"):  # Run button added
         # Escape newline characters and single quotes in new_text
         escaped_new_text = new_text.replace('\n', '\\n').replace('\r', '\\r').replace("'", "\\'")
 
-        if 'new_text' not in st.session_state:
-            st.session_state.new_text = ""
-
-        new_text = st.text_area("Updated Transcript:", st.session_state.new_text, key='updated_transcript_text')
-
-        st.session_state.new_text = new_text
-
         # Button to copy the replaced text to the clipboard
         copy_button_html = f"""
             <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
@@ -327,4 +320,9 @@ if st.button("Run"):  # Run button added
         for name in unmatched_names:
             st.write(name)
 
-        st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
+         if 'new_text' not in st.session_state:
+            st.session_state.new_text = ""
+
+        new_text = st.text_area("Updated Transcript:", st.session_state.new_text, key='updated_transcript_text')
+
+        st.session_state.new_text = new_text
