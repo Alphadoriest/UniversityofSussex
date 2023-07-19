@@ -352,15 +352,17 @@ unmatched_names_str = ', '.join(st.session_state.unmatched_names)
 st.write(unmatched_names_str)
 
 # Button to copy unmatched names to clipboard
-copy_unmatched_names_button_html = f"""
-    <button onclick="copyUnmatchedNames()">Copy unmatched names to clipboard</button>
-    <script>
-    function copyUnmatchedNames() {{
-        navigator.clipboard.writeText("{unmatched_names_str}");
-    }}
-    </script>
-    """
-components.v1.html(copy_unmatched_names_button_html, height=30)
+if 'unmatched_names' in st.session_state and st.session_state.unmatched_names:
+    unmatched_names_str = ', '.join(st.session_state.unmatched_names)
+    copy_unmatched_names_button_html = f"""
+        <button onclick="copyUnmatchedNames()">Copy unmatched names to clipboard</button>
+        <script>
+        function copyUnmatchedNames() {{
+            navigator.clipboard.writeText("{unmatched_names_str}");
+        }}
+        </script>
+        """
+    components.v1.html(copy_unmatched_names_button_html, height=30)
 
 # Get the indices of unmatched names in names_list
 unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
