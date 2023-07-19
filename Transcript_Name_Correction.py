@@ -10,16 +10,6 @@ from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 from streamlit import components
 
-# Initialize session state variables
-if 'new_text' not in st.session_state:
-    st.session_state.new_text = ''
-
-if 'replaced_names' not in st.session_state:
-    st.session_state.replaced_names = []
-
-if 'unmatched_names' not in st.session_state:
-    st.session_state.unmatched_names = []
-
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
     middle_column_texts = []
@@ -155,15 +145,6 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
     else:
         return [], '', unmatched_names  # Return unmatched_names as well
 
-# Initialize unmatched_names if it doesn't exist in session state
-if 'unmatched_names' not in st.session_state:
-    st.session_state.unmatched_names = []
-
-# Store the updated session state variables
-st.session_state.new_text = new_text
-st.session_state.replaced_names = replaced_names
-st.session_state.unmatched_names = unmatched_names
-
 def decapitalize(text):
     roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
     words = text.split()
@@ -245,12 +226,7 @@ def find_best_match(transcript, preceding, succeeding):
     else:
         return None
         
-# Name Corrector UI
-if 'new_text' not in st.session_state:
-    st.session_state.new_text = ''
-
-if 'unmatched_name' not in st.session_state:
-    st.session_state.unmatched_name = ''
+#Name Corrector UI
 
 st.title('Graduation Transcription Workflow Web Tool')
 
@@ -267,11 +243,11 @@ similarity_threshold = st.sidebar.slider(
 # Slider weights
 st.sidebar.header('Adjust Weights for Comparison Methods')
 st.sidebar.text('Set the relative weights of each method towards the name similarity matching - experimental.')
-sequence_weight = st.sidebar.slider('SequenceMatcher Weight', 0.0, 1.0, 0.33, 0.01)
-fuzz_weight = st.sidebar.slider('Fuzz Ratio Weight', 0.0, 1.0, 0.33, 0.01)
-metaphone_weight = st.sidebar.slider('Double Metaphone Weight', 0.0, 1.0, 0.34, 0.01)
+sequence_weight = st.sidebar.slider ('SequenceMatcher Weight', 0.0, 1.0, 0.33, 0.01)
+fuzz_weight = st.sidebar.slider ('Fuzz Ratio Weight', 0.0, 1.0, 0.33, 0.01)
+metaphone_weight = st.sidebar.slider ('Double Metaphone Weight', 0.0, 1.0, 0.34, 0.01)
 
-# Ensure the sum of weights equals 1
+# Ensure the sum of weights equal to 1
 if sequence_weight + fuzz_weight + metaphone_weight != 1.0:
     st.sidebar.error('Please adjust the weights so their sum equals to 1.0')
 
@@ -339,35 +315,41 @@ if st.button("Press to Replace Names"):
         st.session_state.replaced_names = replaced_names
         st.session_state.unmatched_names = unmatched_names
 
+        # Get the indices of unmatched names in names_list
+        unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
+
+        # Get the names that precede the unmatched names
+        preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
+
+        # Get the names that succeed the unmatched names
+        succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
+
 # Display replaced and unmatched names from session state
-if 'replaced_names' in st.session_state and st.session_state.replaced_names:
-    st.subheader("Names replaced:")
-    for original, replaced in st.session_state.replaced_names:
-        original_words = original.split()
-        replaced_words = replaced.split()
+st.subheader("Names replaced:")
+for original, replaced in st.session_state.replaced_names:
+    original_words = original.split()
+    replaced_words = replaced.split()
 
-        # Check if the original and replaced names have a different number of words
-        if len(original_words) != len(replaced_words):
-            # If they do, make the text bold
-            st.markdown(f"**{original} -> {replaced}**")
-        else:
-            st.write(f"{original} -> {replaced}")
+    # Check if the original and replaced names have a different number of words
+    if len(original_words) != len(replaced_words):
+        # If they do, make the text bold
+        st.markdown(f"**{original} -> {replaced}**")
+    else:
+        st.write(f"{original} -> {replaced}")
 
-    for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
-        best_match = find_best_match(st.session_state.new_text, preceding, succeeding)
-        if best_match is not None:
-            st.write(f"Best match for {unmatched} is {best_match}")
-        else:
-            st.write(f"No match found for {unmatched}")
+for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
+    best_match = find_best_match(st.session_state.new_text, preceding, succeeding)
+    if best_match is not None:
+        st.write(f"Best match for {unmatched} is {best_match}")
+    else:
+        st.write(f"No match found for {unmatched}")
 
 st.subheader("Names not matched:")
 st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated transcript text box. The app will reset after each addition, but all progress is saved.")
-
 unmatched_names_str = ', '.join(st.session_state.unmatched_names)
 st.write(unmatched_names_str)
 
 # Button to copy unmatched names to clipboard
-unmatched_names_str = ', '.join(st.session_state.unmatched_names)
 copy_unmatched_names_button_html = f"""
     <button onclick="copyUnmatchedNames()">Copy unmatched names to clipboard</button>
     <script>
@@ -375,16 +357,16 @@ copy_unmatched_names_button_html = f"""
         navigator.clipboard.writeText("{unmatched_names_str}");
     }}
     </script>
-        """
+    """
 components.v1.html(copy_unmatched_names_button_html, height=30)
 
 # Get the indices of unmatched names in names_list
-
 unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
 
 # Get the names that precede the unmatched names
-# Get the names that succeed the unmatched names
 preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
+
+# Get the names that succeed the unmatched names
 succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
 
 st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Transcript Box:")
