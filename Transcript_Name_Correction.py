@@ -106,6 +106,9 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
 
+    # Add this line to convert American English to British English and record the replacements
+    text, american_british_replacements = american_to_british(text)
+
     def replace_name(match):
         full_name = match.group(0)
     
@@ -150,9 +153,9 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
     if replaced_names:
         # Remove leading whitespaces from all lines as a final step
         new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
-        return replaced_names, new_text, unmatched_names  # Return unmatched_names as well
+        return replaced_names, new_text, unmatched_names, american_british_replacements  # Return unmatched_names and american_british_replacements as well
     else:
-        return [], '', unmatched_names  # Return unmatched_names as well
+        return [], '', unmatched_names, american_british_replacements  # Return unmatched_names and american_british_replacements as well
 
 def decapitalize(text):
     roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
