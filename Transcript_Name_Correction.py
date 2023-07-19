@@ -373,11 +373,15 @@ st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name 
 for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
     st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
 
+
 # Display the text area for the transcript
-new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", st.session_state.new_text, key='updated_transcript_text')
+# First check if the updated_transcript_text is in the session state
+if 'updated_transcript_text' not in st.session_state:
+    st.session_state.updated_transcript_text = st.session_state.new_text
+new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", st.session_state.updated_transcript_text, key='updated_transcript_text')
 
 # Update session state with any changes made in the text area
-st.session_state.new_text = new_text
+st.session_state.updated_transcript_text = new_text
 
 # Button to copy the replaced text to the clipboard
 new_text_element_id = 'updated_transcript_text'
