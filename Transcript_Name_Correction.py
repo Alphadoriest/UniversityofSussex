@@ -102,7 +102,7 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str]], str]:
+def replace_similar_names(text, names_list):
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
 
@@ -155,7 +155,7 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
         new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
         return replaced_names, new_text, unmatched_names, american_british_replacements  # Return unmatched_names and american_british_replacements as well
     else:
-        return [], '', unmatched_names, american_british_replacements  # Return unmatched_names and american_british_replacements as well
+        return replaced_names, new_text
 
 def decapitalize(text):
     roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
@@ -184,7 +184,7 @@ def american_to_british(text: str) -> Tuple[str, List[Tuple[str, str]]]:
             replacements_made.append((american, british))
     return text, replacements_made
 
-def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> Tuple[str, List[Tuple[str, str]], List[Tuple[str, str]]]:
+def reformat_transcript(text, replaced_names):
     replacements_made = []
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
     american_british_replacements = []  # List to store American to British replacements.
@@ -220,7 +220,7 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> Tup
                 formatted_line = re.sub(r'\((applause)\)', '[Applause]', formatted_line, flags=re.IGNORECASE)
                 
                 # Apply American to British replacements here
-                formatted_line, local_replacements = american_to_british(formatted_line)
+                formatted_line, local_replacements = american_to_british(formatted_line) 
                 american_british_replacements.extend(local_replacements)
 
             formatted_lines.append(formatted_line.strip())
@@ -382,9 +382,10 @@ copy_button_html = f"""
     """
 components.v1.html(copy_button_html, height=30)
 
-# Assuming `text` and `names_list` are already defined
-replaced_names, new_text, unmatched_names, american_british_replacements = replace_similar_names(text, names_list)
-reformatted_text, name_replacements, american_british_replacements = reformat_transcript(new_text, replaced_names)
+replaced_names, new_text = replace_similar_names(text, names_list)
 
-# Print or display the American to British replacements:
-print(american_british_replacements)
+reformatted_text, american_british_replacements = reformat_transcript(text, replaced_names)
+
+st.subheader("American to British Conversions:")
+for original, replacement in american_british_replacements:
+  st.write(f"{original} -> {replacement}")
