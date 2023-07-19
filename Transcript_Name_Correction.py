@@ -317,7 +317,7 @@ if st.button("Press to Replace Names"):
 
         # Get the indices of unmatched names in names_list
         if 'unmatched_names' in st.session_state:
-        unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
+            unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
 
         # Get the names that precede the unmatched names
         preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
