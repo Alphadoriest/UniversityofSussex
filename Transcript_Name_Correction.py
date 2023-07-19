@@ -172,11 +172,14 @@ def decapitalize(text):
 
     return ' '.join(words)
 
-def american_to_british(text: str) -> str:
+def american_to_british(text: str) -> Tuple[str, List[Tuple[str, str]]]:
+    replacements_made = []
     # Replace each American English word with its British English counterpart
     for american, british in american_british_dict.items():
-        text = re.sub(fr'\b{american}\b', british, text, flags=re.IGNORECASE)
-    return text
+        if re.search(fr'\b{american}\b', text, flags=re.IGNORECASE):
+            text = re.sub(fr'\b{american}\b', british, text, flags=re.IGNORECASE)
+            replacements_made.append((american, british))
+    return text, replacements_made
 
 def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
@@ -216,7 +219,8 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
                 formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
                 
                 # Add this line to convert American English to British English
-                formatted_line = american_to_british(formatted_line)
+                formatted_line, replacements = american_to_british(formatted_line)
+                replacements_made.extend(replacements)
                 
                 formatted_lines.append(formatted_line)
 
@@ -378,3 +382,7 @@ copy_button_html = f"""
     </script>
     """
 components.v1.html(copy_button_html, height=30)
+
+print("List of replacements made in the transcript:")
+for american, british in replacements_made:
+    print(f"'{american}' replaced with '{british}'")
