@@ -93,11 +93,11 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text: str, names_list: List[str], similarity_threshold: float) -> Tuple[List[Tuple[str, str]], str, List[str]]:
+def replace_similar_names(text: str, names_list: List[str], similarity_threshold: float, second_pass=False) -> Tuple[List[Tuple[str, str]], str, List[str]]:
     replaced_names = []
     unmatched_names = names_list[:]
-
-    def replace_name(match, second_pass=False):
+    
+    def replace_name(match):
         full_name = match.group(0)
 
         # Check if the name is already replaced
@@ -133,10 +133,12 @@ def replace_similar_names(text: str, names_list: List[str], similarity_threshold
             processed_lines.append(line)
             continue
 
-        line = re.sub(pattern, lambda match: replace_name(match, second_pass=False), line)
+        line = re.sub(pattern, lambda match: replace_name(match), line)
         processed_lines.append(line)
 
-    new_text = '\n'.join(processed_lines)
+        new_text = '\n'.join(processed_lines)
+
+    return replaced_names, new_text, unmatched_names
 
     # Ensure that all code paths return three values
     if replaced_names:
@@ -287,13 +289,13 @@ if st.button("Run"):  # Run button added
 
         # If there are unmatched names, run replace_similar_names again with a lower threshold
         if unmatched_names:
-            st.subheader("Trying second pass with lower threshold...")
-            current_similarity_threshold = similarity_threshold
-            lower_similarity_threshold = (current_similarity_threshold - 0.1)
-            replaced_names_second_pass, new_text, unmatched_names = replace_similar_names(new_text, unmatched_names, lower_similarity_threshold, replace_name=lambda match: replace_name(match, second_pass=True))
-
-            # Merge the lists of replaced names from the first and second passes
-            replaced_names += replaced_names_second_pass
+        st.subheader("Trying second pass with lower threshold...")
+        current_similarity_threshold = similarity_threshold
+        lower_similarity_threshold = (current_similarity_threshold - 0.1)
+        replaced_names_second_pass, new_text, unmatched_names = replace_similar_names(new_text, unmatched_names, lower_similarity_threshold, second_pass=True)
+    
+        # Merge the lists of replaced names from the first and second passes
+        replaced_names += replaced_names_second_pass
 
     if replaced_names and new_text:  # Check if replaced_names and new_text exist
         # Reformat the new_text
