@@ -182,6 +182,9 @@ def american_to_british(text: str) -> Tuple[str, List[Tuple[str, str]]]:
     return text, replacements_made
 
 def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
+replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)
+new_text, replacements_made = reformat_transcript(text, replaced_names)    
+    
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
 
     if text.startswith('WEBVTT'):
