@@ -9,23 +9,59 @@ from typing import List, Tuple
 from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 from streamlit import components
+from streamlit.hashing import _CodeHasher
+from collections.abc import MutableMapping
+
+# Define SessionState class to store values persistently
+class SessionState(MutableMapping):
+    def __init__(self, **kwargs):
+        self.hasher = _CodeHasher()
+        self.data = {}
+        self.update(kwargs)
+    
+    def __getitem__(self, key):
+        return self.data[key]
+    
+    def __setitem__(self, key, value):
+        self.data[key] = value
+    
+    def __delitem__(self, key):
+        del self.data[key]
+    
+    def __iter__(self):
+        return iter(self.data)
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __repr__(self):
+        return self.data.__repr__()
+    
+    def __getstate__(self):
+        return self.data
+    
+    def __setstate__(self, state):
+        self.data = state
+
+# Create or get the existing SessionState object
+session_state = SessionState()
 
 american_to_british_dict = {
-  'honored': 'honoured',
-  'honor': 'honour',
-  'realizing': 'realising',
-  'realize': 'realise',
-  'color': 'colour',
-  'colored': 'coloured',
-  'recognize': 'recognise',
-  'recognized': 'recognised',
-  'humor': 'humour',
-  'humored': 'humoured',
-  'organize': 'organise',
-  'organized': 'organised',
+    'honored': 'honoured',
+    'honor': 'honour',
+    'realizing': 'realising',
+    'realize': 'realise',
+    'color': 'colour',
+    'colored': 'coloured',
+    'recognize': 'recognise',
+    'recognized': 'recognised',
+    'humor': 'humour',
+    'humored': 'humoured',
+    'organize': 'organise',
+    'organized': 'organised',
 }
 
-# Convert dictionary keys/values to lowercase 
+# Convert dictionary keys/values to lowercase
 american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
 
 # Name Extractor for graduation ceremony in-person lists functions
@@ -81,7 +117,7 @@ def format_names(names_list):
         formatted_names.append(formatted_name)
     return formatted_names
 
-#Correct all names in graduation transcript (find and replace) functions
+# Correct all names in graduation transcript (find and replace) functions
 
 def get_similar_names(text: str, name: str) -> List[str]:
     # Split the name into words
@@ -237,6 +273,18 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
         formatted_blocks.append(formatted_block)
 
     return ''.join(formatted_blocks)
+
+# Initialize session state variables
+if 'names_list' not in session_state:
+    session_state.names_list = []
+if 'transcript_text' not in session_state:
+    session_state.transcript_text = ''
+if 'new_text' not in session_state:
+    session_state.new_text = ''
+if 'replaced_names' not in session_state:
+    session_state.replaced_names = []
+if 'unmatched_names' not in session_state:
+    session_state.unmatched_names = []
         
 #Name Corrector UI
 
@@ -313,15 +361,19 @@ if uploaded_transcript_file is not None:
 # Use the transcript_text as the default value for the transcript text_area
 text = st.text_area("Alternatively, Enter Text From a Transcript:", transcript_text, key='transcript_text')
 
+# Update session state with the names_list and transcript_text
+session_state.names_list = names_list
+session_state.transcript_text = text
+
 # Add a separate button for the name replacement process
 if st.button("Press to Replace Names"):  
-    if names_list and text:  # Check if both text boxes are populated
-        replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
+    if session_state.names_list and session_state.transcript_text:  # Check if both text boxes are populated
+        replaced_names, new_text, unmatched_names = replace_similar_names(session_state.transcript_text, session_state.names_list)  # Unpack unmatched_names
         
-        # Store the resultant text and replaced_names and unmatched_names in session state
-        st.session_state.new_text = new_text  
-        st.session_state.replaced_names = replaced_names
-        st.session_state.unmatched_names = unmatched_names
+        # Update session state with new values
+        session_state.replaced_names = replaced_names
+        session_state.new_text = new_text
+        session_state.unmatched_names = unmatched_names
 
 # Ensure new_text, replaced_names, and unmatched_names are in session state
 if 'new_text' not in st.session_state:
@@ -333,11 +385,11 @@ if 'unmatched_names' not in st.session_state:
 
 # Display replaced and unmatched names from session state
 st.subheader("Names replaced:")
-for original, replaced in st.session_state.replaced_names:
+for original, replaced in session_state.replaced_names:
     original_words = original.split()
     replaced_words = replaced.split()
 
-    # Check if the original and replaced names have a different number of words
+   # Check if the original and replaced names have a different number of words
     if len(original_words) != len(replaced_words):
         # If they do, make the text bold
         st.markdown(f"**{original} -> {replaced}**")
@@ -346,7 +398,7 @@ for original, replaced in st.session_state.replaced_names:
 
 st.subheader("Names not matched:")
 st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated transcript text box. The app will reset after each addition, but all progress is saved.")
-unmatched_names_str = ', '.join(st.session_state.unmatched_names)
+unmatched_names_str = ', '.join(session_state.unmatched_names)
 st.write(unmatched_names_str)
 
 # Button to copy unmatched names to clipboard
@@ -361,23 +413,23 @@ copy_unmatched_names_button_html = f"""
 components.v1.html(copy_unmatched_names_button_html, height=30)
 
 # Get the indices of unmatched names in names_list
-unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
+unmatched_indices = [session_state.names_list.index(name) for name in session_state.unmatched_names if name in session_state.names_list]
 
 # Get the names that precede the unmatched names
-preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
+preceding_names = [session_state.names_list[i-1] if i > 0 else None for i in unmatched_indices]
 
 # Get the names that succeed the unmatched names
-succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
+succeeding_names = [session_state.names_list[i+1] if i < len(session_state.names_list) - 1 else None for i in unmatched_indices]
 
 st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Transcript Box:")
-for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
+for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, session_state.unmatched_names):
     st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
 
 # Display the text area for the transcript
-new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", st.session_state.new_text, key='updated_transcript_text')
+new_text = st.text_area("Updated Transcript Text to Copy Into VTT/TXT File:", session_state.new_text, key='updated_transcript_text')
 
 # Update session state with any changes made in the text area
-st.session_state.new_text = new_text
+session_state.new_text = new_text
 
 # Button to copy the replaced text to the clipboard
 new_text_element_id = 'updated_transcript_text'
@@ -388,11 +440,4 @@ copy_button_html = f"""
 
 copy_script = f"""
     <script>
-    function copyReplacedText() {{
-      let text = document.getElementById('{new_text_element_id}').value;
-      navigator.clipboard.writeText(text);
-    }}
-    </script>
-"""
-
-components.v1.html(copy_button_html + copy_script, height=30)
+    function copy
