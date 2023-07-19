@@ -93,18 +93,18 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text: str, names_list: List[str], similarity_threshold: float, second_pass=False) -> Tuple[List[Tuple[str, str]], str, List[str]]:
+def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str]], str]:
     replaced_names = []
-    unmatched_names = names_list[:]
-    
+    unmatched_names = names_list[:]  # Make a copy of names_list
+
     def replace_name(match):
         full_name = match.group(0)
-
+    
         # Check if the name is already replaced
-        for original, replaced, _ in replaced_names:
+        for original, replaced in replaced_names:
             if full_name == replaced:
                 return full_name
-
+    
         max_similarity = 0
         most_similar_name = None
         for name in names_list:
@@ -112,9 +112,9 @@ def replace_similar_names(text: str, names_list: List[str], similarity_threshold
             if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(name.split())):
                 max_similarity = sim
                 most_similar_name = name
-
+    
         if max_similarity >= similarity_threshold:
-            replaced_names.append((full_name, most_similar_name, second_pass))
+            replaced_names.append((full_name, most_similar_name))
             # Remove the name from unmatched_names if it was matched
             if most_similar_name in unmatched_names:
                 unmatched_names.remove(most_similar_name)
@@ -133,18 +133,17 @@ def replace_similar_names(text: str, names_list: List[str], similarity_threshold
             processed_lines.append(line)
             continue
 
-        line = re.sub(pattern, lambda match: replace_name(match), line)
+        line = re.sub(pattern, replace_name, line)
         processed_lines.append(line)
 
-        new_text = '\n'.join(processed_lines)
+    new_text = '\n'.join(processed_lines)
 
-    return replaced_names, new_text, unmatched_names
-
-    # Ensure that all code paths return three values
     if replaced_names:
-        return replaced_names, new_text, unmatched_names
+        # Remove leading whitespaces from all lines as a final step
+        new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
+        return replaced_names, new_text, unmatched_names  # Return unmatched_names as well
     else:
-        return [], new_text, unmatched_names  # Return unmatched_names as well
+        return [], '', unmatched_names  # Return unmatched_names as well
 
 def decapitalize(text):
     roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
@@ -165,7 +164,7 @@ def decapitalize(text):
     return ' '.join(words)
 
 def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
-    replaced_names_dict = {replaced: original for original, replaced, _ in replaced_names}  # reversed mapping
+    replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
 
     if text.startswith('WEBVTT'):
         text = text.replace('WEBVTT', 'WEBVTT\n', 1)
@@ -285,17 +284,7 @@ text = st.text_area("Enter graduation transcript text:", transcript_text, key='t
 
 if st.button("Run"):  # Run button added
     if names_list and text:  # Check if both text boxes are populated
-        replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, similarity_threshold)  # Unpack unmatched_names
-
-        # If there are unmatched names, run replace_similar_names again with a lower threshold
-        if unmatched_names:
-            st.subheader("Trying second pass with lower threshold...")
-            current_similarity_threshold = similarity_threshold
-            lower_similarity_threshold = (current_similarity_threshold - 0.1)
-            replaced_names_second_pass, new_text, unmatched_names = replace_similar_names(new_text, unmatched_names, lower_similarity_threshold, second_pass=True)
-    
-        # Merge the lists of replaced names from the first and second passes
-        replaced_names += replaced_names_second_pass
+        replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
 
     if replaced_names and new_text:  # Check if replaced_names and new_text exist
         # Reformat the new_text
@@ -316,20 +305,19 @@ if st.button("Run"):  # Run button added
         html(copy_button_html, height=30)
 
         st.subheader("Names replaced:")
-        for original, replaced, second_pass in replaced_names:
+        for original, replaced in replaced_names:
             original_words = original.split()
             replaced_words = replaced.split()
-            second_pass_indicator = " (second pass)" if second_pass else ""
 
-        # Check if the original and replaced names have a different number of words
-        if len(original_words) != len(replaced_words):
-            # If they do, make the text bold
-            st.markdown(f"**{original} -> {replaced}{second_pass_indicator}**")
-        else:
-            st.write(f"{original} -> {replaced}{second_pass_indicator}")
+            # Check if the original and replaced names have a different number of words
+            if len(original_words) != len(replaced_words):
+                # If they do, make the text bold
+                st.markdown(f"**{original} -> {replaced}**")
+            else:
+                st.write(f"{original} -> {replaced}")
 
-            st.subheader("Names not matched:")
-            for name in unmatched_names:
-                st.write(name)
-    
-            st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
+        st.subheader("Names not matched:")
+        for name in unmatched_names:
+            st.write(name)
+
+        st.text_area("Updated Transcript:", new_text, key='updated_transcript_text')
