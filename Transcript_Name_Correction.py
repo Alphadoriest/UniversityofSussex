@@ -316,13 +316,13 @@ if st.button("Run"):  # Run button added
             else:
                 st.write(f"{original} -> {replaced}")
 
-            st.subheader("Names not matched:")
-            for name in unmatched_names:
-                st.write(name)
+        st.subheader("Names not matched:")
+        for name in unmatched_names:
+            st.write(name)
     
-             if 'new_text' not in st.session_state:
-                st.session_state.new_text = ""
+        if 'new_text' not in st.session_state:
+            st.session_state.new_text = ""
     
-            new_text = st.text_area("Updated Transcript:", st.session_state.new_text, key='updated_transcript_text')
+        new_text = st.text_area("Updated Transcript:", st.session_state.new_text, key='updated_transcript_text')
     
-            st.session_state.new_text = new_text
+        st.session_state.new_text = new_text
