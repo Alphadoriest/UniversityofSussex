@@ -376,7 +376,27 @@ if st.button('Save Changes'):
     st.session_state.new_text = new_text
 
 # Add a button that copies the text to the clipboard
-st_tweaker.button('Copy to clipboard', id="copy-button", js="""
+st_tweaker.button('Copy to clipboard', id="copy-button", css="""
+    #copy-button button {
+        position: relative;
+    }
+    #copy-button button:after {
+        content: "Copied!";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 0.5em;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 0.5em;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+    }
+    #copy-button button:active:after {
+        opacity: 1;
+    }
+""", js="""
     document.getElementById('copy-button').addEventListener('click', function() {
         let text = document.getElementById('updated_text').value;
         navigator.clipboard.writeText(text);
