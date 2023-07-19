@@ -320,9 +320,6 @@ if st.button("Run"):  # Run button added
         for name in unmatched_names:
             st.write(name)
     
-        if 'new_text' not in st.session_state:
-            st.session_state.new_text = ""
-    
+        st.session_state.new_text = new_text  # Assign new_text to the session state variable
         new_text = st.text_area("Updated Transcript:", st.session_state.new_text, key='updated_transcript_text')
-    
         st.session_state.new_text = new_text
