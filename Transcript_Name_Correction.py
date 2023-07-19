@@ -338,7 +338,7 @@ if 'replaced_names' in st.session_state and st.session_state.replaced_names:
         else:
             st.write(f"{original} -> {replaced}")
 
-if 'unmatched_names' in st.session_state and st.session_state.unmatched_names:
+if 'unmatched_names' in st.session_state:
     for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
         best_match = find_best_match(st.session_state.new_text, preceding, succeeding)
         if best_match is not None:
@@ -348,11 +348,12 @@ if 'unmatched_names' in st.session_state and st.session_state.unmatched_names:
 
 st.subheader("Names not matched:")
 st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated transcript text box. The app will reset after each addition, but all progress is saved.")
-unmatched_names_str = ', '.join(st.session_state.unmatched_names)
-st.write(unmatched_names_str)
+if 'unmatched_names' in st.session_state:
+    unmatched_names_str = ', '.join(st.session_state.unmatched_names)
+    st.write(unmatched_names_str)
 
 # Button to copy unmatched names to clipboard
-if 'unmatched_names' in st.session_state and st.session_state.unmatched_names:
+if 'unmatched_names' in st.session_state:
     unmatched_names_str = ', '.join(st.session_state.unmatched_names)
     copy_unmatched_names_button_html = f"""
         <button onclick="copyUnmatchedNames()">Copy unmatched names to clipboard</button>
