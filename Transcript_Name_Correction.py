@@ -372,6 +372,14 @@ st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name 
 for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
     st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
 
+# Add CSS to set height 
+st.markdown(f"""
+<style>
+#updated_transcript_text {{
+  height: 400px;
+}}
+</style>
+""", unsafe_allow_html=True)
 
 # Function to update state
 def update_transcript_text():
@@ -380,14 +388,15 @@ def update_transcript_text():
 # Check for the right state key
 if 'updated_transcript_text' not in st.session_state:
   st.session_state.updated_transcript_text = st.session_state.new_text
-  
-# Call with height parameter  
-new_text = st_tweaker.text_input("Updated Transcript Text to Copy Into VTT/TXT File:", 
-                                 st.session_state.updated_transcript_text,
-                                 height=400,
-                                 id='updated_transcript_text',  
-                                 key='updated_transcript_text',
-                                 on_change=update_transcript_text)
+
+# Remove height parameter  
+new_text = st_tweaker.text_input("Updated Transcript Text to Copy Into VTT/TXT File:",
+                               st.session_state.updated_transcript_text,
+                               id='updated_transcript_text',
+                               key='updated_transcript_text',
+                               on_change=update_transcript_text)
+
+# Rest of code
 
 copy_button_html = f"""
     <button onclick="copyReplacedText()">Copy replaced text to clipboard</button>
