@@ -296,7 +296,7 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
 
                 formatted_line = ' '.join(words)
                 formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((applause)\)|\[applause]', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\((applause)\)|\[applause\]', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((music|MUSIC PLAYING)\)|\[(music|MUSIC PLAYING)\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
