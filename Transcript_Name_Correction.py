@@ -261,9 +261,6 @@ def decapitalize(text):
 
     return ' '.join(words)
 
-# Convert dict keys/values to lowercase 
-american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
-
 def reformat_subtitles(text: str) -> str:
   
     if text.startswith('WEBVTT'):
@@ -284,13 +281,6 @@ def reformat_subtitles(text: str) -> str:
         for line in lines:
             words = line.split()
             if words:
-                for replaced in replaced_names_dict.keys():
-                    replaced_words = replaced.split()
-                    if len(words) >= len(replaced_words):
-                        last_words = words[-len(replaced_words):]
-                        if ' '.join(last_words) == replaced and not last_words[-1].endswith('.'):
-                            words[-1] = words[-1] + '.'
-
                 formatted_line = ' '.join(words)
                 formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\[applause\]', '[Applause]', formatted_line, flags=re.IGNORECASE)
@@ -299,12 +289,14 @@ def reformat_subtitles(text: str) -> str:
                 formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
-                formatted_lines.append(formatted_line)
-
-        # American to British replacement
-        for american, british in american_to_british_dict.items():
-                formatted_line = formatted_line.replace(american, british)
-
+                
+                # Convert dict keys/values to lowercase 
+                american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
+        
+                # American to British replacement
+                for american, british in american_to_british_dict.items():
+                    formatted_line = formatted_line.replace(american, british)
+        
                 formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')        
                 formatted_lines.append(formatted_line)
       
