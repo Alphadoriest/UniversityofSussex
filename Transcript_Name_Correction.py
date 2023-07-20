@@ -264,9 +264,8 @@ def decapitalize(text):
 # Convert dict keys/values to lowercase 
 american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
 
-def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
-    replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
-
+def reformat_subtitles(text: str) -> str:
+  
     if text.startswith('WEBVTT'):
         text = text.replace('WEBVTT', 'WEBVTT\n', 1)
 
@@ -313,7 +312,7 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
         formatted_blocks.append(formatted_block)
 
-    return ''.join(formatted_blocks)
+    return ''.join(formatted_blocks)  # Return as a string
 
 def reformat_transcript(text: str, filename: str):
     # Remove timestamps, and empty lines
@@ -425,9 +424,9 @@ text = st.text_area("Alternatively, Enter Text From a Subtitles:", subtitles_tex
 if st.button("Press to Replace Names"):  
     if names_list and text:  # Check if both text boxes are populated
         replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
-        
+
         # Store the resultant text and replaced_names and unmatched_names in session state
-        st.session_state.new_text = new_text  
+        st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
         st.session_state.replaced_names = replaced_names
         st.session_state.unmatched_names = unmatched_names
 
@@ -487,7 +486,7 @@ new_text = st.text_area("Updated Subtitles Text to Copy Into VTT/TXT File:", st.
 # Save changes button
 if st.button('Save Changes'):
     # Update session state with any changes made in the text area
-    st.session_state.new_text = new_text
+    st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
 
 st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")
 
