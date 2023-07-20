@@ -305,7 +305,7 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
 
                 # American to British replacement
                 for american, british in american_to_british_dict.items():
-                  formatted_line = formatted_line.replace(american, british)
+                    formatted_line = formatted_line.replace(american, british)
 
                 formatted_line = re.sub(r'\[(.*?)\]', '[\\1]', formatted_line)        
                 formatted_lines.append(formatted_line)
