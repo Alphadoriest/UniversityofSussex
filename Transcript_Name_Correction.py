@@ -280,24 +280,24 @@ def reformat_subtitles(text: str) -> str:
         formatted_lines = []
         for line in lines:
             words = line.split()
-            if words:
-                formatted_line = ' '.join(words)
-                formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\[applause\]', '[Applause]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((applause)\)', '[Applause]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING)\)|\[(Music|MUSIC|MUSIC PLAYING)\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
-                
-                # Convert dict keys/values to lowercase 
-                local_american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
+        if words:
+            formatted_line = ' '.join(words)
+            formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\[applause\]|\(applause\)', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING)\)|\[(Music|MUSIC|MUSIC PLAYING)\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
+            
+            # Convert dict keys/values to lowercase 
+            local_american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
 
-                # American to British replacement
-                for american, british in local_american_to_british_dict.items():
-                    formatted_line = formatted_line.replace(american, british)
-                
-                formatted_lines.append(formatted_line)
+            # American to British replacement
+            for american, british in local_american_to_british_dict.items():
+                formatted_line = formatted_line.replace(american, british)
+
+            formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')        
+            formatted_lines.append(formatted_line)
 
                 formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')        
       
