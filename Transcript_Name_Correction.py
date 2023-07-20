@@ -28,7 +28,6 @@ american_to_british_dict = {
   'esthetic': 'aesthetic',
   'anemia': 'anaemia',
   'anesthesia': 'anaesthesia',
-  'gynecologist': 'gynaecologist',
   'pediatrician': 'paediatrician',
   'appall': 'appal',
   'carburetor': 'carburettor',
@@ -52,7 +51,6 @@ american_to_british_dict = {
   'program': 'programme',
   'ton': 'tonne',
   'diarrhea': 'diarrhoea',
-  'gonorrhea': 'gonorrhoea',
   'maneuver': 'manoeuvre',
   'arbor': 'arbour',
   'armor': 'armour',
@@ -290,6 +288,7 @@ def reformat_subtitles(text: str) -> str:
                 formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\((pause)\)', '[Pause]', formatted_line, flags=re.IGNORECASE)
 
                 # Convert dict keys/values to lowercase
                 local_american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
