@@ -264,7 +264,7 @@ def decapitalize(text):
 # Convert dict keys/values to lowercase 
 american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
 
-def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
+def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
 
     if text.startswith('WEBVTT'):
