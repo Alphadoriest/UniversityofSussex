@@ -302,8 +302,8 @@ def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str
                 formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
                 formatted_lines.append(formatted_line)
 
-                 # American to British replacement
-                for american, british in american_to_british_dict.items():
+        # American to British replacement
+        for american, british in american_to_british_dict.items():
                 formatted_line = formatted_line.replace(american, british)
 
                 formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')        
