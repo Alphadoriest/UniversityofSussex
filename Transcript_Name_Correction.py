@@ -309,6 +309,8 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
 
         formatted_block = '\n'.join(formatted_lines)
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
+        # Lowercase after all other processing
+        formatted_line = formatted_line.lower()
         formatted_blocks.append(formatted_block)
 
         # Lowercase after all other processing
