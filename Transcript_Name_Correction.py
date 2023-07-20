@@ -350,8 +350,8 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
 
         formatted_block = '\n'.join(formatted_lines)
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
-        # Lowercase after all other processing
-        formatted_block = formatted_block.lower()
+# Convert dict keys/values to lowercase
+        american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
         formatted_blocks.append(formatted_block)
         
     return ''.join(formatted_blocks)
