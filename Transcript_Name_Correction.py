@@ -196,7 +196,7 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
     unmatched_names = names_list[:]  # Make a copy of names_list
 
     def replace_name(match):
-    full_name = match.group(0)
+      full_name = match.group(0)
 
     # Check if the name is already replaced
     for original, replaced in replaced_names:
