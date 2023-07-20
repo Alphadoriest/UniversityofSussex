@@ -302,9 +302,9 @@ def reformat_subtitles(text: str) -> str:
                     formatted_line = formatted_line.replace(american, british)
                 
                 formatted_lines.append(formatted_line)
-                print(f"Before: {formatted_line}")
+                print(f"Before1: {formatted_line}")
                 formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')  
-                print(f"After: {formatted_line}")
+                print(f"After2: {formatted_line}")
       
         formatted_block = '\n'.join(formatted_lines)
         print(f"Before: {formatted_block}")
