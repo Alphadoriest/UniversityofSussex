@@ -315,7 +315,7 @@ def reformat_subtitles(text: str) -> str:
         # Create a list of lines from formatted_blocks
 lines = ''.join(formatted_blocks).split('\n')                
 
-    return ''.join(formatted_blocks)  # Return as a string
+  return ''.join(formatted_blocks)  # Return as a string
 
 # Find the index of the line containing "Dain Jeong"
 index = next((i for i, line in enumerate(lines) if "Dain Jeong" in line), -1)
