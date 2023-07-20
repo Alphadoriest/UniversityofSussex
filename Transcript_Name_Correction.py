@@ -318,12 +318,12 @@ lines = ''.join(formatted_blocks).split('\n')
 # Find the index of the line containing "Dain Jeong"
           index = next((i for i, line in enumerate(lines) if "Dain Jeong" in line), -1)
           
-          # Print a few lines before and after the line containing "Dain Jeong"
+# Print a few lines before and after the line containing "Dain Jeong"
           if index != -1:
               start = max(0, index - 5)  # 5 lines before, or start of text if less than 5 lines
               end = min(len(lines), index + 6)  # 5 lines after, or end of text if less than 5 lines
               for i in range(start, end):
-                  print(lines[i])
+                  print(lines[i])          
 
     return ''.join(formatted_blocks)  # Return as a string
 
