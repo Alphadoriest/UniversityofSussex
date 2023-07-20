@@ -299,7 +299,7 @@ def reformat_subtitles(text: str) -> str:
             formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')        
             formatted_lines.append(formatted_line)
 
-                formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')        
+            formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')        
       
         formatted_block = '\n'.join(formatted_lines)
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
