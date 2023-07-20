@@ -154,7 +154,16 @@ def extract_middle_column_text(doc):
 
     # Join the text with ', ', then replace ', ,' with ', ', and finally split again by ', '
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
-    return [decapitalize(text) for text in cleaned_text.split(', ') if text not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD"]]
+
+    # Remove single letters from names
+    cleaned_names = []
+    for name in cleaned_text.split(', '):
+        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD"]:
+            words = name.split()
+            name = ' '.join(word for word in words if len(word) > 1)
+            cleaned_names.append(decapitalize(name))
+
+    return cleaned_names
 
 def format_names(names_list):
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
