@@ -309,7 +309,7 @@ def reformat_subtitles(text: str) -> str:
 
 def reformat_transcript(text: str, filename: str = "reformatted_transcript.docx"):
     # Remove timestamps, and empty lines
-    text = re.sub(r'\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d\n|\n$', '', text)
+    text = re.sub(r'\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d\s', '', text)
     
     # Remove all newline characters and extra whitespace
     formatted_text = text.replace('\n', ' ')
@@ -338,6 +338,22 @@ def reformat_transcript(text: str, filename: str = "reformatted_transcript.docx"
 
     # Return the formatted text
     return formatted_text
+
+import base64
+from pathlib import Path
+
+def get_binary_file_downloader_html(bin_file, file_label='File'):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    bin_str = base64.b64encode(data).decode()
+    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{Path(bin_file).name}">{file_label}</a>'
+    return href
+
+# Use the function after saving the Word file
+if st.button("Reformat VTT/TXT Into Transcript"):
+    if transcript_text:  # Check if transcript_text is not empty
+        reformatted_transcript = reformat_transcript(transcript_text)
+        transcript_text = reformatted_transcript  # Overwrite transcript_text with the reformatted transcript
         
 #Name Corrector UI
 
@@ -504,3 +520,6 @@ if st.button("Reformat VTT/TXT Into Transcript"):
 
     # Display the reformatted transcript
     st.text_area("Reformatted Transcript:", transcript_text, key='reformatted_transcript')
+
+    # Provide download link for the Word file
+    st.markdown(get_binary_file_downloader_html('reformatted_transcript.docx', 'Download Word file'), unsafe_allow_html=True)
