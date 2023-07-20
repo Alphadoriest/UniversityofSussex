@@ -264,7 +264,7 @@ def decapitalize(text):
 # Convert dict keys/values to lowercase 
 american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
 
-def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
+def reformat_transcript(text: str, replaced_names: List[Tuple[str, str]]) -> str:
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
 
     if text.startswith('WEBVTT'):
@@ -293,31 +293,26 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
                             words[-1] = words[-1] + '.'
 
                 formatted_line = ' '.join(words)
-                formatted_line = formatted_line.replace('[no audio]', '')  
-                formatted_line = formatted_line.replace('(applause)', '[Audience Applauds]')
-                formatted_line = formatted_line.replace('[applause]', '[Audience Applauds]')
-                formatted_line = formatted_line.replace('(music)', '[Music Playing]')
-                formatted_line = formatted_line.replace('[music]', '[Music Playing]')
-                formatted_line = formatted_line.replace('(laughter)', '[Audience Laughing]')
-                formatted_line = formatted_line.replace('[laughter]', '[Audience Laughing]')
-                formatted_line = formatted_line.replace('(cheering)', '[Audience Cheers]')
-                formatted_line = formatted_line.replace('[cheering]', '[Audience Cheers]')
-                formatted_line = formatted_line.replace('(shouting)', '[Audience Shouts]')
-                formatted_line = formatted_line.replace('[shouting]', '[Audience Shouts]')
+                formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\[applause\]', '[Applause]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\((applause)\)', '[Applause]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING)\)|\[(Music|MUSIC|MUSIC PLAYING)\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
+                formatted_lines.append(formatted_line)
 
-                # American to British replacement
+                 # American to British replacement
                 for american, british in american_to_british_dict.items():
-                    formatted_line = formatted_line.replace(american, british)
+                formatted_line = formatted_line.replace(american, british)
 
                 formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')        
                 formatted_lines.append(formatted_line)
-
+      
         formatted_block = '\n'.join(formatted_lines)
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
-        # Lowercase after all other processing
-        formatted_block = formatted_block.lower()
         formatted_blocks.append(formatted_block)
-        
+
     return ''.join(formatted_blocks)
 
 def reformat_transcript(text: str, filename: str):
