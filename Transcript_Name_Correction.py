@@ -106,6 +106,7 @@ american_to_british_dict = {
   'paralyze': 'paralyse',
   'humorous': 'humourous',
   'civilization': 'civilisation',
+  'acknowledgment': 'acknowledgement',
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
