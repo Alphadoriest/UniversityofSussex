@@ -108,9 +108,6 @@ american_to_british_dict = {
   'civilization': 'civilisation',
 }
 
-# Convert dictionary keys/values to lowercase 
-american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
-
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
     middle_column_texts = []
@@ -264,6 +261,9 @@ def decapitalize(text):
 
     return ' '.join(words)
 
+# Convert dict keys/values to lowercase 
+american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
+
 def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
     replaced_names_dict = {replaced: original for original, replaced in replaced_names}  # reversed mapping
 
@@ -293,18 +293,19 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
                             words[-1] = words[-1] + '.'
 
                 formatted_line = ' '.join(words)
-                formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((applause)\)|\[applause\]', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((music|MUSIC PLAYING)\)|\[(music|MUSIC PLAYING)\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)  
+                formatted_line = re.sub(r'\(applause\)|\[applause\]', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\(music(?: playing)?\)|\[music(?: playing)?\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE) 
+                formatted_line = re.sub(r'\(laughter\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\(cheering\)|\[cheering\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\(shouting\)|\[shouting\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
                 
                 # Lowercase line to match dictionary
                 formatted_line = formatted_line.lower() 
 
+                # American to British replacement
                 for american, british in american_to_british_dict.items():
-                    formatted_line = formatted_line.replace(american, british)
+                  formatted_line = formatted_line.replace(american, british)
 
                 formatted_line = re.sub(r'\[(.*?)\]', '[\\1]', formatted_line)        
                 formatted_lines.append(formatted_line)
@@ -312,6 +313,9 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
         formatted_block = '\n'.join(formatted_lines)
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
         formatted_blocks.append(formatted_block)
+
+                # Lowercase after all other processing
+                formatted_line = formatted_line.lower()
 
     return ''.join(formatted_blocks)
 
