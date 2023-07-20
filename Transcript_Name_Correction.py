@@ -195,32 +195,30 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
 
-def replace_name(match):
-    full_name = match.group(0)
-
-    # Check if the name is already replaced
-    for original, replaced in replaced_names:
-        if full_name == replaced:
+    def replace_name(match):
+        full_name = match.group(0)
+    
+        # Check if the name is already replaced
+        for original, replaced in replaced_names:
+            if full_name == replaced:
+                return full_name
+    
+        max_similarity = 0
+        most_similar_name = None
+        for name in names_list:
+            sim = similarity(full_name, name)
+            if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(name.split())):
+                max_similarity = sim
+                most_similar_name = name
+    
+        if max_similarity >= similarity_threshold:
+            replaced_names.append((full_name, most_similar_name))
+            # Remove the name from unmatched_names if it was matched
+            if most_similar_name in unmatched_names:
+                unmatched_names.remove(most_similar_name)
+            return most_similar_name
+        else:
             return full_name
-
-    max_similarity = 0
-    most_similar_name = None
-    for name in names_list:
-        sim = similarity(full_name, name)
-        if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(name.split())):
-            max_similarity = sim
-            most_similar_name = name
-
-    print(f"full_name: {full_name}, most_similar_name: {most_similar_name}, max_similarity: {max_similarity}")
-
-    if max_similarity >= similarity_threshold:
-        replaced_names.append((full_name, most_similar_name))
-        # Remove the name from unmatched_names if it was matched
-        if most_similar_name in unmatched_names:
-            unmatched_names.remove(most_similar_name)
-        return most_similar_name
-    else:
-        return full_name
 
     # Updated regex pattern
     pattern = r'\b([A-Z][a-z]+(?:(?: |-)[A-Z][a-z]+)*)\b'
