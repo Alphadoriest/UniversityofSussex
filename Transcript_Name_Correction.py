@@ -299,9 +299,6 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
                 formatted_line = re.sub(r'\(laughter\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\(cheering\)|\[cheering\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\(shouting\)|\[shouting\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
-                
-                # Lowercase line to match dictionary
-                formatted_line = formatted_line.lower() 
 
                 # American to British replacement
                 for american, british in american_to_british_dict.items():
