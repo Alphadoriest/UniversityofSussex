@@ -308,8 +308,6 @@ def reformat_subtitles(text: str) -> str:
     return ''.join(formatted_blocks)  # Return as a string
 
 def reformat_transcript(text: str, filename: str = "reformatted_transcript.docx"):
-
-    return reformatted_transcript
     # Remove timestamps, and empty lines
     text = re.sub(r'\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d\n|\n$', '', text)
     
@@ -337,6 +335,9 @@ def reformat_transcript(text: str, filename: str = "reformatted_transcript.docx"
 
     # Save the document
     doc.save(filename)
+
+    # Return the formatted text
+    return formatted_text
         
 #Name Corrector UI
 
