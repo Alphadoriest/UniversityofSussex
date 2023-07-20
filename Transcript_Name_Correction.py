@@ -210,8 +210,6 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
             if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(name.split())):
                 max_similarity = sim
                 most_similar_name = name
-
-        print(f"full_name: {full_name}, most_similar_name: {most_similar_name}, max_similarity: {max_similarity}")
     
         if max_similarity >= similarity_threshold:
             replaced_names.append((full_name, most_similar_name))
@@ -263,8 +261,8 @@ def decapitalize(text):
 
     return ' '.join(words)
 
-def reformat_subtitles(text: str) -> tuple:
-    
+def reformat_subtitles(text: str) -> str:
+  
     if text.startswith('WEBVTT'):
         text = text.replace('WEBVTT', 'WEBVTT\n', 1)
 
@@ -284,15 +282,12 @@ def reformat_subtitles(text: str) -> tuple:
             words = line.split()
             if words:
                 formatted_line = ' '.join(words)
-                print(f"Before: {formatted_line}")
                 formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\[applause\]|\(applause\)', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING)\)|\[(Music|MUSIC|MUSIC PLAYING)\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
-
-                print(f"After: {formatted_line}")
                 
                 # Convert dict keys/values to lowercase 
                 local_american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
@@ -302,30 +297,14 @@ def reformat_subtitles(text: str) -> tuple:
                     formatted_line = formatted_line.replace(american, british)
                 
                 formatted_lines.append(formatted_line)
-                print(f"Before1: {formatted_line}")
-                formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')  
-                print(f"After2: {formatted_line}")
-                
+
+                formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')        
+      
         formatted_block = '\n'.join(formatted_lines)
-        print(f"Before: {formatted_block}")
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
         formatted_blocks.append(formatted_block)
-        print(f"After7: {formatted_block}")
-      
-                # Find the index of the line containing "Dain Jeong"
-        index = next((i for i, line in enumerate(lines) if "Dain Jeong" in line), -1)
-        
-        # Print a few lines before and after the line containing "Dain Jeong"
-        if index != -1:
-            start = max(0, index - 5)  # 5 lines before, or start of text if less than 5 lines
-            end = min(len(lines), index + 6)  # 5 lines after, or end of text if less than 5 lines
-            for i in range(start, end):
-                print(lines[i])
 
-    # Create a list of lines from formatted_blocks
-    lines = ''.join(formatted_blocks).split('\n')                
-
-    return ''.join(formatted_blocks), lines  # Return as a tuple
+    return ''.join(formatted_blocks)  # Return as a string
 
 def reformat_transcript(text: str, filename: str):
     # Remove timestamps, and empty lines
