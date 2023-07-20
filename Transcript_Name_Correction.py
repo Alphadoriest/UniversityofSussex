@@ -171,11 +171,7 @@ def format_names(names_list):
     for i, name in enumerate(names_list):
         color = colors[i % len(colors)]
         formatted_name = (name, color)
-        formatted_names.append(formatted_name)
-    
-    # Add extra blank lines
-    for _ in range(10):  # Adjust the range as needed
-        formatted_names.append(('', 'black'))  # Add a name with no text and black color
+        formatted_names.append(formatted_name
 
     return formatted_names
 
@@ -422,13 +418,11 @@ if names_list:  # Check if names_list is not empty
 # Assuming format_names now returns a list of tuples like [(name, color), ...]
         formatted_names = format_names(names_list)
     
-# Convert the list of tuples to a single string with HTML tags 
-# Create the HTML div and set its height
-        html_names = '<div style="height: 600px; overflow-y: auto;">' + ''.join([f'<span style="color:{color}; margin-right: 10px;"><strong><u>{name}</u></strong></span>' if len(name.split()) > 4 or len(name.split()) < 2 or any(len(word) < 3 for word in name.split()) or re.search(r'[^a-zA-Z\s]', name) else f'<span style="color:{color}; margin-right: 10px;">{name}</span>' for name, color in formatted_names]) + '</div>'
-            
-# Display the HTML
-        components.v1.html(html_names, height=600)
-        st.text("Visualise potential errors. Number of names <2 or >4 or names with less than two letters = bold and underlined.")
+        # Create the names list as a Markdown string
+        names_md = ', '.join([f'<span style="color:{color};"><strong><u>{name}</u></strong></span>' if len(name.split()) > 4 or len(name.split()) < 2 or any(len(word) < 3 for word in name.split()) or re.search(r'[^a-zA-Z\s]', name) else f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
+        
+        # Display the names list using st.markdown
+        st.markdown(names_md, unsafe_allow_html=True)
 
 st.header("Graduation Subtitles Name Corrector")
 # Initialize subtitles_text as an empty string
