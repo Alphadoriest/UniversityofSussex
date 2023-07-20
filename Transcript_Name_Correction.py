@@ -294,12 +294,12 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
                 
                 formatted_line = ' '.join(words)
                 # Add regex substitutions after cleaning up text
-                formatted_line = re.sub(r'\[(no audio)\]', '', formatted_line, flags=re.IGNORECASE)  
-                formatted_line = re.sub(r'(\[|\()(applause)(\]|\))', '[audience applauds]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'(\[|\()(music(?: playing)?)(\]|\))', '[music playing]', formatted_line, flags=re.IGNORECASE) 
-                formatted_line = re.sub(r'(\[|\()(laughter)(\]|\))', '[audience laughing]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'(\[|\()(cheering)(\]|\))', '[audience cheers]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'(\[|\()(shouting)(\]|\))', '[audience shouts]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)  
+                formatted_line = re.sub(r'\[(applause)\]|\((applause)\)', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\[(music)\]|\((music)\)', '[Music Playing]', formatted_line, flags=re.IGNORECASE) 
+                formatted_line = re.sub(r'\[(laughter)\]|\((laughter)\)', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\[(cheering)\]|\((cheering)\)', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\[(shouting)\]|\((shouting)\)', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
 
                 formatted_lines.append(formatted_line)
                 formatted_block = '\n'.join(formatted_lines)
