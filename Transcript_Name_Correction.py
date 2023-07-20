@@ -278,18 +278,10 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
             formatted_blocks.append(block.strip() + '\n')
             continue
 
-        # Apply regex substitutions before splitting into lines
-        block = re.sub(r'\[no audio\]', '', block, flags=re.IGNORECASE)
-        block = re.sub(r'\(\s*applause\s*\)|\[\s*applause\s*\]', '[Audience Applauds]', block, flags=re.IGNORECASE)
-        block = re.sub(r'\(\s*music(?: playing)?\s*\)|\[\s*music(?: playing)?\s*\]', '[Music Playing]', block, flags=re.IGNORECASE)
-        block = re.sub(r'\(\s*laughter\s*\)|\[\s*laughter\s*\]', '[Audience Laughing]', block, flags=re.IGNORECASE)
-        block = re.sub(r'\(\s*cheering\s*\)|\[\s*cheering\s*\]', '[Audience Cheers]', block, flags=re.IGNORECASE)
-        block = re.sub(r'\(\s*shouting\s*\)|\[\s*shouting\s*\]', '[Audience Shouts]', block, flags=re.IGNORECASE)
-
         lines = block.split('\n')
         lines = [line for line in lines if line.strip()]
-        formatted_lines = []
 
+        formatted_lines = []
         for line in lines:
             words = line.split()
             if words:
@@ -299,17 +291,29 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
                         last_words = words[-len(replaced_words):]
                         if ' '.join(last_words) == replaced and not last_words[-1].endswith('.'):
                             words[-1] = words[-1] + '.'
-                
+
                 formatted_line = ' '.join(words)
+                formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)  
+                formatted_line = re.sub(r'\(applause\)|\[applause\]', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\(music(?: playing)?\)|\[music(?: playing)?\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE) 
+                formatted_line = re.sub(r'\(laughter\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\(cheering\)|\[cheering\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\(shouting\)|\[shouting\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
+
+                # American to British replacement
+                for american, british in american_to_british_dict.items():
+                    formatted_line = formatted_line.replace(american, british)
+
+                formatted_line = re.sub(r'\[(.*?)\]', '[\\1]', formatted_line)        
                 formatted_lines.append(formatted_line)
 
-        formatted_block = '\n'.join(formatted_lines)
-        formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
-        # Lowercase after all other processing
-        formatted_block = formatted_block.lower()
-        formatted_blocks.append(formatted_block)
-
-    return ''.join(formatted_blocks)
+                formatted_block = '\n'.join(formatted_lines)
+                formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
+                # Lowercase after all other processing
+                formatted_line = formatted_line.lower()
+                formatted_blocks.append(formatted_block)
+        
+            return ''.join(formatted_blocks)
 
 def reformat_transcript(text: str, filename: str):
     # Remove timestamps, and empty lines
@@ -321,7 +325,26 @@ def reformat_transcript(text: str, filename: str):
     
     # Remove bracketed captions
     formatted_text = re.sub(r'\[.*?\]', '', formatted_text)
-    return formatted_text
+
+    # Write to Word file
+    doc = Document()
+    
+    # Add initial text
+    p = doc.add_paragraph()
+    p.add_run('[‘Trumpet Fanfare’ music playing] (A procession of University senior academics and staff in ceremonial robes enter the auditorium, walk down the aisles betwixt the audience of seated graduands and guests, ascend the stage via staircases on the left and right respectively, and take their seats. At the end of the procession are two academics/staff with ceremonial torches who on stage bow to each other, the rows of academics/staff, and then place the torches on a small, raised table with a cloth at the very front of the stage.)').italic = True
+    doc.add_paragraph()  # Add paragraph break
+    
+    # Add the formatted transcript
+    doc.add_paragraph(formatted_text)
+    
+    # Add final text
+    p = doc.add_paragraph()
+    p.add_run('[Music playing] (Senior academics and staff on stage tip their hats as two academics/staff walk across the stage to pick up the ceremonial torches from the small, raised table. They bow to one another before bowing to the rest of the academics/staff. Both lead lines single file of all the professors in separate directions down the staircases on the left and right. The academics and staff walk down the aisles betwixt the audience of seated graduates and guests and exit at the back of the auditorium.)').italic = True
+
+    # Save the document
+    doc.save(filename)
+
+    return reformatted_transcript
         
 #Name Corrector UI
 
