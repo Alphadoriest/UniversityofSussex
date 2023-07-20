@@ -262,7 +262,6 @@ def decapitalize(text):
     return ' '.join(words)
 
 def reformat_subtitles(text: str) -> str:
-  
     if text.startswith('WEBVTT'):
         text = text.replace('WEBVTT', 'WEBVTT\n', 1)
 
@@ -288,19 +287,20 @@ def reformat_subtitles(text: str) -> str:
                 formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
-                
-                # Convert dict keys/values to lowercase 
+
+                # Convert dict keys/values to lowercase
                 local_american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
 
                # American to British replacement
                 for american, british in local_american_to_british_dict.items():
                     # Replace whole words only
                     formatted_line = re.sub(rf'\b{american}\b', british, formatted_line, flags=re.IGNORECASE)
-                
-                formatted_lines.append(formatted_line)
 
-                formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')        
-      
+                formatted_lines.append(formatted_line) 
+                
+        # Replace brackets in each line in formatted_lines
+        formatted_lines = [line.replace('[', '[[').replace(']', ']]') for line in formatted_lines]
+
         formatted_block = '\n'.join(formatted_lines)
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
         formatted_blocks.append(formatted_block)
