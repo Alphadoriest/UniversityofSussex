@@ -520,4 +520,4 @@ if st.button("Reformat VTT/TXT Into Transcript", key="reformat_button"):
 
     # Provide download link for the Word file
     buffer.seek(0)  # Reset buffer position
-    st.download_button('Download Word file', buffer, 'reformatted_transcript.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    st.download_button('Download Word file', buffer, 'Transcript.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
