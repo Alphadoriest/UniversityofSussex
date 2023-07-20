@@ -291,15 +291,12 @@ def reformat_subtitles(text: str) -> str:
                 # Convert dict keys/values to lowercase
                 local_american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
 
-               # American to British replacement
+                # American to British replacement
                 for american, british in local_american_to_british_dict.items():
                     # Replace whole words only
                     formatted_line = re.sub(rf'\b{american}\b', british, formatted_line, flags=re.IGNORECASE)
 
-                formatted_lines.append(formatted_line) 
-                
-        # Replace brackets in each line in formatted_lines
-        formatted_lines = [line.replace('[', '[[').replace(']', ']]') for line in formatted_lines]
+                formatted_lines.append(formatted_line)
 
         formatted_block = '\n'.join(formatted_lines)
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
