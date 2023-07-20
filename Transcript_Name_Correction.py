@@ -513,7 +513,7 @@ if uploaded_transcript_file is not None:
 transcript_text = st.text_area("Alternatively, Enter VTT/TXT Text:", transcript_text, key='transcript_text')
 
 # Reformat the transcript when a button is pressed
-if st.button("Reformat VTT/TXT Into Transcript"):
+if st.button("Reformat VTT/TXT Into Transcript", key="reformat_button"):
     if transcript_text:  # Check if transcript_text is not empty
         reformatted_transcript = reformat_transcript(transcript_text)
         transcript_text = reformatted_transcript  # Overwrite transcript_text with the reformatted transcript
@@ -521,5 +521,5 @@ if st.button("Reformat VTT/TXT Into Transcript"):
     # Display the reformatted transcript
     st.text_area("Reformatted Transcript:", transcript_text, key='reformatted_transcript')
 
-    # Provide download link for the Word file
-    st.markdown(get_binary_file_downloader_html('reformatted_transcript.docx', 'Download Word file'), unsafe_allow_html=True)
+# Provide download link for the Word file
+st.markdown(get_binary_file_downloader_html('reformatted_transcript.docx', 'Download Word file'), unsafe_allow_html=True)
