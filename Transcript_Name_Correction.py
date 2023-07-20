@@ -279,12 +279,12 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
             continue
 
         # Apply regex substitutions before splitting into lines
-        block = re.sub(r'\[no audio\]', '', block, flags=re.IGNORECASE)  
-        block = re.sub(r'\(applause\)|\[applause\]', '[Audience Applauds]', block, flags=re.IGNORECASE)
-        block = re.sub(r'\(music(?: playing)?\)|\[music(?: playing)?\]', '[Music Playing]', block, flags=re.IGNORECASE) 
-        block = re.sub(r'\(laughter\)|\[laughter\]', '[Audience Laughing]', block, flags=re.IGNORECASE)
-        block = re.sub(r'\(cheering\)|\[cheering\]', '[Audience Cheers]', block, flags=re.IGNORECASE)
-        block = re.sub(r'\(shouting\)|\[shouting\]', '[Audience Shouts]', block, flags=re.IGNORECASE)
+        block = re.sub(r'\[no audio\]', '', block, flags=re.IGNORECASE)
+        block = re.sub(r'\(\s*applause\s*\)|\[\s*applause\s*\]', '[Audience Applauds]', block, flags=re.IGNORECASE)
+        block = re.sub(r'\(\s*music(?: playing)?\s*\)|\[\s*music(?: playing)?\s*\]', '[Music Playing]', block, flags=re.IGNORECASE)
+        block = re.sub(r'\(\s*laughter\s*\)|\[\s*laughter\s*\]', '[Audience Laughing]', block, flags=re.IGNORECASE)
+        block = re.sub(r'\(\s*cheering\s*\)|\[\s*cheering\s*\]', '[Audience Cheers]', block, flags=re.IGNORECASE)
+        block = re.sub(r'\(\s*shouting\s*\)|\[\s*shouting\s*\]', '[Audience Shouts]', block, flags=re.IGNORECASE)
 
         lines = block.split('\n')
         lines = [line for line in lines if line.strip()]
