@@ -195,7 +195,7 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str]], str]:
+def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str, float]], str]:
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
 
@@ -203,7 +203,7 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
         full_name = match.group(0)
     
         # Check if the name is already replaced
-        for original, replaced in replaced_names:
+        for original, replaced, _ in replaced_names:
             if full_name == replaced:
                 return full_name
     
@@ -216,7 +216,7 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
                 most_similar_name = name
     
         if max_similarity >= similarity_threshold:
-            replaced_names.append((full_name, most_similar_name))
+            replaced_names.append((full_name, most_similar_name, max_similarity))
             # Remove the name from unmatched_names if it was matched
             if most_similar_name in unmatched_names:
                 unmatched_names.remove(most_similar_name)
@@ -447,16 +447,16 @@ if 'unmatched_names' not in st.session_state:
 
 # Display replaced and unmatched names from session state
 st.subheader("Names replaced:")
-for original, replaced in st.session_state.replaced_names:
+for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
     original_words = original.split()
     replaced_words = replaced.split()
 
     # Check if the original and replaced names have a different number of words
     if len(original_words) != len(replaced_words):
         # If they do, make the text bold
-        st.markdown(f"**{original} -> {replaced}**")
+        st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")  # Display similarity score
     else:
-        st.write(f"{original} -> {replaced}")
+        st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")  # Display similarity score
 
 st.subheader("Names not matched:")
 st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
