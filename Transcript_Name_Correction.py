@@ -172,6 +172,11 @@ def format_names(names_list):
         color = colors[i % len(colors)]
         formatted_name = (name, color)
         formatted_names.append(formatted_name)
+    
+    # Add extra blank lines
+    for _ in range(10):  # Adjust the range as needed
+        formatted_names.append(('', 'black'))  # Add a name with no text and black color
+
     return formatted_names
 
 #Correct all names in graduation subtitles (find and replace) functions
