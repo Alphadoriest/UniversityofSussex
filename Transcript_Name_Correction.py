@@ -284,7 +284,7 @@ def reformat_subtitles(text: str) -> tuple:
             words = line.split()
             if words:
                 formatted_line = ' '.join(words)
-                # print(f"Before: {formatted_line}")
+                print(f"Before: {formatted_line}")
                 formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\[applause\]|\(applause\)', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING)\)|\[(Music|MUSIC|MUSIC PLAYING)\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
@@ -292,26 +292,35 @@ def reformat_subtitles(text: str) -> tuple:
                 formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
 
-                # print(f"After: {formatted_line}")
+                print(f"After: {formatted_line}")
                 
                 # Convert dict keys/values to lowercase 
                 local_american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
 
                 # American to British replacement
                 for american, british in local_american_to_british_dict.items():
-                    # Replace whole words only
-                    formatted_line = re.sub(rf'\b{american}\b', british, formatted_line, flags=re.IGNORECASE)
+                    formatted_line = formatted_line.replace(american, british)
                 
                 formatted_lines.append(formatted_line)
-                # print(f"Before1: {formatted_line}")
+                print(f"Before1: {formatted_line}")
                 formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')  
-                # print(f"After2: {formatted_line}")
+                print(f"After2: {formatted_line}")
                 
         formatted_block = '\n'.join(formatted_lines)
-        # print(f"Before: {formatted_block}")
+        print(f"Before: {formatted_block}")
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
         formatted_blocks.append(formatted_block)
-        # print(f"After7: {formatted_block}")
+        print(f"After7: {formatted_block}")
+      
+                # Find the index of the line containing "Dain Jeong"
+        index = next((i for i, line in enumerate(lines) if "Dain Jeong" in line), -1)
+        
+        # Print a few lines before and after the line containing "Dain Jeong"
+        if index != -1:
+            start = max(0, index - 5)  # 5 lines before, or start of text if less than 5 lines
+            end = min(len(lines), index + 6)  # 5 lines after, or end of text if less than 5 lines
+            for i in range(start, end):
+                print(lines[i])
 
     # Create a list of lines from formatted_blocks
     lines = ''.join(formatted_blocks).split('\n')                
@@ -490,7 +499,7 @@ new_text = st.text_area("Updated Subtitles Text to Copy Into VTT/TXT File:", st.
 # Save changes button
 if st.button('Save Changes'):
     # Update session state with any changes made in the text area
-    st.session_state.new_text, _ = reformat_subtitles(new_text)  # Use reformat_subtitles here
+    st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
 
 st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")
 
