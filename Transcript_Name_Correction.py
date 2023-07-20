@@ -293,25 +293,30 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
                             words[-1] = words[-1] + '.'
 
                 formatted_line = ' '.join(words)
-                formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)  
-                formatted_line = re.sub(r'\(applause\)|\[applause\]', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\(music(?: playing)?\)|\[music(?: playing)?\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE) 
-                formatted_line = re.sub(r'\(laughter\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\(cheering\)|\[cheering\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\(shouting\)|\[shouting\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = formatted_line.replace('[no audio]', '')  
+                formatted_line = formatted_line.replace('(applause)', '[Audience Applauds]')
+                formatted_line = formatted_line.replace('[applause]', '[Audience Applauds]')
+                formatted_line = formatted_line.replace('(music)', '[Music Playing]')
+                formatted_line = formatted_line.replace('[music]', '[Music Playing]')
+                formatted_line = formatted_line.replace('(laughter)', '[Audience Laughing]')
+                formatted_line = formatted_line.replace('[laughter]', '[Audience Laughing]')
+                formatted_line = formatted_line.replace('(cheering)', '[Audience Cheers]')
+                formatted_line = formatted_line.replace('[cheering]', '[Audience Cheers]')
+                formatted_line = formatted_line.replace('(shouting)', '[Audience Shouts]')
+                formatted_line = formatted_line.replace('[shouting]', '[Audience Shouts]')
 
                 # American to British replacement
                 for american, british in american_to_british_dict.items():
                     formatted_line = formatted_line.replace(american, british)
 
-                formatted_line = re.sub(r'\[(.*?)\]', '[\\1]', formatted_line)        
+                formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')        
                 formatted_lines.append(formatted_line)
 
-                formatted_block = '\n'.join(formatted_lines)
-                formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
-                # Lowercase after all other processing
-                formatted_line = formatted_line.lower()
-                formatted_blocks.append(formatted_block)
+        formatted_block = '\n'.join(formatted_lines)
+        formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
+        # Lowercase after all other processing
+        formatted_block = formatted_block.lower()
+        formatted_blocks.append(formatted_block)
         
     return ''.join(formatted_blocks)
 
