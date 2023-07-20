@@ -294,16 +294,52 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
 
                 formatted_line = ' '.join(words)
                 formatted_line = formatted_line.replace('[no audio]', '')  
+                formatted_line = formatted_line.replace('[No Audio]', '')  
+                formatted_line = formatted_line.replace('[NO AUDIO]', '')  
+                formatted_line = formatted_line.replace('(no audio)', '')  
+                formatted_line = formatted_line.replace('(No Audio)', '')  
+                formatted_line = formatted_line.replace('(NO AUDIO)', '')  
+          
                 formatted_line = formatted_line.replace('(applause)', '[Audience Applauds]')
                 formatted_line = formatted_line.replace('[applause]', '[Audience Applauds]')
+                formatted_line = formatted_line.replace('(Applause)', '[Audience Applauds]')
+                formatted_line = formatted_line.replace('[Applause]', '[Audience Applauds]')
+                formatted_line = formatted_line.replace('(APPLAUSE)', '[Audience Applauds]')
+                formatted_line = formatted_line.replace('[APPLAUSE]', '[Audience Applauds]')
+              
                 formatted_line = formatted_line.replace('(music)', '[Music Playing]')
                 formatted_line = formatted_line.replace('[music]', '[Music Playing]')
+                formatted_line = formatted_line.replace('(Music)', '[Music Playing]')
+                formatted_line = formatted_line.replace('[Music]', '[Music Playing]')
+                formatted_line = formatted_line.replace('(MUSIC)', '[Music Playing]')
+                formatted_line = formatted_line.replace('[MUSIC]', '[Music Playing]')
+                formatted_line = formatted_line.replace('(MUSIC PLAYING)', '[Music Playing]')
+                formatted_line = formatted_line.replace('[MUSIC PLAYING]', '[Music Playing]')
+                formatted_line = formatted_line.replace('[music playing]', '[Music Playing]')
+                formatted_line = formatted_line.replace('(music playing)', '[Music Playing]')
+                formatted_line = formatted_line.replace('[Music Plays]', '[Music Playing]')
+                formatted_line = formatted_line.replace('(Music Plays)', '[Music Playing]')
+              
                 formatted_line = formatted_line.replace('(laughter)', '[Audience Laughing]')
                 formatted_line = formatted_line.replace('[laughter]', '[Audience Laughing]')
+                formatted_line = formatted_line.replace('(Laughter)', '[Audience Laughing]')
+                formatted_line = formatted_line.replace('[Laughter]', '[Audience Laughing]')
+                formatted_line = formatted_line.replace('(LAUGHTER)', '[Audience Laughing]')
+                formatted_line = formatted_line.replace('[LAUGHTER]', '[Audience Laughing]')
+              
                 formatted_line = formatted_line.replace('(cheering)', '[Audience Cheers]')
                 formatted_line = formatted_line.replace('[cheering]', '[Audience Cheers]')
+                formatted_line = formatted_line.replace('(Cheering)', '[Audience Cheers]')
+                formatted_line = formatted_line.replace('[Cheering]', '[Audience Cheers]')
+                formatted_line = formatted_line.replace('(CHEERING)', '[Audience Cheers]')
+                formatted_line = formatted_line.replace('[CHEERING]', '[Audience Cheers]')     
+              
                 formatted_line = formatted_line.replace('(shouting)', '[Audience Shouts]')
                 formatted_line = formatted_line.replace('[shouting]', '[Audience Shouts]')
+                formatted_line = formatted_line.replace('(Shouting)', '[Audience Shouts]')
+                formatted_line = formatted_line.replace('[Shouting]', '[Audience Shouts]')
+                formatted_line = formatted_line.replace('(SHOUTING)', '[Audience Shouts]')
+                formatted_line = formatted_line.replace('[SHOUTING]', '[Audience Shouts]')
 
                 # American to British replacement
                 for american, british in american_to_british_dict.items():
