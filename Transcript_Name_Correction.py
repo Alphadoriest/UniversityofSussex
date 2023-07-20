@@ -308,27 +308,30 @@ def reformat_subtitles(text: str) -> str:
     return ''.join(formatted_blocks)  # Return as a string
 
 def reformat_transcript(text: str, filename: str = "reformatted_transcript.docx"):
+    # Remove 'WEBVTT'
+    text = text.replace('WEBVTT', '')
+
     # Remove timestamps, and empty lines
     text = re.sub(r'\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d\s', '', text)
     
-    # Remove all newline characters and extra whitespace
-    formatted_text = text.replace('\n', ' ')
-    formatted_text = re.sub(r'\s{2,}', ' ', formatted_text)
+    # Replace paragraph breaks and multiple spaces with single spaces
+    formatted_text = re.sub(r'\s+', ' ', text)
     
-    # Remove bracketed captions
-    formatted_text = re.sub(r'\[.*?\]', '', formatted_text)
+    # Remove anything in square or round brackets
+    formatted_text = re.sub(r'\[.*?\]', '', formatted_text)  # Square brackets
+    formatted_text = re.sub(r'\(.*?\)', '', formatted_text)  # Round brackets
 
     # Write to Word file
     doc = Document()
-    
+
     # Add initial text
     p = doc.add_paragraph()
     p.add_run('[‘Trumpet Fanfare’ music playing] (A procession of University senior academics and staff in ceremonial robes enter the auditorium, walk down the aisles betwixt the audience of seated graduands and guests, ascend the stage via staircases on the left and right respectively, and take their seats. At the end of the procession are two academics/staff with ceremonial torches who on stage bow to each other, the rows of academics/staff, and then place the torches on a small, raised table with a cloth at the very front of the stage.)').italic = True
     doc.add_paragraph()  # Add paragraph break
-    
+
     # Add the formatted transcript
     doc.add_paragraph(formatted_text)
-    
+
     # Add final text
     p = doc.add_paragraph()
     p.add_run('[Music playing] (Senior academics and staff on stage tip their hats as two academics/staff walk across the stage to pick up the ceremonial torches from the small, raised table. They bow to one another before bowing to the rest of the academics/staff. Both lead lines single file of all the professors in separate directions down the staircases on the left and right. The academics and staff walk down the aisles betwixt the audience of seated graduates and guests and exit at the back of the auditorium.)').italic = True
