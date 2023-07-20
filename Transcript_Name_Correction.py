@@ -210,6 +210,8 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
             if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(name.split())):
                 max_similarity = sim
                 most_similar_name = name
+
+        print(f"full_name: {full_name}, most_similar_name: {most_similar_name}, max_similarity: {max_similarity}")
     
         if max_similarity >= similarity_threshold:
             replaced_names.append((full_name, most_similar_name))
