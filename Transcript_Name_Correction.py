@@ -512,7 +512,7 @@ transcript_text = st.text_area("Alternatively, Enter VTT/TXT Text:", transcript_
 if st.button("Reformat VTT/TXT Into Transcript", key="reformat_button"):
     if transcript_text:  # Check if transcript_text is not empty
         reformatted_transcript = reformat_transcript(transcript_text)
-        transcript_text = reformatted_transcript  # Overwrite transcript_text with the reformatted transcript
+        transcript_text = reformatted_transcript  # Overwrite transcript_text with the reformatted transcript    
 
     # Display the reformatted transcript
     st.text_area("Reformatted Transcript:", transcript_text, key='reformatted_transcript')
