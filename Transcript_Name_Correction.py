@@ -278,6 +278,14 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
             formatted_blocks.append(block.strip() + '\n')
             continue
 
+        # Apply regex substitutions before splitting into lines
+        block = re.sub(r'\[no audio\]', '', block, flags=re.IGNORECASE)  
+        block = re.sub(r'\(applause\)|\[applause\]', '[Audience Applauds]', block, flags=re.IGNORECASE)
+        block = re.sub(r'\(music(?: playing)?\)|\[music(?: playing)?\]', '[Music Playing]', block, flags=re.IGNORECASE) 
+        block = re.sub(r'\(laughter\)|\[laughter\]', '[Audience Laughing]', block, flags=re.IGNORECASE)
+        block = re.sub(r'\(cheering\)|\[cheering\]', '[Audience Cheers]', block, flags=re.IGNORECASE)
+        block = re.sub(r'\(shouting\)|\[shouting\]', '[Audience Shouts]', block, flags=re.IGNORECASE)
+
         lines = block.split('\n')
         lines = [line for line in lines if line.strip()]
         formatted_lines = []
@@ -293,21 +301,14 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
                             words[-1] = words[-1] + '.'
                 
                 formatted_line = ' '.join(words)
-                # Add regex substitutions after cleaning up text
-                formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)  
-                formatted_line = re.sub(r'\[(applause)\]|\((applause)\)', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\[(music)\]|\((music)\)', '[Music Playing]', formatted_line, flags=re.IGNORECASE) 
-                formatted_line = re.sub(r'\[(laughter)\]|\((laughter)\)', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\[(cheering)\]|\((cheering)\)', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\[(shouting)\]|\((shouting)\)', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
-
                 formatted_lines.append(formatted_line)
-                formatted_block = '\n'.join(formatted_lines)
-                formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
-                # Lowercase after all other processing
-                formatted_line = formatted_line.lower()
-                formatted_blocks.append(formatted_block)
-        
+
+        formatted_block = '\n'.join(formatted_lines)
+        formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
+        # Lowercase after all other processing
+        formatted_block = formatted_block.lower()
+        formatted_blocks.append(formatted_block)
+
     return ''.join(formatted_blocks)
 
 def reformat_transcript(text: str, filename: str):
