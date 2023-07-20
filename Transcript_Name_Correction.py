@@ -423,7 +423,7 @@ html_names = '<div style="height: 600px; overflow-y: auto;">' + ''.join([f'<span
             
 # Display the HTML
 components.v1.html(html_names, height=600)
-st.text("Visualise potential errors. Number of names <2 or >4 = bold and underlined.")
+st.text("Visualise potential errors. Number of names <2 or >4 or names with less than two letters = bold and underlined.")
 
 st.header("Graduation Subtitles Name Corrector")
 # Initialize subtitles_text as an empty string
