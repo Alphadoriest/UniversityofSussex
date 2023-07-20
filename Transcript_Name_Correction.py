@@ -264,7 +264,7 @@ def decapitalize(text):
     return ' '.join(words)
 
 def reformat_subtitles(text: str) -> str:
-  
+    
     if text.startswith('WEBVTT'):
         text = text.replace('WEBVTT', 'WEBVTT\n', 1)
 
@@ -305,17 +305,27 @@ def reformat_subtitles(text: str) -> str:
                 print(f"Before1: {formatted_line}")
                 formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')  
                 print(f"After2: {formatted_line}")
-      
+                
         formatted_block = '\n'.join(formatted_lines)
         print(f"Before: {formatted_block}")
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
         formatted_blocks.append(formatted_block)
         print(f"After: {formatted_block}")
 
-        # Create a list of lines from formatted_blocks
-lines = ''.join(formatted_blocks).split('\n')                
+    # Create a list of lines from formatted_blocks
+    lines = ''.join(formatted_blocks).split('\n')                
 
- return ''.join(formatted_blocks)  # Return as a string
+    # Find the index of the line containing "Dain Jeong"
+    index = next((i for i, line in enumerate(lines) if "Dain Jeong" in line), -1)
+    
+    # Print a few lines before and after the line containing "Dain Jeong"
+    if index != -1:
+        start = max(0, index - 5)  # 5 lines before, or start of text if less than 5 lines
+        end = min(len(lines), index + 6)  # 5 lines after, or end of text if less than 5 lines
+        for i in range(start, end):
+            print(lines[i])   
+
+    return ''.join(formatted_blocks)  # Return as a string
 
 # Find the index of the line containing "Dain Jeong"
 index = next((i for i, line in enumerate(lines) if "Dain Jeong" in line), -1)
