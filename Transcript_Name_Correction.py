@@ -9,7 +9,9 @@ from typing import List, Tuple
 from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 from streamlit import components
-import os
+from io import BytesIO
+import base64
+from pathlib import Path
 
 american_to_british_dict = {
   'honored': 'honoured',
@@ -307,7 +309,7 @@ def reformat_subtitles(text: str) -> str:
 
     return ''.join(formatted_blocks)  # Return as a string
 
-def reformat_transcript(text: str, filename: str = "transcript.docx"):
+def reformat_transcript(text: str):
     # Remove 'WEBVTT'
     text = text.replace('WEBVTT', '')
 
@@ -336,14 +338,12 @@ def reformat_transcript(text: str, filename: str = "transcript.docx"):
     p = doc.add_paragraph()
     p.add_run('[Music playing] (Senior academics and staff on stage tip their hats as two academics/staff walk across the stage to pick up the ceremonial torches from the small, raised table. They bow to one another before bowing to the rest of the academics/staff. Both lead lines single file of all the professors in separate directions down the staircases on the left and right. The academics and staff walk down the aisles betwixt the audience of seated graduates and guests and exit at the back of the auditorium.)').italic = True
 
-    # Save the document
-    doc.save(filename)
+    # Write to a BytesIO buffer instead of a file
+    buffer = BytesIO()
+    doc.save(buffer)
 
-    # Return the formatted text
-    return formatted_text
-
-import base64
-from pathlib import Path
+    # Return the buffer along with the formatted text
+    return formatted_text, buffer
 
 def get_binary_file_downloader_html(bin_file, file_label='File'):
     with open(bin_file, 'rb') as f:
@@ -512,12 +512,12 @@ transcript_text = st.text_area("Alternatively, Enter VTT/TXT Text:", transcript_
 # Reformat the transcript when a button is pressed
 if st.button("Reformat VTT/TXT Into Transcript", key="reformat_button"):
     if transcript_text:  # Check if transcript_text is not empty
-        reformatted_transcript = reformat_transcript(transcript_text)
+        reformatted_transcript, buffer = reformat_transcript(transcript_text)  # Unpack buffer
         transcript_text = reformatted_transcript  # Overwrite transcript_text with the reformatted transcript    
 
     # Display the reformatted transcript
     st.text_area("Reformatted Transcript:", transcript_text, key='reformatted_transcript')
 
     # Provide download link for the Word file
-    if os.path.exists('reformatted_transcript.docx'):
-        st.markdown(get_binary_file_downloader_html('reformatted_transcript.docx', 'Download Word file'), unsafe_allow_html=True)
+    buffer.seek(0)  # Reset buffer position
+    st.download_button('Download Word file', buffer, 'reformatted_transcript.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
