@@ -284,12 +284,15 @@ def reformat_subtitles(text: str) -> str:
             words = line.split()
             if words:
                 formatted_line = ' '.join(words)
+                print(f"Before: {formatted_line}")
                 formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\[applause\]|\(applause\)', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING)\)|\[(Music|MUSIC|MUSIC PLAYING)\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
+
+                print(f"After: {formatted_line}")
                 
                 # Convert dict keys/values to lowercase 
                 local_american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
@@ -303,8 +306,10 @@ def reformat_subtitles(text: str) -> str:
                 formatted_line = formatted_line.replace('[', '[[').replace(']', ']]')        
       
         formatted_block = '\n'.join(formatted_lines)
+        print(f"Before: {formatted_block}")
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
         formatted_blocks.append(formatted_block)
+        print(f"After: {formatted_block}")
 
     return ''.join(formatted_blocks)  # Return as a string
 
