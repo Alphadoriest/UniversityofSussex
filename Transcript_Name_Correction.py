@@ -311,15 +311,8 @@ def reformat_subtitles(text: str) -> tuple:
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
         formatted_blocks.append(formatted_block)
         print(f"After: {formatted_block}")
-
-    # Create a list of lines from formatted_blocks
-    lines = ''.join(formatted_blocks).split('\n')                
-
-    return ''.join(formatted_blocks), lines  # Return as a tuple
-
-formatted_blocks, lines = reformat_subtitles(text)
-
-# Find the index of the line containing "Dain Jeong"
+      
+        # Find the index of the line containing "Dain Jeong"
 index = next((i for i, line in enumerate(lines) if "Dain Jeong" in line), -1)
 
 # Print a few lines before and after the line containing "Dain Jeong"
@@ -328,6 +321,11 @@ if index != -1:
     end = min(len(lines), index + 6)  # 5 lines after, or end of text if less than 5 lines
     for i in range(start, end):
         print(lines[i])
+
+    # Create a list of lines from formatted_blocks
+    lines = ''.join(formatted_blocks).split('\n')                
+
+    return ''.join(formatted_blocks), lines  # Return as a tuple
 
 def reformat_transcript(text: str, filename: str):
     # Remove timestamps, and empty lines
