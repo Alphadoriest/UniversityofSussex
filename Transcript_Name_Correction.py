@@ -310,7 +310,7 @@ def reformat_subtitles(text: str) -> tuple:
         print(f"Before: {formatted_block}")
         formatted_block += '\n\n' if formatted_block and block != blocks[-1] else '\n'
         formatted_blocks.append(formatted_block)
-        print(f"After: {formatted_block}")
+        print(f"After7: {formatted_block}")
       
                 # Find the index of the line containing "Dain Jeong"
         index = next((i for i, line in enumerate(lines) if "Dain Jeong" in line), -1)
