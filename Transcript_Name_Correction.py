@@ -521,5 +521,5 @@ if st.button("Reformat VTT/TXT Into Transcript", key="reformat_button"):
     # Display the reformatted transcript
     st.text_area("Reformatted Transcript:", transcript_text, key='reformatted_transcript')
 
-# Provide download link for the Word file
-st.markdown(get_binary_file_downloader_html('reformatted_transcript.docx', 'Download Word file'), unsafe_allow_html=True)
+    # Provide download link for the Word file
+    st.markdown(get_binary_file_downloader_html('reformatted_transcript.docx', 'Download Word file'), unsafe_allow_html=True)
