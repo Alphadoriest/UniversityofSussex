@@ -9,6 +9,7 @@ from typing import List, Tuple
 from fuzzywuzzy import fuzz
 from metaphone import doublemetaphone
 from streamlit import components
+import os
 
 american_to_british_dict = {
   'honored': 'honoured',
@@ -517,5 +518,7 @@ if st.button("Reformat VTT/TXT Into Transcript", key="reformat_button"):
     # Display the reformatted transcript
     st.text_area("Reformatted Transcript:", transcript_text, key='reformatted_transcript')
 
-    # Provide download link for the Word file
-    st.markdown(get_binary_file_downloader_html('reformatted_transcript.docx', 'Download Word file'), unsafe_allow_html=True)
+    # Check if the file exists before trying to create a download link for it
+    if os.path.exists('reformatted_transcript.docx'):
+        # Provide download link for the Word file
+        st.markdown(get_binary_file_downloader_html('reformatted_transcript.docx', 'Download Word file'), unsafe_allow_html=True)
