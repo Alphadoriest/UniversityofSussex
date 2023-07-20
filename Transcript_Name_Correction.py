@@ -279,7 +279,7 @@ def reformat_subtitles(text: str) -> str:
 
         formatted_lines = []
         for line in lines:
-        words = line.split()
+            words = line.split()
         if words:
             formatted_line = ' '.join(words)
             formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
