@@ -307,7 +307,7 @@ def reformat_subtitles(text: str) -> str:
 
     return ''.join(formatted_blocks)  # Return as a string
 
-def reformat_transcript(text: str, filename: str = "reformatted_transcript.docx"):
+def reformat_transcript(text: str, filename: str = "transcript.docx"):
     # Remove 'WEBVTT'
     text = text.replace('WEBVTT', '')
 
