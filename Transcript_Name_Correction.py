@@ -312,6 +312,8 @@ def reformat_subtitles(text: str) -> str:
         formatted_blocks.append(formatted_block)
         print(f"After: {formatted_block}")
 
+        print(f"formatted_blocks: {formatted_blocks}")
+
     return ''.join(formatted_blocks)  # Return as a string
 
 def reformat_transcript(text: str, filename: str):
