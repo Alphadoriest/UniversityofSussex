@@ -319,7 +319,7 @@ lines = ''.join(formatted_blocks).split('\n')
 index = next((i for i, line in enumerate(lines) if "Dain Jeong" in line), -1)
           
 # Print a few lines before and after the line containing "Dain Jeong"
- if index != -1:
+if index != -1:
               start = max(0, index - 5)  # 5 lines before, or start of text if less than 5 lines
               end = min(len(lines), index + 6)  # 5 lines after, or end of text if less than 5 lines
               for i in range(start, end):
