@@ -313,7 +313,7 @@ def reformat_subtitles(text: str, replaced_names: List[Tuple[str, str]]) -> str:
                 formatted_line = formatted_line.lower()
                 formatted_blocks.append(formatted_block)
         
-   return ''.join(formatted_blocks)
+    return ''.join(formatted_blocks)
 
 def reformat_transcript(text: str, filename: str):
     # Remove timestamps, and empty lines
