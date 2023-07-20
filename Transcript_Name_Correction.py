@@ -490,7 +490,7 @@ new_text = st.text_area("Updated Subtitles Text to Copy Into VTT/TXT File:", st.
 # Save changes button
 if st.button('Save Changes'):
     # Update session state with any changes made in the text area
-    st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
+    st.session_state.new_text, _ = reformat_subtitles(new_text)  # Use reformat_subtitles here
 
 st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")
 
