@@ -171,8 +171,7 @@ def format_names(names_list):
     for i, name in enumerate(names_list):
         color = colors[i % len(colors)]
         formatted_name = (name, color)
-        formatted_names.append(formatted_name
-
+        formatted_names.append(formatted_name)
     return formatted_names
 
 #Correct all names in graduation subtitles (find and replace) functions
@@ -393,7 +392,7 @@ st.sidebar.text('Turning on ensures less mismatching, but more necessary if only
 match_word_count = st.sidebar.checkbox('Should the number of words match?', value=False)
 
 # Add the banner image at the top of the app
-st.image("banner.jpg")
+st.image("banner2.jpg")
 
 st.header('Name Extractor for Graduation Ceremony In-Person Lists')
 
