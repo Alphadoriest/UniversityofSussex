@@ -299,7 +299,7 @@ def reformat_subtitles(text: str) -> str:
                 formatted_line = re.sub(r'\[applause\]|\(applause\)', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING|ORCHESTRAL MUSIC)\)|\[(Music|MUSIC|MUSIC PLAYING|ORCHESTRAL MUSIC)\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((cheering|audience cheering)\)|\[(cheering|audience cheering)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\((cheering|audience cheering|CHEERING AND APPLAUSE)\)|\[(cheering|audience cheering|CHEERING AND APPLAUSE)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((pause)\)', '[Pause]', formatted_line, flags=re.IGNORECASE)
 
