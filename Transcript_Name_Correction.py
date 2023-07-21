@@ -110,6 +110,7 @@ american_to_british_dict = {
   'acknowledgment':'acknowledgement',
   'favorite':'favourite',
   'benefited':'benefitted',
+  'practise':'practice',
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
