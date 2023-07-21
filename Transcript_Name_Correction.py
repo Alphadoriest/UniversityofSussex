@@ -159,7 +159,7 @@ def extract_middle_column_text(doc):
     # Remove single letters from names
     cleaned_names = []
     for name in cleaned_text.split(', '):
-        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion"]:
+        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat",]:
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
             cleaned_names.append(decapitalize(name))
