@@ -443,8 +443,18 @@ if st.button("Press to Replace Names"):
         st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
         st.session_state.replaced_names = replaced_names
         st.session_state.unmatched_names = unmatched_names
+        # Get the indices of unmatched names in names_list
+        unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
+        # Get the names that precede the unmatched names and store in the session state
+        st.session_state.preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
+        # Get the names that succeed the unmatched names and store in the session state
+        st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
 
-# Ensure new_text, replaced_names, and unmatched_names are in session state
+# Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
+if 'preceding_names' not in st.session_state:
+    st.session_state.preceding_names = []
+if 'succeeding_names' not in st.session_state:
+    st.session_state.succeeding_names = []
 if 'new_text' not in st.session_state:
     st.session_state.new_text = ""
 if 'replaced_names' not in st.session_state:
@@ -452,18 +462,15 @@ if 'replaced_names' not in st.session_state:
 if 'unmatched_names' not in st.session_state:
     st.session_state.unmatched_names = []
 
-# Display replaced and unmatched names from session state
+# Display replaced, unmatched, preceding, and succeeding names from session state
 st.subheader("Names replaced:")
 for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
     original_words = original.split()
     replaced_words = replaced.split()
-
-    # Check if the original and replaced names have a different number of words
     if len(original_words) != len(replaced_words):
-        # If they do, make the text bold
-        st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")  # Display similarity score
+        st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
     else:
-        st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")  # Display similarity score
+        st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
 
 st.subheader("Names not matched:")
 st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
@@ -491,7 +498,7 @@ preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices
 succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
 
 st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Subtitles Box:")
-for preceding, succeeding, unmatched in zip(preceding_names, succeeding_names, st.session_state.unmatched_names):
+for preceding, succeeding, unmatched in zip(st.session_state.preceding_names, st.session_state.succeeding_names, st.session_state.unmatched_names):
     st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
 
 # Get the text from the text area
