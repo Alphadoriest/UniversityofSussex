@@ -50,7 +50,6 @@ american_to_british_dict = {
   'annex':'annexe',
   'glycerin':'glycerine',
   'gram':'gramme',
-  'grill':'grille',
   'program':'programme',
   'ton':'tonne',
   'diarrhea':'diarrhoea',
@@ -92,7 +91,6 @@ american_to_british_dict = {
   'theater':'theatre',
   'airplane':'aeroplane',
   'artifact':'artefact',
-  'check':'cheque',
   'checkerboard':'chequerboard',
   'checkered':'chequered',
   'cozy':'cosy',
@@ -111,6 +109,12 @@ american_to_british_dict = {
   'favorite':'favourite',
   'benefited':'benefitted',
   'practise':'practice',
+  'characterization':'characterisation',
+  'learned':'learnt',
+  'decarbonization ':'decarbonisation',
+  'dependent':'dependant',
+  'judgmental':'judgemental',
+  'apologize':'apologise',
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
@@ -296,8 +300,8 @@ def reformat_subtitles(text: str) -> str:
             if words:
                 formatted_line = ' '.join(words)
                 formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\[applause\]|\(applause\)', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING|ORCHESTRAL MUSIC)\)|\[(Music|MUSIC|MUSIC PLAYING|ORCHESTRAL MUSIC)\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\((applause|ALL APPLAUD|)\)|\[(applause)\]'\, '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
+                formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music )\)|\[(Music|MUSIC|MUSIC PLAYING|ORCHESTRAL MUSIC| Music )\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((cheering|audience cheering|CHEERING AND APPLAUSE)\)|\[(cheering|audience cheering|CHEERING AND APPLAUSE)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
                 formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
