@@ -295,32 +295,33 @@ def reformat_subtitles(text: str) -> str:
         lines = [line for line in lines if line.strip()]
 
         formatted_lines = []
-        for line in lines:
-            words = line.split()
-            if words:
-                formatted_line = ' '.join(words)
-                formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((applause|ALL APPLAUD|)\)|\[(applause)\]'\, '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music )\)|\[(Music|MUSIC|MUSIC PLAYING|ORCHESTRAL MUSIC| Music )\]', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((laughter)\)|\[laughter\]', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((cheering|audience cheering|CHEERING AND APPLAUSE)\)|\[(cheering|audience cheering|CHEERING AND APPLAUSE)\]', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
-                formatted_line = re.sub(r'\((pause)\)', '[Pause]', formatted_line, flags=re.IGNORECASE)
+for line in lines:
+    words = line.split()
+    if words:
+        formatted_line = ' '.join(words)
+        formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
+        formatted_line = re.sub(r'\((applause|ALL APPLAUD|APPLAUSE CONTINUES)\)|\[(applause|ALL APPLAUD|APPLAUSE CONTINUES)\]|applause|ALL APPLAUD|APPLAUSE CONTINUES', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
+        formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music )\)|\[(Music|MUSIC|MUSIC PLAYING|ORCHESTRAL MUSIC| Music )\]|Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
+        formatted_line = re.sub(r'\((laughter|ALL LAUGH)\)|\[(laughter|ALL LAUGH)\]|laughter|ALL LAUGH', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
+        formatted_line = re.sub(r'\((cheering|audience cheering|CHEERING AND APPLAUSE|INDISTINCT CHATTER)\)|\[(cheering|audience cheering|CHEERING AND APPLAUSE|INDISTINCT CHATTER)\]|CHEERING AND APPLAUSE', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
+        formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]|shouting|audience shouting', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
+        formatted_line = re.sub(r'\((pause)\)|\[(pause)\]|pause', '[Pause]', formatted_line, flags=re.IGNORECASE)
+        formatted_line = re.sub(r'\((exhale)\)|\[(exhale)\]|exhale', '[They Exhale]', formatted_line, flags=re.IGNORECASE)
 
-                # Convert dict keys/values to lowercase
-                local_american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
+        # Convert dict keys/values to lowercase
+        local_american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
 
-                # American to British replacement
-                for american, british in local_american_to_british_dict.items():
-                    # Replace whole words only
-                    formatted_line = re.sub(rf'\b{american}\b', british, formatted_line, flags=re.IGNORECASE)
+        # American to British replacement
+        for american, british in local_american_to_british_dict.items():
+            # Replace whole words only
+            formatted_line = re.sub(rf'\b{american}\b', british, formatted_line, flags=re.IGNORECASE)
 
-                formatted_lines.append(formatted_line)
+        formatted_lines.append(formatted_line)
 
-        formatted_block = '\n'.join(formatted_lines) + '\n\n'
-        formatted_blocks.append(formatted_block)
+formatted_block = '\n'.join(formatted_lines) + '\n\n'
+formatted_blocks.append(formatted_block)
 
-    return ''.join(formatted_blocks)  # Return as a string
+return ''.join(formatted_blocks)  # Return as a string
 
 def reformat_transcript(text: str):
     # Remove 'WEBVTT'
