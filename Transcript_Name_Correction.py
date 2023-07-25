@@ -295,10 +295,10 @@ def reformat_subtitles(text: str) -> str:
         lines = [line for line in lines if line.strip()]
 
         formatted_lines = []
-for line in lines:
-    words = line.split()
-    if words:
-        formatted_line = ' '.join(words)
+        for line in lines:
+            words = line.split()
+            if words:
+                formatted_line = ' '.join(words)
         formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
         formatted_line = re.sub(r'\((applause|ALL APPLAUD|APPLAUSE CONTINUES)\)|\[(applause|ALL APPLAUD|APPLAUSE CONTINUES)\]|applause|ALL APPLAUD|APPLAUSE CONTINUES', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
         formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music )\)|\[(Music|MUSIC|MUSIC PLAYING|ORCHESTRAL MUSIC| Music )\]|Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
@@ -318,10 +318,10 @@ for line in lines:
 
         formatted_lines.append(formatted_line)
 
-formatted_block = '\n'.join(formatted_lines) + '\n\n'
-formatted_blocks.append(formatted_block)
+        formatted_block = '\n'.join(formatted_lines) + '\n\n'
+        formatted_blocks.append(formatted_block)
 
-return ''.join(formatted_blocks)  # Return as a string
+    return ''.join(formatted_blocks)  # Return as a string
 
 def reformat_transcript(text: str):
     # Remove 'WEBVTT'
