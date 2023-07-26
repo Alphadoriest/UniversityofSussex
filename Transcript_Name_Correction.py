@@ -131,8 +131,10 @@ def extract_middle_column_text(doc):
                 paragraphs = middle_cell.paragraphs
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
+                    is_strikethrough = False  # Initialize strikethrough indicator for this paragraph
                     for run in paragraph.runs:
                         if run.font.strike:
+                            is_strikethrough = True  # Set indicator to True if any run in the paragraph is struck out
                             strikethroughs.append(run.text)
                         else:
                             clean_paragraph_text += run.text  
@@ -146,6 +148,7 @@ def extract_middle_column_text(doc):
                     if desired_text:  # Only add non-empty text
                         middle_column_texts.append(desired_text)
                         name_mapping[desired_text] = None  # Initialize mapping
+                        strikethroughs.append(is_strikethrough)  # Append strikethrough indicator to list
 
     # Clean names and update mapping
     cleaned_names = []
