@@ -135,7 +135,7 @@ def extract_middle_column_text(doc):
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
-                        if run.font.strike or run.font.delete:
+                        if run.font.strike:
                             strikethrough = True
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
