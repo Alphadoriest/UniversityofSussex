@@ -397,7 +397,7 @@ st.sidebar.text('Turning on ensures less mismatching, but more necessary if only
 match_word_count = st.sidebar.checkbox('Should the number of words match?', value=False)
 # Add a checkbox to switch the strikethrough removal feature on or off
 
-strikethrough_checkbox = st.checkbox('Remove strikethrough text from names?', value=False)
+strikethrough_checkbox = st.sidebar.checkbox('Remove strikethrough text from names?', value=False)
 
 # Add the banner image at the top of the app
 st.image("banner2.jpg")
