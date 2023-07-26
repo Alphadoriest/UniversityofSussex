@@ -178,6 +178,7 @@ def extract_middle_column_text(doc):
     return cleaned_names, strikethroughs
 
 def format_names(names_list, strikethroughs):
+    assert len(names_list) == len(strikethroughs), f"names_list has {len(names_list)} items but strikethroughs has {len(strikethroughs)} items"
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
     formatted_names = []
     for i, name in enumerate(names_list):
