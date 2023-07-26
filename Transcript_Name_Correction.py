@@ -179,7 +179,7 @@ def extract_middle_column_text(doc):
                     name += ' (Marked as not present)'  # Add '(Marked as not present)' suffix
             else:
                 name = ' '.join(word for word in words if len(word) > 1)
-            cleaned_names.append(name)
+            cleaned_names.append(decapitalize(name))  
 
     return cleaned_names
   
