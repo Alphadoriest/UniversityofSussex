@@ -129,28 +129,18 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 for paragraph in paragraphs:
-                    inside_brackets = False  # Initialize bracket flag
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
+
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         strikethrough = any(run.font.strike for run in paragraph.runs if run.text in line) # Set strikethrough flag for each line
                         line = line.strip()
+
                         # Ignore lines that contain full bracketed phrases
                         line = re.sub(r'\(.*?\)', '', line)
                         line = re.sub(r'\[.*?\]', '', line)
-
-                        # Update bracket flag
-                        if line.startswith('('):
-                            inside_brackets = True
-                        if line.endswith(')'):
-                            inside_brackets = False
-                            continue
-
-                        # Ignore lines inside brackets
-                        if inside_brackets:
-                            continue
 
                         if line:
                             middle_column_texts.append(line)
@@ -163,7 +153,7 @@ def extract_middle_column_text(doc):
     cleaned_names = []
     cleaned_strikethroughs = []
     for name in cleaned_text.split(', '):
-        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
+        if name and name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
             cleaned_names.append(decapitalize(name))
