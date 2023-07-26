@@ -170,14 +170,13 @@ def extract_middle_column_text(doc):
 
     return cleaned_names
 
-def format_names(names_list):
+def format_names(names_list, strikethrough=False):
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
     formatted_names = []
     for name in names_list:
         if strikethrough and name.startswith("~"):
             name = name[1:]  # Remove strikethrough mark
-    for i, name in enumerate(names_list):
-        color = colors[i % len(colors)]
+        color = colors[names_list.index(name) % len(colors)]
         formatted_name = (name, color)
         formatted_names.append(formatted_name)
     return formatted_names
