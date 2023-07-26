@@ -128,31 +128,28 @@ def extract_middle_column_text(doc):
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
-                desired_text = ''
-                inside_brackets = False  # Initialize bracket flag
-                strikethrough = False
                 for paragraph in paragraphs:
+                    desired_text = ''
+                    strikethrough = False
                     for run in paragraph.runs:
                         if run.font.strike:
                             strikethrough = True
-                        if not run.font.strike:  # If the text is not strikethrough
-                            desired_text += run.text  # append the text of run to the clean_paragraph_text
+                        if not run.font.strike:  
+                            desired_text += run.text  
                     lines = desired_text.split('\n')
                     for line in lines:
                         line = line.strip()
+                        inside_brackets = False
 
-                        # Update bracket flag
                         if line.startswith('('):
                             inside_brackets = True
                         if line.endswith(')'):
                             inside_brackets = False
                             continue
 
-                        # Ignore lines inside brackets
                         if inside_brackets:
                             continue
 
-                        # Ignore lines that contain full bracketed phrases
                         line = re.sub(r'\(.*?\)', '', line)
                         line = re.sub(r'\[.*?\]', '', line)
 
@@ -160,10 +157,8 @@ def extract_middle_column_text(doc):
                             middle_column_texts.append(line)
                             strikethroughs.append(strikethrough)  # Add strikethrough info to the list
 
-    # Join the text with ', ', then replace ', ,' with ', ', and finally split again by ', '
-    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
+    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  
 
-    # Remove single letters from names
     cleaned_names = []
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
