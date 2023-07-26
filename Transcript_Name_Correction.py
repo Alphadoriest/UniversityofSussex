@@ -12,6 +12,8 @@ from streamlit import components
 from io import BytesIO
 import base64
 from pathlib import Path
+from docx.oxml.ns import nsdecls
+from docx.oxml import parse_xml
 
 american_to_british_dict = {
   'honored':'honoured',
@@ -118,7 +120,7 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-def extract_middle_column_text(doc):
+def extract_middle_column_text_xml(doc):
     middle_column_texts = []
 
     for table in doc.tables:
@@ -131,9 +133,15 @@ def extract_middle_column_text(doc):
                 inside_brackets = False  # Initialize bracket flag
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
+                    run: docx.text.run.Run
                     for run in paragraph.runs:
-                        if run.font.strike:  # Check if the text is strikethrough
-                            clean_paragraph_text += run.text + ' (Marked as not present)'  # Add marker for strikethrough text
+                        # Use XML to detect strikethrough text
+                        rPr = run._r.getchildren()[0]  # Get the properties of the run
+                        rPr_xml = parse_xml(rPr.xml)  # Parse the XML of the properties
+                        strike = rPr_xml.find("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}strike")  # Find the strike element
+                        if strike is not None and strike.attrib.get("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val") == "true":
+                            # This run is strikethrough text
+                            clean_paragraph_text += f"~~{run.text}~~"
                         else:
                             clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
 
@@ -142,7 +150,7 @@ def extract_middle_column_text(doc):
                         line = line.strip()
 
                         # Update bracket flag
-                        if line.startswith('(') and not line.endswith('(Marked as not present)'):
+                        if line.startswith('('):
                             inside_brackets = True
                         if line.endswith(')'):
                             inside_brackets = False
@@ -227,17 +235,21 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
         max_similarity = 0
         most_similar_name = None
         for name in names_list:
-            sim = similarity(full_name, name)
+            sim = similarity(full_name.replace('~~', ''), name)
             if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(name.split())):
                 max_similarity = sim
                 most_similar_name = name
     
         if max_similarity >= similarity_threshold:
-            replaced_names.append((full_name, most_similar_name, max_similarity))
+            replacement = most_similar_name
+            if full_name.startswith('~~') and full_name.endswith('~~'):
+                # This name was marked as not present, so add the marker to the replacement
+                replacement += ' (Marked as not present)'
+            replaced_names.append((full_name, replacement, max_similarity))
             # Remove the name from unmatched_names if it was matched
             if most_similar_name in unmatched_names:
                 unmatched_names.remove(most_similar_name)
-            return most_similar_name
+            return replacement
         else:
             return full_name
 
