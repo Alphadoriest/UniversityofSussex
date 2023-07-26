@@ -132,12 +132,12 @@ def extract_middle_column_text(doc):
                 inside_brackets = False  # Initialize bracket flag
                 strikethrough = False
                 for paragraph in paragraphs:
+                    clean_paragraph_text = ''
                     for run in paragraph.runs:
+                        clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
                         if run.font.strike:
                             strikethrough = True
-                        if not run.font.strike:  # If the text is not strikethrough
-                            desired_text += run.text  # append the text of run to the clean_paragraph_text
-                    lines = desired_text.split('\n')
+                    lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
 
@@ -157,8 +157,9 @@ def extract_middle_column_text(doc):
                         line = re.sub(r'\[.*?\]', '', line)
 
                         if line:
-                            middle_column_texts.append(line)
-                            strikethroughs.append(strikethrough)  # Add strikethrough info to the list
+                            desired_text = line
+                middle_column_texts.append(desired_text)
+                strikethroughs.append(strikethrough)
 
     # Join the text with ', ', then replace ', ,' with ', ', and finally split again by ', '
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
@@ -212,36 +213,31 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text: str, names_list: List[str], strikethroughs: List[bool]) -> Tuple[List[Tuple[str, str, float, bool]], str]:
+def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str, float]], str]:
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
-    unmatched_strikethroughs = strikethroughs[:]  # Make a copy of strikethroughs
 
     def replace_name(match):
         full_name = match.group(0)
-
+    
         # Check if the name is already replaced
-        for original, replaced, _, _ in replaced_names:
+        for original, replaced, _ in replaced_names:
             if full_name == replaced:
                 return full_name
-
+    
         max_similarity = 0
         most_similar_name = None
-        most_similar_index = None
-        for i, name in enumerate(names_list):
+        for name in names_list:
             sim = similarity(full_name, name)
             if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(name.split())):
                 max_similarity = sim
                 most_similar_name = name
-                most_similar_index = i
-
+    
         if max_similarity >= similarity_threshold:
-            replaced_names.append((full_name, most_similar_name, max_similarity, strikethroughs[most_similar_index]))
+            replaced_names.append((full_name, most_similar_name, max_similarity))
             # Remove the name from unmatched_names if it was matched
             if most_similar_name in unmatched_names:
-                index = unmatched_names.index(most_similar_name)
                 unmatched_names.remove(most_similar_name)
-                unmatched_strikethroughs.pop(index)
             return most_similar_name
         else:
             return full_name
@@ -265,9 +261,9 @@ def replace_similar_names(text: str, names_list: List[str], strikethroughs: List
     if replaced_names:
         # Remove leading whitespaces from all lines as a final step
         new_text = '\n'.join(line.lstrip() for line in new_text.split('\n'))
-        return replaced_names, new_text, unmatched_names, unmatched_strikethroughs  # Return unmatched_names and unmatched_strikethroughs as well
+        return replaced_names, new_text, unmatched_names  # Return unmatched_names as well
     else:
-        return [], '', unmatched_names, unmatched_strikethroughs  # Return unmatched_names and unmatched_strikethroughs as well
+        return [], '', unmatched_names  # Return unmatched_names as well
 
 def decapitalize(text):
     roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
@@ -450,7 +446,7 @@ text = st.text_area("Alternatively, Enter Text From a Subtitles:", subtitles_tex
 # Add a separate button for the name replacement process
 if st.button("Press to Replace Names"):  
     if names_list and text:  # Check if both text boxes are populated
-        replaced_names, new_text, unmatched_names, unmatched_strikethroughs = replace_similar_names(text, names_list, strikethroughs)  # Unpack unmatched_names and unmatched_strikethroughs
+        replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
 
         # Store the resultant text and replaced_names and unmatched_names in session state
         st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
