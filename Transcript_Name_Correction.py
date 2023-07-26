@@ -179,6 +179,8 @@ def extract_middle_column_text(doc):
                     name += ' (Marked as not present)'  # Add '(Marked as not present)' suffix
             else:
                 name = ' '.join(word for word in words if len(word) > 1)
+                # Remove any remaining '~~' from the name
+                name = re.sub(r'~~', '', name)
             cleaned_names.append(name)
 
     return cleaned_names
