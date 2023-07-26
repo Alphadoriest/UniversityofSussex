@@ -132,9 +132,10 @@ def extract_middle_column_text(doc):
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
-                        if run.font.strike:
-                            clean_paragraph_text += ' (Marked as not present)'  # Add marker for strikethrough text
+                        if run.font.strike:  # Check if the text is strikethrough
+                            clean_paragraph_text += run.text + ' (Marked as not present)'  # Add marker for strikethrough text
+                        else:
+                            clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
 
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
