@@ -167,21 +167,19 @@ def extract_middle_column_text(doc):
     # Remove single letters from names
     cleaned_names = []
     for name in cleaned_text.split(', '):
-        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
+        if name and name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
             words = name.split()
             # Check if name starts and ends with '~~'
             if words[0].startswith('~~') and words[-1].endswith('~~'):
                 # Remove '~~' from the first and last words
                 words[0] = words[0][2:]
                 words[-1] = words[-1][:-2]
-            name = ' '.join(word for word in words if len(word) > 1)
-            # Decapitalize name
+            # Join the words back into a string and remove any remaining '~' symbols
+            name = ' '.join(word for word in words if len(word) > 1).replace('~', '')
             name = decapitalize(name)
-            if name.startswith('~~') and name.endswith('~~'):
-                name = decapitalize(name[2:-2]) + ' (Marked as not present)'  # Add '(Marked as not present)' suffix
-            else:
-                name = decapitalize(name)
             cleaned_names.append(name)
+    # Remove any empty strings from cleaned_names
+    cleaned_names = [name for name in cleaned_names if name]
 
     return cleaned_names
   
