@@ -135,9 +135,7 @@ def extract_middle_column_text(doc):
                     for run in paragraph.runs:
                         if run.font.strike:
                             is_strikethrough = True  # Set indicator to True if any run in the paragraph is struck out
-                            strikethroughs.append(run.text)
-                        else:
-                            clean_paragraph_text += run.text  
+                        clean_paragraph_text += run.text  
 
                     # Remove bracketed phrases from the entire paragraph text
                     clean_paragraph_text = re.sub(r'\(.*?\)', '', clean_paragraph_text)
