@@ -132,8 +132,7 @@ def extract_middle_column_text(doc):
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        if not run.font.strike:  # If the text is not strikethrough
-                            clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
+                        clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
@@ -473,13 +472,13 @@ for original, replaced, similarity in sorted(st.session_state.replaced_names, ke
     original_words = original.split()
     replaced_words = replaced.split()
     if len(original_words) != len(replaced_words):
-        st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
+        st.markdown(f"**{original} (Marked as not present) -> {replaced} (Similarity: {similarity:.2f})**")
     else:
-        st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
+        st.write(f"{original} (Marked as not present) -> {replaced} (Similarity: {similarity:.2f})")
 
 st.subheader("Names not matched:")
 st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
-unmatched_names_str = ', '.join(st.session_state.unmatched_names)
+unmatched_names_str = ', '.join([f"{name} (Marked as not present)" for name in st.session_state.unmatched_names])
 st.write(unmatched_names_str)
 
 # Button to copy unmatched names to clipboard
@@ -502,10 +501,11 @@ preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices
 # Get the names that succeed the unmatched names
 succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
 
+# Preceding and succeeding names
 st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Subtitles Box:")
 for preceding, succeeding, unmatched in zip(st.session_state.preceding_names, st.session_state.succeeding_names, st.session_state.unmatched_names):
-    st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
-
+    st.write(f"{preceding or 'N/A'} (Marked as not present), {succeeding or 'N/A'} (Marked as not present) -> {unmatched} (Marked as not present)")
+    
 # Get the text from the text area
 new_text = st.text_area("Updated Subtitles Text to Copy Into VTT/TXT File:", st.session_state.get('new_text', ''), key='updated_subtitles_text')
 
