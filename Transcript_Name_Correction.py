@@ -120,7 +120,8 @@ american_to_british_dict = {
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
     middle_column_texts = []
-    strikethroughs = []
+    name_mapping = {}  # Store original to cleaned names
+    strikethroughs = []  # Store strikethrough text
 
     for table in doc.tables:
         for row in table.rows:
@@ -131,46 +132,31 @@ def extract_middle_column_text(doc):
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        clean_paragraph_text += run.text
+                        if run.font.strike:
+                            strikethroughs.append(run.text)
+                        else:
+                            clean_paragraph_text += run.text  
 
-                    lines = clean_paragraph_text.split('\n')
-                    inside_brackets = False  # Initialize variable
-                    for line in lines:
-                        strikethrough = any(run.font.strike for run in paragraph.runs if run.text in line)
-                        line = line.strip()
+                    # Remove bracketed phrases from the entire paragraph text
+                    clean_paragraph_text = re.sub(r'\(.*?\)', '', clean_paragraph_text)
+                    clean_paragraph_text = re.sub(r'\[.*?\]', '', clean_paragraph_text)
 
-                        # Remove full bracketed phrases
-                        line = re.sub(r'\(.*?\)', '', line)
-                        line = re.sub(r'\[.*?\]', '', line)
+                    desired_text = clean_paragraph_text.strip()
 
-                        # Update bracket flag
-                        if line.startswith('('):
-                            inside_brackets = True
-                        if line.endswith(')'):
-                            inside_brackets = False
-                            continue
+                    if desired_text:  # Only add non-empty text
+                        middle_column_texts.append(desired_text)
+                        name_mapping[desired_text] = None  # Initialize mapping
 
-                        # Ignore lines inside brackets
-                        if inside_brackets:
-                            continue
-
-                        if line:
-                            middle_column_texts.append(line)
-                            strikethroughs.append(strikethrough)
-
-    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))
-
+    # Clean names and update mapping
     cleaned_names = []
-    cleaned_strikethroughs = []
-    for name in cleaned_text.split(', '):
-        if name and name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
+    for name in middle_column_texts:
+        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD", "Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat"]:
             words = name.split()
-            name = ' '.join(word for word in words if len(word) > 1)
-            if name and name in middle_column_texts:  # Check if name exists in middle_column_texts
-                cleaned_names.append(decapitalize(name))
-                cleaned_strikethroughs.append(strikethroughs[middle_column_texts.index(name)])
+            cleaned_name = ' '.join(word for word in words if len(word) > 1)
+            cleaned_names.append(cleaned_name)
+            name_mapping[name] = cleaned_name  # Update mapping
 
-    return cleaned_names, cleaned_strikethroughs
+    return cleaned_names, name_mapping, strikethroughs
 
 def format_names(names_list, strikethroughs):
     assert len(names_list) == len(strikethroughs), f"names_list has {len(names_list)} items but strikethroughs has {len(strikethroughs)} items"
@@ -416,7 +402,7 @@ names_list = ''
 
 if uploaded_file is not None:
     document = Document(io.BytesIO(uploaded_file.read()))
-    names_list, strikethroughs = extract_middle_column_text(document)  # Unpack strikethroughs
+    names_list, name_mapping, strikethroughs = extract_middle_column_text(document)  # Unpack all three items
 
 # Use names_list as the default value for the names_list text_area
 names_list = st.text_area("Alternatively, enter names, separated by commas:", ', '.join(names_list), key='names_list')
