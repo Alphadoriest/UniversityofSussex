@@ -169,14 +169,12 @@ def extract_middle_column_text(doc):
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
             # Check if name contains '~~'
-            strikethrough_matches = re.findall(r'~~(.*?)~~', name)
-            for match in strikethrough_matches:
-                if match.strip():  # If the strikethrough text is not empty
-                    name = name.replace('~~' + match + '~~', decapitalize(match) + ' (Marked As Not Present)')  # Replace it with the name and the suffix
-                else:
-                    name = name.replace('~~' + match + '~~', '')  # Otherwise, remove it
-            name = decapitalize(name)  # Apply decapitalize to the name
-            cleaned_names.append(name)
+            if '~~' in name:
+                # Remove '~~' from the name
+                name = re.sub(r'~~(.*?)~~', r'\1', name).strip() # Added strip() to remove leading/trailing spaces
+                if name:  # Only add the suffix if the name is not empty
+                    name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
+            cleaned_names.append(decapitalize(name))  # Apply decapitalize here
 
     return cleaned_names
   
