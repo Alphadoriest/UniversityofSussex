@@ -129,27 +129,45 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 desired_text = ''
+                inside_brackets = False  # Initialize bracket flag
                 strikethrough = False
                 for paragraph in paragraphs:
+                    clean_paragraph_text = ''
                     for run in paragraph.runs:
+                        clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
                         if run.font.strike:
                             strikethrough = True
-                        desired_text += run.text.strip() + ' '
-                    desired_text = desired_text.strip()
-                    # Ignore empty lines and lines that contain only special characters
-                    if desired_text and not re.match(r'^[^\w\s]+$', desired_text):
-                        middle_column_texts.append(desired_text)
-                        strikethroughs.append(strikethrough)
-                        desired_text = ''
-                        strikethrough = False
+                    lines = clean_paragraph_text.split('\n')
+                    for line in lines:
+                        line = line.strip()
+
+                        # Update bracket flag
+                        if line.startswith('('):
+                            inside_brackets = True
+                        if line.endswith(')'):
+                            inside_brackets = False
+                            continue
+
+                        # Ignore lines inside brackets
+                        if inside_brackets:
+                            continue
+
+                        # Ignore lines that contain full bracketed phrases
+                        line = re.sub(r'\(.*?\)', '', line)
+                        line = re.sub(r'\[.*?\]', '', line)
+
+                        if line:
+                            desired_text = line
+                middle_column_texts.append(desired_text)
+                strikethroughs.append(strikethrough)
 
     # Join the text with ', ', then replace ', ,' with ', ', and finally split again by ', '
-    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))
+    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
     # Remove single letters from names
     cleaned_names = []
     for name in cleaned_text.split(', '):
-        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat"]:
+        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
             cleaned_names.append(decapitalize(name))
@@ -160,10 +178,7 @@ def format_names(names_list, strikethroughs):
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
     formatted_names = []
     for i, name in enumerate(names_list):
-        if i < len(strikethroughs):  # Check if index is within range
-            color = colors[i % len(colors)] if not strikethroughs[i] else 'purple'
-        else:
-            color = colors[i % len(colors)]
+        color = colors[i % len(colors)] if not strikethroughs[i] else 'purple'
         formatted_name = (name, color)
         formatted_names.append(formatted_name)
     return formatted_names
@@ -407,9 +422,6 @@ if names_list:  # Check if names_list is not empty
     names_list = [name.strip() for name in names_list]
     # Check if names_list contains meaningful entries
     if any(name for name in names_list):
-        names_list, strikethroughs = extract_middle_column_text(document)
-        # Ensure strikethroughs has the same length as names_list
-        strikethroughs = strikethroughs[:len(names_list)]
 
 # Assuming format_names now returns a list of tuples like [(name, color), ...]
         formatted_names = format_names(names_list, strikethroughs)
@@ -461,13 +473,13 @@ if 'unmatched_names' not in st.session_state:
 
 # Display replaced, unmatched, preceding, and succeeding names from session state
 st.subheader("Names replaced:")
-for original, replaced, similarity, strikethrough in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
+for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
     original_words = original.split()
     replaced_words = replaced.split()
     if len(original_words) != len(replaced_words):
-        st.markdown(f"**{original}{' (Marked as not present)' if strikethrough else ''} -> {replaced} (Similarity: {similarity:.2f})**")
+        st.markdown(f"**{original} (Marked as not present) -> {replaced} (Similarity: {similarity:.2f})**")
     else:
-        st.write(f"{original}{' (Marked as not present)' if strikethrough else ''} -> {replaced} (Similarity: {similarity:.2f})")
+        st.write(f"{original} (Marked as not present) -> {replaced} (Similarity: {similarity:.2f})")
 
 st.subheader("Names not matched:")
 st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
