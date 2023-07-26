@@ -134,6 +134,7 @@ def extract_middle_column_text(doc):
                         clean_paragraph_text += run.text
 
                     lines = clean_paragraph_text.split('\n')
+                    inside_brackets = False  # Initialize variable
                     for line in lines:
                         strikethrough = any(run.font.strike for run in paragraph.runs if run.text in line)
                         line = line.strip()
