@@ -403,7 +403,7 @@ if names_list:  # Check if names_list is not empty
     names_list = names_list.split(',')
     names_list = [name.strip() for name in names_list]
     # Check if names_list contains meaningful entries
-   if any(name for name in names_list):
+    if any(name for name in names_list):
         names_list, strikethroughs = extract_middle_column_text(document)
 
 # Assuming format_names now returns a list of tuples like [(name, color), ...]
