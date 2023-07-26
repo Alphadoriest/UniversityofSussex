@@ -406,6 +406,8 @@ if names_list:  # Check if names_list is not empty
     # Check if names_list contains meaningful entries
     if any(name for name in names_list):
         names_list, strikethroughs = extract_middle_column_text(document)
+        # Ensure strikethroughs has the same length as names_list
+        strikethroughs = strikethroughs[:len(names_list)]
 
 # Assuming format_names now returns a list of tuples like [(name, color), ...]
         formatted_names = format_names(names_list, strikethroughs)
