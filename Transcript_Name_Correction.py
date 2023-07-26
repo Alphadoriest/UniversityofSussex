@@ -414,7 +414,7 @@ names_list = ''
 
 if uploaded_file is not None:
     document = Document(io.BytesIO(uploaded_file.read()))
-    names_list = extract_middle_column_text(doc, remove_strikethrough=strikethrough_checkbox))  # Keep names_list as a list
+    names_list = extract_middle_column_text(doc, remove_strikethrough=strikethrough_checkbox)  # Keep names_list as a list
 
 # Use names_list as the default value for the names_list text_area
 names_list = st.text_area("Alternatively, enter names, separated by commas:", ', '.join(names_list), key='names_list')
