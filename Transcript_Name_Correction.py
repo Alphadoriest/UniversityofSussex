@@ -131,24 +131,17 @@ def extract_middle_column_text(doc):
                 desired_text = ''
                 strikethrough = False
                 for paragraph in paragraphs:
-                    clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        # Check if any run in the paragraph has strikethrough formatting
                         if run.font.strike:
                             strikethrough = True
-                        clean_paragraph_text += run.text
-                    lines = clean_paragraph_text.split('\n')
-                    for line in lines:
-                        line = line.strip()
-
-                        # Ignore lines that contain full bracketed phrases
-                        line = re.sub(r'\(.*?\)', '', line)
-                        line = re.sub(r'\[.*?\]', '', line)
-
-                        if line:
-                            desired_text = line
-                middle_column_texts.append(desired_text)
-                strikethroughs.append(strikethrough)
+                        desired_text += run.text.strip() + ' '
+                    desired_text = desired_text.strip()
+                    # Ignore empty lines and lines that contain only special characters
+                    if desired_text and not re.match(r'^[^\w\s]+$', desired_text):
+                        middle_column_texts.append(desired_text)
+                        strikethroughs.append(strikethrough)
+                        desired_text = ''
+                        strikethrough = False
 
     # Join the text with ', ', then replace ', ,' with ', ', and finally split again by ', '
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))
@@ -156,7 +149,7 @@ def extract_middle_column_text(doc):
     # Remove single letters from names
     cleaned_names = []
     for name in cleaned_text.split(', '):
-        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
+        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat"]:
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
             cleaned_names.append(decapitalize(name))
