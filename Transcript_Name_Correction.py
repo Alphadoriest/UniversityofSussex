@@ -118,7 +118,7 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-def extract_middle_column_text(doc):
+def extract_middle_column_text(doc, remove_strikethrough=False):
     middle_column_texts = []
 
     for table in doc.tables:
@@ -132,8 +132,9 @@ def extract_middle_column_text(doc):
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        if not run.font.strike:  # If the text is not strikethrough
-                            clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
+                        if remove_strikethrough and run.font.strike:  # If the text is strikethrough
+                            continue  # Skip this run
+                        clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
@@ -413,7 +414,7 @@ names_list = ''
 
 if uploaded_file is not None:
     document = Document(io.BytesIO(uploaded_file.read()))
-    names_list = extract_middle_column_text(document)  # Keep names_list as a list
+    names_list = extract_middle_column_text(doc, remove_strikethrough=strikethrough_checkbox))  # Keep names_list as a list
 
 # Use names_list as the default value for the names_list text_area
 names_list = st.text_area("Alternatively, enter names, separated by commas:", ', '.join(names_list), key='names_list')
