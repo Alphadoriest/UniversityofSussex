@@ -170,12 +170,12 @@ def extract_middle_column_text(doc):
 
     return cleaned_names
 
-def format_names(names_list):
-    colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
+def format_names(names_list, strikethrough=False):
     formatted_names = []
-    for i, name in enumerate(names_list):
-        color = colors[i % len(colors)]
-        formatted_name = (name, color)
+    for name in names_list:
+        if strikethrough and name.startswith("~"):
+            name = name[1:]  # Remove strikethrough mark
+        formatted_name = f"<span style='color:{color};'>{name}</span>"
         formatted_names.append(formatted_name)
     return formatted_names
 
@@ -395,6 +395,9 @@ if sequence_weight + fuzz_weight + metaphone_weight != 1.0:
 st.sidebar.header('Match Word Count')
 st.sidebar.text('Turning on ensures less mismatching, but more necessary if only relying on SequenceMatcher.')
 match_word_count = st.sidebar.checkbox('Should the number of words match?', value=False)
+# Add a checkbox to switch the strikethrough removal feature on or off
+
+strikethrough_checkbox = st.checkbox('Remove strikethrough text from names?', value=False)
 
 # Add the banner image at the top of the app
 st.image("banner2.jpg")
@@ -420,7 +423,7 @@ if names_list:  # Check if names_list is not empty
     if any(name for name in names_list):
 
 # Assuming format_names now returns a list of tuples like [(name, color), ...]
-        formatted_names = format_names(names_list)
+        formatted_names = format_names(names_list, strikethrough=strikethrough_checkbox)
     
         # Create the names list as a Markdown string
         names_md = ', '.join([f'<span style="color:{color};"><strong><u>{name}</u></strong></span>' if len(name.split()) > 4 or len(name.split()) < 2 or any(len(word) < 3 for word in name.split()) or re.search(r'[^a-zA-Z\s]', name) else f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
