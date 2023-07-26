@@ -130,12 +130,13 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 desired_text = ''
-                inside_brackets = False  # Initialize bracket flag
+                has_strike = False  # Initialize strikethrough flag
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         if run.font.strike:  # Check if the text is strikethrough
-                            clean_paragraph_text += '~~' + run.text + '~~'  # Mark strikethrough text with ~~
+                            clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
+                            has_strike = True  # Update strikethrough flag
                         else:
                             clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
 
@@ -158,10 +159,14 @@ def extract_middle_column_text(doc):
                         line = re.sub(r'\(.*?\)', '', line)
                         line = re.sub(r'\[.*?\]', '', line)
 
-                        if line:
-                            desired_text = line
-                middle_column_texts.append(desired_text)
+                        if clean_paragraph_text:
+                            if has_strike:
+                                desired_text += decapitalize(clean_paragraph_text) + ' (Marked As Not Present)'
+                            else:
+                                desired_text += decapitalize(clean_paragraph_text)
 
+                middle_column_texts.append(desired_text)
+              
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
     # Remove single letters from names
