@@ -160,6 +160,7 @@ def format_names(names_list, strikethroughs):
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
     formatted_names = []
     for i, name in enumerate(names_list):
+        print(f"i: {i}, name: {name}, len(strikethroughs): {len(strikethroughs)}")
         color = colors[i % len(colors)] if not strikethroughs[i] else 'purple'
         formatted_name = (name, color)
         formatted_names.append(formatted_name)
