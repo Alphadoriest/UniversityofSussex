@@ -174,11 +174,13 @@ def extract_middle_column_text(doc):
                 # Remove '~~' from the first and last words
                 words[0] = words[0][2:]
                 words[-1] = words[-1][:-2]
-                name = ' '.join(word for word in words if len(word) > 1)
-                if name:  # Only add the suffix if the name is not empty
-                    name += ' (Marked as not present)'  # Add '(Marked as not present)' suffix
+            name = ' '.join(word for word in words if len(word) > 1)
+            # Decapitalize name
+            name = decapitalize(name)
+            if name.startswith('~~') and name.endswith('~~'):
+                name = decapitalize(name[2:-2]) + ' (Marked as not present)'  # Add '(Marked as not present)' suffix
             else:
-                name = ' '.join(word for word in words if len(word) > 1)
+                name = decapitalize(name)
             cleaned_names.append(name)
 
     return cleaned_names
@@ -279,7 +281,6 @@ def decapitalize(text):
     words = text.split()
     for i, word in enumerate(words):
         if word not in roman_numerals:
-
             # Split hyphenated words and capitalize each part
             hyphen_parts = word.split('-')
             hyphen_parts = [part.lower().title() for part in hyphen_parts]
