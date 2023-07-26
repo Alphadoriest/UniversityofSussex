@@ -173,7 +173,7 @@ def extract_middle_column_text(doc):
             name = ' '.join(word for word in words if len(word) > 1).replace('~', '')
             name = decapitalize(name)
             # Check if name starts and ends with '~~', and add the '(Marked as not present)' suffix
-              name = name.strip()  # Remove leading and trailing whitespace
+            name = name.strip()  # Remove leading and trailing whitespace
               if name.startswith('~~') and name.endswith('~~'):
                   name = name[2:-2] + ' (Marked as not present)'
               cleaned_names.append(name)
