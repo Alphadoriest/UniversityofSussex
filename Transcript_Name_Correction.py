@@ -143,10 +143,9 @@ def extract_middle_column_text(doc):
 
                     desired_text = clean_paragraph_text.strip()
 
-                    if desired_text:  # Only add non-empty text
-                        middle_column_texts.append(desired_text)
-                        name_mapping[desired_text] = None  # Initialize mapping
-                        strikethroughs.append(is_strikethrough)  # Append strikethrough indicator to list
+                    middle_column_texts.append(desired_text)
+                    name_mapping[desired_text] = None  # Initialize mapping
+                    strikethroughs.append(is_strikethrough)  # Append strikethrough indicator to list
 
     # Clean names and update mapping
     cleaned_names = []
