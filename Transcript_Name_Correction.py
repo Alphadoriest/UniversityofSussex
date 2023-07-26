@@ -120,7 +120,7 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-def extract_middle_column_text_xml(doc):
+def extract_middle_column_text(doc):
     middle_column_texts = []
 
     for table in doc.tables:
