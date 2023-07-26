@@ -128,10 +128,10 @@ def extract_middle_column_text(doc):
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
-                desired_text = ''
-                inside_brackets = False  # Initialize bracket flag
-                strikethrough = False
                 for paragraph in paragraphs:
+                    desired_text = ''
+                    inside_brackets = False  # Initialize bracket flag
+                    strikethrough = False
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
