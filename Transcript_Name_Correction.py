@@ -131,11 +131,13 @@ def extract_middle_column_text(doc):
                 for paragraph in paragraphs:
                     inside_brackets = False  # Initialize bracket flag
                     clean_paragraph_text = ''
+                    paragraph_strikethroughs = []
                     for run in paragraph.runs:
                         clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
+                        paragraph_strikethroughs.append(run.font.strike)
                     lines = clean_paragraph_text.split('\n')
-                    for line in lines:
-                        strikethrough = any(run.font.strike for run in paragraph.runs if run.text in line) # Set strikethrough flag for each line
+                    for i, line in enumerate(lines):
+                        strikethrough = paragraph_strikethroughs[i]
                         line = line.strip()
                         # Ignore lines that contain full bracketed phrases
                         line = re.sub(r'\(.*?\)', '', line)
@@ -159,7 +161,7 @@ def extract_middle_column_text(doc):
                         if line:
                             middle_column_texts.append(line)
                             strikethroughs.append(strikethrough)
-                  
+
     # Join the text with ', ', then replace ', ,' with ', ', and finally split again by ', '
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
