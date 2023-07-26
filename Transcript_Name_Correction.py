@@ -135,7 +135,7 @@ def extract_middle_column_text(doc):
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         if run.font.strike:  # Check if the text is strikethrough
-                            clean_paragraph_text += run.text + ' (Marked as not present)'  # Add marker for strikethrough text
+                            clean_paragraph_text += '~~' + run.text + '~~'  # Mark strikethrough text with ~~
                         else:
                             clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
 
@@ -144,7 +144,7 @@ def extract_middle_column_text(doc):
                         line = line.strip()
 
                         # Update bracket flag
-                        if line.startswith('(') and not line.endswith('(Marked as not present)'):  # Exclude '(Marked as not present)' from inside bracket
+                        if line.startswith('('):
                             inside_brackets = True
                         if line.endswith(')'):
                             inside_brackets = False
@@ -162,7 +162,6 @@ def extract_middle_column_text(doc):
                             desired_text = line
                 middle_column_texts.append(desired_text)
 
-    # Join the text with ', ', then replace ', ,' with ', ', and finally split again by ', '
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
     # Remove single letters from names
@@ -171,7 +170,11 @@ def extract_middle_column_text(doc):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
-            cleaned_names.append(decapitalize(name))
+            if name.startswith('~~') and name.endswith('~~'):
+                name = decapitalize(name[2:-2]) + ' (Marked as not present)'  # Add '(Marked as not present)' suffix
+            else:
+                name = decapitalize(name)
+            cleaned_names.append(name)
 
     return cleaned_names
   
@@ -220,24 +223,21 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
 
     def replace_name(match):
         full_name = match.group(0)
-    
         # Check if the name is already replaced
         for original, replaced, _ in replaced_names:
             if full_name == replaced:
                 return full_name
-    
+
         max_similarity = 0
         most_similar_name = None
         for name in names_list:
-            sim = similarity(full_name, name)
+            clean_name = name.replace(' (Marked as not present)', '')  # Remove the marker for comparison
+            sim = similarity(full_name, clean_name)
             if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(name.split())):
                 max_similarity = sim
-                most_similar_name = name
-    
+                most_similar_name = name  # Keep the marker in the final name
+
         if max_similarity >= similarity_threshold:
-            # If the name in the text was marked as not present, append the marker to the most similar name
-            if '(Marked as not present)' in full_name:
-                most_similar_name += ' (Marked as not present)'
             replaced_names.append((full_name, most_similar_name, max_similarity))
             # Remove the name from unmatched_names if it was matched
             if most_similar_name in unmatched_names:
