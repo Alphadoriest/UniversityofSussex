@@ -169,15 +169,16 @@ def extract_middle_column_text(doc):
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
             words = name.split()
-            strikethrough = False  # Initialize strikethrough flag
-            for i, word in enumerate(words):
-                if word.startswith('~~') and word.endswith('~~'):
-                    word = word[2:-2]  # Remove '~~' from the beginning and end of the word
-                    strikethrough = True  # Set the strikethrough flag
-                words[i] = word
-            name = ' '.join(word for word in words if len(word) > 1)
-            if strikethrough:  # Only add the suffix if the name contains strikethrough
-                name += ' (Marked as not present)'  # Add '(Marked as not present)' suffix
+            # Check if name starts and ends with '~~'
+            if words[0].startswith('~~') and words[-1].endswith('~~'):
+                # Remove '~~' from the first and last words
+                words[0] = words[0][2:]
+                words[-1] = words[-1][:-2]
+                name = ' '.join(word for word in words if len(word) > 1)
+                if name:  # Only add the suffix if the name is not empty
+                    name += ' (Marked as not present)'  # Add '(Marked as not present)' suffix
+            else:
+                name = ' '.join(word for word in words if len(word) > 1)
             cleaned_names.append(name)
 
     return cleaned_names
@@ -277,9 +278,9 @@ def decapitalize(text):
     roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
     words = text.split()
     for i, word in enumerate(words):
-        if word not in roman_numerals and not word.endswith('(Marked as not present)'):  # Skip names marked as not present
-            
-          # Split hyphenated words and capitalize each part
+        if word not in roman_numerals:
+
+            # Split hyphenated words and capitalize each part
             hyphen_parts = word.split('-')
             hyphen_parts = [part.lower().title() for part in hyphen_parts]
             word = '-'.join(hyphen_parts)
