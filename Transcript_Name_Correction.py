@@ -118,7 +118,7 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-def extract_middle_column_text(doc, remove_strikethrough=False):
+def extract_middle_column_text(doc):
     middle_column_texts = []
 
     for table in doc.tables:
@@ -132,9 +132,8 @@ def extract_middle_column_text(doc, remove_strikethrough=False):
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        if remove_strikethrough and run.font.strike:  # If the text is strikethrough
-                            continue  # Skip this run
-                        clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
+                        if not run.font.strike:  # If the text is not strikethrough
+                            clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
@@ -171,13 +170,11 @@ def extract_middle_column_text(doc, remove_strikethrough=False):
 
     return cleaned_names
 
-def format_names(names_list, strikethrough=False):
+def format_names(names_list):
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
     formatted_names = []
-    for name in names_list:
-        if strikethrough and name.startswith("~"):
-            name = name[1:]  # Remove strikethrough mark
-        color = colors[names_list.index(name) % len(colors)]
+    for i, name in enumerate(names_list):
+        color = colors[i % len(colors)]
         formatted_name = (name, color)
         formatted_names.append(formatted_name)
     return formatted_names
@@ -398,9 +395,6 @@ if sequence_weight + fuzz_weight + metaphone_weight != 1.0:
 st.sidebar.header('Match Word Count')
 st.sidebar.text('Turning on ensures less mismatching, but more necessary if only relying on SequenceMatcher.')
 match_word_count = st.sidebar.checkbox('Should the number of words match?', value=False)
-# Add a checkbox to switch the strikethrough removal feature on or off
-
-strikethrough_checkbox = st.sidebar.checkbox('Remove strikethrough text from names?', value=False)
 
 # Add the banner image at the top of the app
 st.image("banner2.jpg")
@@ -414,7 +408,7 @@ names_list = ''
 
 if uploaded_file is not None:
     document = Document(io.BytesIO(uploaded_file.read()))
-    names_list = extract_middle_column_text(doc, remove_strikethrough=strikethrough_checkbox)  # Keep names_list as a list
+    names_list = extract_middle_column_text(document)  # Keep names_list as a list
 
 # Use names_list as the default value for the names_list text_area
 names_list = st.text_area("Alternatively, enter names, separated by commas:", ', '.join(names_list), key='names_list')
@@ -426,7 +420,7 @@ if names_list:  # Check if names_list is not empty
     if any(name for name in names_list):
 
 # Assuming format_names now returns a list of tuples like [(name, color), ...]
-        formatted_names = format_names(names_list, strikethrough=strikethrough_checkbox)
+        formatted_names = format_names(names_list)
     
         # Create the names list as a Markdown string
         names_md = ', '.join([f'<span style="color:{color};"><strong><u>{name}</u></strong></span>' if len(name.split()) > 4 or len(name.split()) < 2 or any(len(word) < 3 for word in name.split()) or re.search(r'[^a-zA-Z\s]', name) else f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
