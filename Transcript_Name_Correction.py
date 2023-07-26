@@ -142,7 +142,7 @@ def extract_middle_column_text(doc):
                         line = line.strip()
 
                         # Update bracket flag
-                        if line.startswith('('):
+                        if line.startswith('(') and not line.endswith('(Marked as not present)'):
                             inside_brackets = True
                         if line.endswith(')'):
                             inside_brackets = False
