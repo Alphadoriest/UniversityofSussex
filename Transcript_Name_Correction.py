@@ -129,7 +129,6 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 for paragraph in paragraphs:
-                    desired_text = ''
                     inside_brackets = False  # Initialize bracket flag
                     strikethrough = False
                     clean_paragraph_text = ''
@@ -138,6 +137,7 @@ def extract_middle_column_text(doc):
                         if run.font.strike:
                             strikethrough = True
                     lines = clean_paragraph_text.split('\n')
+                    desired_text = ''
                     for line in lines:
                         line = line.strip()
                         # Ignore lines that contain full bracketed phrases
@@ -160,9 +160,10 @@ def extract_middle_column_text(doc):
                         line = re.sub(r'\[.*?\]', '', line)
 
                         if line:
-                            desired_text = line
-                    middle_column_texts.append(desired_text)
-                    strikethroughs.append(strikethrough)
+                            desired_text = line  # Just assign the line to desired_text, don't append to middle_column_texts yet
+                    if desired_text:  # If there's a non-empty desired_text after going through all lines, append it
+                        middle_column_texts.append(desired_text)
+                        strikethroughs.append(strikethrough)
                   
     # Join the text with ', ', then replace ', ,' with ', ', and finally split again by ', '
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
