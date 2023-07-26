@@ -473,13 +473,13 @@ if 'unmatched_names' not in st.session_state:
 
 # Display replaced, unmatched, preceding, and succeeding names from session state
 st.subheader("Names replaced:")
-for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
+for original, replaced, similarity, strikethrough in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
     original_words = original.split()
     replaced_words = replaced.split()
     if len(original_words) != len(replaced_words):
-        st.markdown(f"**{original} (Marked as not present) -> {replaced} (Similarity: {similarity:.2f})**")
+        st.markdown(f"**{original}{' (Marked as not present)' if strikethrough else ''} -> {replaced} (Similarity: {similarity:.2f})**")
     else:
-        st.write(f"{original} (Marked as not present) -> {replaced} (Similarity: {similarity:.2f})")
+        st.write(f"{original}{' (Marked as not present)' if strikethrough else ''} -> {replaced} (Similarity: {similarity:.2f})")
 
 st.subheader("Names not matched:")
 st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
