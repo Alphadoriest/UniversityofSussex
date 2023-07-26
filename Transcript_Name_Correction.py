@@ -133,15 +133,9 @@ def extract_middle_column_text(doc):
                 inside_brackets = False  # Initialize bracket flag
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
-                    run: docx.text.run.Run
                     for run in paragraph.runs:
-                        # Use XML to detect strikethrough text
-                        rPr = run._r.getchildren()[0]  # Get the properties of the run
-                        rPr_xml = parse_xml(rPr.xml)  # Parse the XML of the properties
-                        strike = rPr_xml.find("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}strike")  # Find the strike element
-                        if strike is not None and strike.attrib.get("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val") == "true":
-                            # This run is strikethrough text
-                            clean_paragraph_text += f"~~{run.text}~~"
+                        if run.font.strike:  # Check if the text is strikethrough
+                            clean_paragraph_text += run.text + ' (Marked as not present)'  # Add marker for strikethrough text
                         else:
                             clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
 
@@ -150,7 +144,7 @@ def extract_middle_column_text(doc):
                         line = line.strip()
 
                         # Update bracket flag
-                        if line.startswith('('):
+                        if line.startswith('(') and not line.endswith('(Marked as not present)'):  # Exclude '(Marked as not present)' from inside bracket
                             inside_brackets = True
                         if line.endswith(')'):
                             inside_brackets = False
@@ -180,7 +174,7 @@ def extract_middle_column_text(doc):
             cleaned_names.append(decapitalize(name))
 
     return cleaned_names
-
+  
 def format_names(names_list):
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
     formatted_names = []
@@ -235,21 +229,20 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
         max_similarity = 0
         most_similar_name = None
         for name in names_list:
-            sim = similarity(full_name.replace('~~', ''), name)
+            sim = similarity(full_name, name)
             if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(name.split())):
                 max_similarity = sim
                 most_similar_name = name
     
         if max_similarity >= similarity_threshold:
-            replacement = most_similar_name
-            if full_name.startswith('~~') and full_name.endswith('~~'):
-                # This name was marked as not present, so add the marker to the replacement
-                replacement += ' (Marked as not present)'
-            replaced_names.append((full_name, replacement, max_similarity))
+            # If the name in the text was marked as not present, append the marker to the most similar name
+            if '(Marked as not present)' in full_name:
+                most_similar_name += ' (Marked as not present)'
+            replaced_names.append((full_name, most_similar_name, max_similarity))
             # Remove the name from unmatched_names if it was matched
             if most_similar_name in unmatched_names:
                 unmatched_names.remove(most_similar_name)
-            return replacement
+            return most_similar_name
         else:
             return full_name
 
