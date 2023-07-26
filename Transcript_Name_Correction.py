@@ -135,6 +135,8 @@ def extract_middle_column_text(doc):
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
+                        if has_strikethrough(run):
+                            strikethrough = True
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
@@ -156,11 +158,6 @@ def extract_middle_column_text(doc):
 
                         if line:
                             desired_text = line
-
-                    # Check if paragraph has strikethrough formatting
-                    if paragraph._element.xpath('.//w:r/w:rPr/w:strike[@w:val="true"]'):
-                        strikethrough = True
-
                 middle_column_texts.append(desired_text)
                 strikethroughs.append(strikethrough)
 
@@ -176,6 +173,14 @@ def extract_middle_column_text(doc):
             cleaned_names.append(decapitalize(name))
 
     return cleaned_names, strikethroughs
+
+def has_strikethrough(run):
+    """Check if the run has strikethrough formatting applied."""
+    if run._element.rPr is not None:
+        for element in run._element.rPr.iter():
+            if element.tag.endswith("strike"):
+                return True
+    return False
 
 def format_names(names_list, strikethroughs):
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
