@@ -166,7 +166,7 @@ def extract_middle_column_text(doc):
         if name and name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
-            if name:  # Check if name is still not an empty string after cleaning
+            if name and name in middle_column_texts:  # Check if name exists in middle_column_texts
                 cleaned_names.append(decapitalize(name))
                 cleaned_strikethroughs.append(strikethroughs[middle_column_texts.index(name)])
 
