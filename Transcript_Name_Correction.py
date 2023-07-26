@@ -135,7 +135,7 @@ def extract_middle_column_text(doc):
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
-                        if run.font.strike:
+                        if run.font.strike or run.font.delete:
                             strikethrough = True
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
@@ -178,7 +178,10 @@ def format_names(names_list, strikethroughs):
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
     formatted_names = []
     for i, name in enumerate(names_list):
-        color = colors[i % len(colors)] if not strikethroughs[i] else 'purple'
+        if i < len(strikethroughs):  # Check if index is within range
+            color = colors[i % len(colors)] if not strikethroughs[i] else 'purple'
+        else:
+            color = colors[i % len(colors)]
         formatted_name = (name, color)
         formatted_names.append(formatted_name)
     return formatted_names
