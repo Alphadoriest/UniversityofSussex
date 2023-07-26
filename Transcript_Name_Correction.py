@@ -129,15 +129,16 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 for paragraph in paragraphs:
-                    inside_brackets = False  # Initialize bracket flag
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
+                        clean_paragraph_text += run.text
+
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
-                        strikethrough = any(run.font.strike for run in paragraph.runs if run.text in line) # Set strikethrough flag for each line
+                        strikethrough = any(run.font.strike for run in paragraph.runs if run.text in line)
                         line = line.strip()
-                        # Ignore lines that contain full bracketed phrases
+
+                        # Remove full bracketed phrases
                         line = re.sub(r'\(.*?\)', '', line)
                         line = re.sub(r'\[.*?\]', '', line)
 
@@ -155,19 +156,18 @@ def extract_middle_column_text(doc):
                         if line:
                             middle_column_texts.append(line)
                             strikethroughs.append(strikethrough)
-                  
-    # Join the text with ', ', then replace ', ,' with ', ', and finally split again by ', '
-    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
-    # Remove single letters from names
+    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))
+
     cleaned_names = []
     cleaned_strikethroughs = []
     for name in cleaned_text.split(', '):
-        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
+        if name and name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
-            cleaned_names.append(decapitalize(name))
-            cleaned_strikethroughs.append(strikethroughs[middle_column_texts.index(name)])
+            if name:  # Check if name is still not an empty string after cleaning
+                cleaned_names.append(decapitalize(name))
+                cleaned_strikethroughs.append(strikethroughs[middle_column_texts.index(name)])
 
     return cleaned_names, cleaned_strikethroughs
 
