@@ -120,6 +120,7 @@ american_to_british_dict = {
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
     middle_column_texts = []
+    strikethroughs = []
 
     for table in doc.tables:
         for row in table.rows:
@@ -129,10 +130,13 @@ def extract_middle_column_text(doc):
                 paragraphs = middle_cell.paragraphs
                 desired_text = ''
                 inside_brackets = False  # Initialize bracket flag
+                strikethrough = False
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
+                        if run.font.strike:
+                            strikethrough = True
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
@@ -155,6 +159,7 @@ def extract_middle_column_text(doc):
                         if line:
                             desired_text = line
                 middle_column_texts.append(desired_text)
+                strikethroughs.append(strikethrough)
 
     # Join the text with ', ', then replace ', ,' with ', ', and finally split again by ', '
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
@@ -167,13 +172,13 @@ def extract_middle_column_text(doc):
             name = ' '.join(word for word in words if len(word) > 1)
             cleaned_names.append(decapitalize(name))
 
-    return cleaned_names
+    return cleaned_names, strikethroughs
 
-def format_names(names_list):
+def format_names(names_list, strikethroughs):
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
     formatted_names = []
     for i, name in enumerate(names_list):
-        color = colors[i % len(colors)]
+        color = colors[i % len(colors)] if not strikethroughs[i] else 'purple'
         formatted_name = (name, color)
         formatted_names.append(formatted_name)
     return formatted_names
@@ -407,7 +412,7 @@ names_list = ''
 
 if uploaded_file is not None:
     document = Document(io.BytesIO(uploaded_file.read()))
-    names_list = extract_middle_column_text(document)  # Keep names_list as a list
+    names_list, strikethroughs = extract_middle_column_text(document)  # Unpack strikethroughs
 
 # Use names_list as the default value for the names_list text_area
 names_list = st.text_area("Alternatively, enter names, separated by commas:", ', '.join(names_list), key='names_list')
@@ -419,7 +424,7 @@ if names_list:  # Check if names_list is not empty
     if any(name for name in names_list):
 
 # Assuming format_names now returns a list of tuples like [(name, color), ...]
-        formatted_names = format_names(names_list)
+        formatted_names = format_names(names_list, strikethroughs)
     
         # Create the names list as a Markdown string
         names_md = ', '.join([f'<span style="color:{color};"><strong><u>{name}</u></strong></span>' if len(name.split()) > 4 or len(name.split()) < 2 or any(len(word) < 3 for word in name.split()) or re.search(r'[^a-zA-Z\s]', name) else f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
