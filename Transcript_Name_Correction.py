@@ -122,50 +122,28 @@ american_to_british_dict = {
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_middle_column_text(doc):
     middle_column_texts = []
-
     for table in doc.tables:
         for row in table.rows:
             cells = row.cells
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
-                run_texts = []  # Initialize list to store texts of all runs
-                for paragraph in paragraphs:
-                    for run in paragraph.runs:
-                        run_text = run.text.strip()
-                        is_strike = run.font.strike
-                        run_texts.append((run_text, is_strike))
-
-                desired_text = ''
-                inside_brackets = False  # Initialize bracket flag
-                for run_text, is_strike in run_texts:
-                    # Update bracket flag
-                    if '(' in run_text:
-                        inside_brackets = True
-                    if ')' in run_text:
-                        inside_brackets = False
-
-                    # Ignore text inside brackets
-                    if inside_brackets:
-                        continue
-
-                    # Ignore text that contains full bracketed phrases
-                    run_text = re.sub(r'\(.*?\)', '', run_text)
-                    run_text = re.sub(r'\[.*?\]', '', run_text)
-
-                    if run_text:  # If run_text is not empty after removing bracketed text
-                        if is_strike:  # Check if the text is strikethrough
-                            run_text += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
-                        desired_text += " " + run_text
-
-                middle_column_texts.append(desired_text.strip())
+                full_text = ' '.join([p.text for p in paragraphs])
+                # Remove text in brackets
+                full_text = re.sub(r'\(.*?\)', '', full_text)
+                full_text = re.sub(r'\[.*?\]', '', full_text)
+                full_text = full_text.strip()
+                if full_text:
+                    for paragraph in paragraphs:
+                        for run in paragraph.runs:
+                            if run.font.strike and run.text.strip() in full_text:
+                                full_text = full_text.replace(run.text.strip(), run.text.strip() + ' (Marked As Not Present)')
+                    middle_column_texts.append(full_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
-
-    # Remove single letters from names
     cleaned_names = []
     for name in cleaned_text.split(', '):
-        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
+        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD", "Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat"]:
             cleaned_names.append(decapitalize(name))  # Apply decapitalize here
 
     return cleaned_names
