@@ -130,31 +130,17 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 desired_text = ''
-                inside_brackets = False  # Initialize bracket flag
                 for paragraph in paragraphs:
-                    clean_paragraph_text = ''
                     for run in paragraph.runs:
                         run_text = run.text.strip()
-                        # Ignore lines inside brackets
-                        if run_text.startswith('('):
-                            inside_brackets = True
-                        if run_text.endswith(')'):
-                            inside_brackets = False
-                            continue
-                        if inside_brackets:
+
+                        # Skip text inside brackets
+                        if "(" in run_text or ")" in run_text:
                             continue
 
-                        # Ignore lines that contain full bracketed phrases
-                        run_text = re.sub(r'\(.*?\)', '', run_text)
-                        run_text = re.sub(r'\[.*?\]', '', run_text)
-
-                        if run_text:
-                            if run.font.strike:  # Check if the text is strikethrough
-                                clean_paragraph_text += run_text + ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
-                            else:
-                                clean_paragraph_text += run_text  # append the text of run to the clean_paragraph_text
-
-                    desired_text += " " + clean_paragraph_text
+                        if run.font.strike and run_text:   # Check if the text is strikethrough and not empty
+                            run_text += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
+                        desired_text += " " + run_text
 
                 middle_column_texts.append(desired_text.strip())
 
