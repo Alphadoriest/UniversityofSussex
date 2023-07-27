@@ -159,7 +159,7 @@ for name in cleaned_text.split(', '):
 # Replace blank spaces in cleaned_names with 'INPUT NAME (Marked As Not Present)'
 cleaned_names = ['INPUT NAME (Marked As Not Present)' if name == '' else name for name in cleaned_names]
 
- return cleaned_names
+return cleaned_names
   
 def format_names(names_list):
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
