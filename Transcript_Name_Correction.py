@@ -150,11 +150,14 @@ def extract_middle_column_text(doc):
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
-    # Remove single letters from names
-    cleaned_names = []
-    for name in cleaned_text.split(', '):
-        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
-            cleaned_names.append(decapitalize(name))  # Apply decapitalize here
+# Remove single letters from names
+cleaned_names = []
+for name in cleaned_text.split(', '):
+    if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
+        cleaned_names.append(decapitalize(name))  # Apply decapitalize here
+
+# Replace blank spaces in cleaned_names with 'INPUT NAME (Marked As Not Present)'
+cleaned_names = ['INPUT NAME (Marked As Not Present)' if name == '' else name for name in cleaned_names]
 
     return cleaned_names
   
