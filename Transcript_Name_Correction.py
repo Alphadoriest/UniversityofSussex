@@ -141,7 +141,6 @@ def extract_middle_column_text(doc):
                             clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
 
                     lines = clean_paragraph_text.split('\n')
-                    inside_brackets = False  # Initialize bracket flag
                     for line in lines:
                         line = line.strip()
 
