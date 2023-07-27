@@ -130,37 +130,23 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 desired_text = ''
-                inside_brackets = False  # Initialize bracket flag
+                prev_line_striked = False  # Flag to keep track of previous line's strikethrough status
                 for paragraph in paragraphs:
-                    clean_paragraph_text = ''
-                    for run in paragraph.runs:
-                        if run.font.strike:  # Check if the text is strikethrough
-                            clean_paragraph_text += '~~' + run.text + '~~'  # Mark strikethrough text with ~~
-                        else:
-                            clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
-
-                    lines = clean_paragraph_text.split('\n')
-                    for line in lines:
+                    lines = paragraph.text.split('\n')
+                    for i, line in enumerate(lines):
                         line = line.strip()
-
-                        # Update bracket flag
-                        if line.startswith('('):
-                            inside_brackets = True
-                        if line.endswith(')'):
-                            inside_brackets = False
+                        # Skip the line if it's inside brackets and previous line was not striked
+                        if line.startswith('(') and line.endswith(')') and not prev_line_striked:
                             continue
-
-                        # Ignore lines inside brackets
-                        if inside_brackets:
-                            continue
-
-                        # Ignore lines that contain full bracketed phrases
-                        line = re.sub(r'\(.*?\)', '', line)
-                        line = re.sub(r'\[.*?\]', '', line)
-
-                        if line:
-                            desired_text = line
-                middle_column_texts.append(desired_text)
+                        # Process each run in the line
+                        line_striked = False  # Flag to track if current line is strikethrough
+                        for run in paragraph.runs:
+                            if run.text.strip() in line and run.font.strike:  # Check if the line is strikethrough
+                                line = line.replace(run.text, run.text + ' (Marked As Not Present)')  # Add '(Marked As Not Present)' suffix
+                                line_striked = True  # Update flag
+                        desired_text += " " + line
+                        prev_line_striked = line_striked  # Update previous line's strikethrough status
+                middle_column_texts.append(desired_text.strip())
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
@@ -168,12 +154,6 @@ def extract_middle_column_text(doc):
     cleaned_names = []
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
-            # Check if name contains '~~'
-            if '~~' in name:
-                # Remove '~~' from the name
-                name = re.sub(r'~~(.*?)~~', r'\1', name).strip() # Added strip() to remove leading/trailing spaces
-                if name:  # Only add the suffix if the name is not empty
-                    name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
             cleaned_names.append(decapitalize(name))  # Apply decapitalize here
 
     return cleaned_names
