@@ -129,18 +129,35 @@ def extract_middle_column_text(doc):
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
-                desired_text = ''
+                run_texts = []  # Initialize list to store texts of all runs
                 for paragraph in paragraphs:
-                    clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        # ignore text within brackets
-                        run_text = re.sub(r'\(.*?\)', '', run.text)
-                        run_text = re.sub(r'\[.*?\]', '', run_text)
-                        if run_text.strip():  # if run_text is not empty after removing bracketed text
-                            if run.font.strike:  # Check if the text is strikethrough
-                                run_text += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
-                            clean_paragraph_text += " " + run_text
-                    desired_text += clean_paragraph_text
+                        run_text = run.text.strip()
+                        is_strike = run.font.strike
+                        run_texts.append((run_text, is_strike))
+
+                desired_text = ''
+                inside_brackets = False  # Initialize bracket flag
+                for run_text, is_strike in run_texts:
+                    # Update bracket flag
+                    if '(' in run_text:
+                        inside_brackets = True
+                    if ')' in run_text:
+                        inside_brackets = False
+
+                    # Ignore text inside brackets
+                    if inside_brackets:
+                        continue
+
+                    # Ignore text that contains full bracketed phrases
+                    run_text = re.sub(r'\(.*?\)', '', run_text)
+                    run_text = re.sub(r'\[.*?\]', '', run_text)
+
+                    if run_text:  # If run_text is not empty after removing bracketed text
+                        if is_strike:  # Check if the text is strikethrough
+                            run_text += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
+                        desired_text += " " + run_text
+
                 middle_column_texts.append(desired_text.strip())
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
