@@ -135,7 +135,9 @@ def extract_middle_column_text(doc):
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         if run.font.strike:  # Check if the text is strikethrough
-                            clean_paragraph_text += '~~' + run.text + '~~'  # Mark strikethrough text with ~~
+                            clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
+                            if clean_paragraph_text:  # Only add the suffix if the text is not empty
+                                clean_paragraph_text += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
                         else:
                             clean_paragraph_text += run.text  # append the text of run to the clean_paragraph_text
 
@@ -168,12 +170,6 @@ def extract_middle_column_text(doc):
     cleaned_names = []
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
-            # Check if name contains '~~'
-            if '~~' in name:
-                # Remove '~~' from the name
-                name = re.sub(r'~~(.*?)~~', r'\1', name).strip() # Added strip() to remove leading/trailing spaces
-                if name:  # Only add the suffix if the name is not empty
-                    name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
             cleaned_names.append(decapitalize(name))  # Apply decapitalize here
 
     return cleaned_names
