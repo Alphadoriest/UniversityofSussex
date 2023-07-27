@@ -131,17 +131,16 @@ def extract_middle_column_text(doc):
                 paragraphs = middle_cell.paragraphs
                 desired_text = ''
                 for paragraph in paragraphs:
+                    clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        run_text = run.text.strip()
-
-                        # Skip text inside brackets
-                        if "(" in run_text or ")" in run_text:
-                            continue
-
-                        if run.font.strike and run_text:   # Check if the text is strikethrough and not empty
-                            run_text += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
-                        desired_text += " " + run_text
-
+                        # ignore text within brackets
+                        run_text = re.sub(r'\(.*?\)', '', run.text)
+                        run_text = re.sub(r'\[.*?\]', '', run_text)
+                        if run_text.strip():  # if run_text is not empty after removing bracketed text
+                            if run.font.strike:  # Check if the text is strikethrough
+                                run_text += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
+                            clean_paragraph_text += " " + run_text
+                    desired_text += clean_paragraph_text
                 middle_column_texts.append(desired_text.strip())
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
