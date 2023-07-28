@@ -149,7 +149,7 @@ def extract_middle_column_text(doc):
                         if line.strip():  # If line is not empty after removal of bracketed text
                             valid_lines.append(line.strip())
                     if valid_lines:  # If there are any valid lines
-                        desired_text = valid_lines[-1]  # Take the last valid line
+                        desired_text = valid_lines[0]  # Take the first valid line
                         middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
