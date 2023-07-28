@@ -144,13 +144,14 @@ def extract_middle_column_text(doc):
 
                     # Split the cleaned paragraph by newline
                     lines = clean_paragraph_text.split('\n')
-                    valid_lines = []
+
+                    # Iterate through the lines and take the first one that looks like a name
                     for line in lines:
-                        if line.strip():  # If line is not empty after removal of bracketed text
-                            valid_lines.append(line.strip())
-                    if valid_lines:  # If there are any valid lines
-                        desired_text = valid_lines[0]  # Take the first valid line
-                        middle_column_texts.append(desired_text)
+                        if re.match(r'^[A-Za-z\s]*$', line.strip()):
+                            desired_text = line.strip()
+                            break
+
+                    middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
