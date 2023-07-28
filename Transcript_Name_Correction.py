@@ -122,6 +122,8 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
+import regex
+
 def extract_middle_column_text(doc):
     middle_column_texts = []
 
@@ -158,7 +160,8 @@ def extract_middle_column_text(doc):
                     
                         # Update desired_text only if line is not empty after all removals
                         if line:
-                            desired_text = line
+                            desired_text = line  # Store the valid line
+
                 middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
