@@ -131,12 +131,15 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 desired_text = ''
-                inside_brackets = False  # Initialize bracket flag
+                inside_brackets = False  # Initialize bracket flag     
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         if run.font.strike:  # Check if the text is strikethrough
-                            clean_paragraph_text += '~~' + run.text + '~~'  # Mark strikethrough text with ~~
+                            # Split the strikethrough text by newline and wrap each line with '~~'
+                            strikethrough_lines = run.text.split('\n')
+                            strikethrough_lines = ['~~' + line + '~~' for line in strikethrough_lines]
+                            clean_paragraph_text += '\n'.join(strikethrough_lines)
                         else:
                             clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
 
