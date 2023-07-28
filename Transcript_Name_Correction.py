@@ -131,7 +131,6 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 desired_text = ''
-                inside_brackets = False  # Initialize bracket flag
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
@@ -142,21 +141,18 @@ def extract_middle_column_text(doc):
                             clean_paragraph_text += '\n'.join(strikethrough_lines)
                         else:
                             clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
-                        
-                    lines = clean_paragraph_text.split('\n')
-                    for line in lines:
-                        line = line.strip()
 
-                        # Ignore lines that contain full bracketed phrases
-                        if '~~' in line:
-                            line = re.sub(r'~~\(.*?\)~~', '', line)
-                        else:
-                            line = re.sub(r'\(.*?\)', '', line)
-                            line = re.sub(r'\[.*?\]', '', line)
+                    desired_text += clean_paragraph_text
 
-                        if line:
-                            desired_text = line
-                middle_column_texts.append(desired_text)
+                # Remove multiline bracketed phrases
+                desired_text = re.sub(r'\(.*?\)', '', desired_text, flags=re.DOTALL)
+                desired_text = re.sub(r'\[.*?\]', '', desired_text, flags=re.DOTALL)
+
+                # Split the cleaned text by newline and ignore the empty lines
+                lines = desired_text.split('\n')
+                lines = [line.strip() for line in lines if line.strip()]
+
+                middle_column_texts.extend(lines)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
