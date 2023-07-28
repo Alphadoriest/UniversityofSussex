@@ -130,7 +130,6 @@ def extract_middle_column_text(doc):
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
-                desired_text = ''
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
@@ -142,17 +141,25 @@ def extract_middle_column_text(doc):
                         else:
                             clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
 
-                    desired_text += clean_paragraph_text
+                    # Split the text by newline and ignore the empty lines
+                    lines = clean_paragraph_text.split('\n')
+                    lines = [line.strip() for line in lines if line.strip() and not line.endswith(')')]
 
-                # Remove multiline bracketed phrases that immediately follow a name
-                desired_text = re.sub(r'[^\n]*?\(.*?\)', '', desired_text, flags=re.DOTALL)
-                desired_text = re.sub(r'[^\n]*?\[.*?\]', '', desired_text, flags=re.DOTALL)
+                    # Start capturing lines after 'For the thesis;' is encountered
+                    # and then capture the 4th line (1 line for 'For the thesis;' + 1-3 lines after)
+                    name_line = ""
+                    capture_lines = False
+                    line_counter = 0
+                    for line in lines:
+                        if 'For the thesis;' in line:
+                            capture_lines = True
+                        elif capture_lines and line_counter < 4 and not line.startswith('('):
+                            line_counter += 1
+                            if line_counter == 4:
+                                name_line = line
 
-                # Split the cleaned text by newline and ignore the empty lines
-                lines = desired_text.split('\n')
-                lines = [line.strip() for line in lines if line.strip() and not line.endswith(')')]
-
-                middle_column_texts.extend(lines)
+                    if name_line:
+                        middle_column_texts.append(name_line)
 
     # Join the cleaned lines with commas, and replace any multiple consecutive commas with a single comma
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))
@@ -163,10 +170,12 @@ def extract_middle_column_text(doc):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
             # Check if name contains '~~'
             if '~~' in name:
-                # Remove '~~' from the name
-                name = re.sub(r'~~(.*?)~~', r'\1', name).strip() # Added strip() to remove leading/trailing spaces
-                if name:  # Only add the suffix if the name is not empty
-                    name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
+                # Remove '~~' from the name and check if the remaining text is not empty
+                stripped_name = re.sub(r'~~(.*?)~~', r'\1', name).strip() # Added strip() to remove leading/trailing spaces
+                if stripped_name:  # Only add the suffix if the name is not empty
+                    name = stripped_name + ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
+                else:
+                    name = stripped_name  # If the name is empty after removing '~~', use the stripped name
                   
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
