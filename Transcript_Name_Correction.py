@@ -122,7 +122,6 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-import regex
 
 def extract_middle_column_text(doc):
     middle_column_texts = []
@@ -143,21 +142,22 @@ def extract_middle_column_text(doc):
                             clean_paragraph_text += '\n'.join(strikethrough_lines)
                         else:
                             clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
-                    
+
+                    # Remove bracketed and strikethrough text
+                    clean_paragraph_text = regex.sub(r'\((?:[^()]|(?R))*\)', '', clean_paragraph_text)
+                    clean_paragraph_text = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)
+                    clean_paragraph_text = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', clean_paragraph_text)
+                    clean_paragraph_text = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', clean_paragraph_text)
+                    clean_paragraph_text = regex.sub(r'~~(.*?)~~', '', clean_paragraph_text)
+
+                    # Split the cleaned paragraph by newline
                     lines = clean_paragraph_text.split('\n')
-                    for i, line in enumerate(lines):
-                        line = line.strip()
 
-                        if i != len(lines) - 1:  # If this is not the last line, remove bracketed and strikethrough text
-                            line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)
-                            line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)
-                            line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)
-                            line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)
-                        else:  # If this is the last line, only remove strikethrough text
-                            line = regex.sub(r'~~(.*?)~~', '', line)
-
-                        if line:
-                            desired_text = line  # Store the valid line
+                    # Iterate through the lines and take the first one that looks like a name
+                    for line in lines:
+                        if re.match(r'^[A-Za-z\s]*$', line.strip()):
+                            desired_text = line.strip()
+                            break
 
                 middle_column_texts.append(desired_text)
 
