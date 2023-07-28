@@ -150,13 +150,10 @@ def extract_middle_column_text(doc):
 
                 # Split the cleaned text by newline and ignore the empty lines
                 lines = desired_text.split('\n')
-                lines = [line.strip() for line in lines if line.strip()]
+                lines = [line.strip() for line in lines if line.strip() and not line.endswith(')')]
 
                 middle_column_texts.extend(lines)
 
-    # Filter out lines that are likely not names
-    middle_column_texts = [line for line in middle_column_texts if line.isupper() or (line.istitle() and len(line.split()) <= 4)]
-    
     # Join the cleaned lines with commas, and replace any multiple consecutive commas with a single comma
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))
 
