@@ -121,10 +121,9 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-import re
-
 def extract_middle_column_text(doc):
     middle_column_texts = []
+
     for table in doc.tables:
         for row in table.rows:
             cells = row.cells
@@ -134,8 +133,17 @@ def extract_middle_column_text(doc):
                 desired_text = ''
                 inside_brackets = False  # Initialize bracket flag
                 for paragraph in paragraphs:
+                    clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        line = run.text.strip()
+                        if run.font.strike:  # Check if the text is strikethrough
+                            clean_paragraph_text += '~~' + run.text + '~~'  # Mark strikethrough text with ~~
+                        else:
+                            clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
+
+                    lines = clean_paragraph_text.split('\n')
+                    for line in lines:
+                        line = line.strip()
+
                         # Update bracket flag
                         if line.startswith('('):
                             inside_brackets = True
@@ -152,33 +160,29 @@ def extract_middle_column_text(doc):
                         line = re.sub(r'\[.*?\]', '', line)
 
                         if line:
-                            # If line is a name (contains only letters (uppercase or lowercase) and spaces)
-                            if re.match(r'^[A-Za-z\s]+$', line):
-                                if run.font.strike:  # Check if the text is strikethrough
-                                    desired_text = line + ' (Marked As Not Present)'
-                                else:
-                                    desired_text = line
-                                middle_column_texts.append(desired_text)
-    return middle_column_texts
+                            desired_text = line
+                middle_column_texts.append(desired_text)
 
-def decapitalize(text):
-    roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
-    words = text.split()
-    for i, word in enumerate(words):
-        if word not in roman_numerals:
+    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
-            # Split hyphenated words and capitalize each part
-            hyphen_parts = word.split('-')
-            hyphen_parts = [part.lower().title() for part in hyphen_parts]
-            word = '-'.join(hyphen_parts)
+    # Remove single letters from names
+    cleaned_names = []
+    for name in cleaned_text.split(', '):
+        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
+            # Check if name contains '~~'
+            if '~~' in name:
+                # Remove '~~' from the name
+                name = re.sub(r'~~(.*?)~~', r'\1', name).strip() # Added strip() to remove leading/trailing spaces
+                if name:  # Only add the suffix if the name is not empty
+                    name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
+                  
+            words = name.split()
+            name = ' '.join(word for word in words if len(word) > 1)
+          
+            cleaned_names.append(decapitalize(name))  # Apply decapitalize here
 
-            # Split words with apostrophes and capitalize each part
-            apostrophe_parts = word.split("'")
-            apostrophe_parts = [part.lower().title() for part in apostrophe_parts]
-            words[i] = "'".join(apostrophe_parts)
-
-    return " ".join(words)
-
+    return cleaned_names
+  
 def format_names(names_list):
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
     formatted_names = []
@@ -269,6 +273,22 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
         return replaced_names, new_text, unmatched_names  # Return unmatched_names as well
     else:
         return [], '', unmatched_names  # Return unmatched_names as well
+
+def decapitalize(text):
+    roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
+    words = text.split()
+    for i, word in enumerate(words):
+        if word not in roman_numerals:
+
+            # Split hyphenated words and capitalize each part
+            hyphen_parts = word.split('-')
+            hyphen_parts = [part.lower().title() for part in hyphen_parts]
+            word = '-'.join(hyphen_parts)
+
+            # Split words with apostrophes and capitalize each part
+            apostrophe_parts = word.split("'")
+            apostrophe_parts = [part.lower().title() for part in apostrophe_parts]
+            words[i] = "'".join(apostrophe_parts)
 
     return ' '.join(words)
 
