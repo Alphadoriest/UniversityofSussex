@@ -160,6 +160,8 @@ def extract_middle_column_text(doc):
                         line = re.sub(r'\[.*?\]', '', line)
 
                         if line:
+                            # Remove single-letter words from the line
+                            line = ' '.join([word for word in line.split() if not (len(word) == 1 and word.isalpha())])
                             desired_text = line
                 middle_column_texts.append(desired_text)
 
@@ -176,9 +178,6 @@ def extract_middle_column_text(doc):
                 if name:  # Only add the suffix if the name is not empty
                     name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
                     
-            # Split the name into words, remove single-letter words, then join them back into a name
-            name = ' '.join([word for word in name.split() if not (len(word) == 1 and word.isalpha())])
-    
             cleaned_names.append(decapitalize(name))  # Apply decapitalize here
 
     return cleaned_names
