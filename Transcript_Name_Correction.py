@@ -292,10 +292,7 @@ def decapitalize(text):
 
 def reformat_subtitles(text: str) -> str:
     if text.startswith('WEBVTT'):
-        first_timestamp = re.search(r'(\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d)', text)
-        if first_timestamp:
-            start_time = first_timestamp.group().split(' --> ')[0]
-            text = text.replace('WEBVTT', f'WEBVTT\n\n00:00.000 --> {start_time}\n', 1)
+        text = text.replace('WEBVTT', 'WEBVTT\n', 1)
 
     blocks = re.split(r'(\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d)', text)
     formatted_blocks = []
