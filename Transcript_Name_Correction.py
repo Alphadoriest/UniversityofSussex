@@ -14,6 +14,7 @@ import base64
 from pathlib import Path
 from docx.oxml.ns import nsdecls
 from docx.oxml import parse_xml
+import regex
 
 american_to_british_dict = {
   'honored':'honoured',
@@ -121,6 +122,8 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
+import regex
+
 def extract_middle_column_text(doc):
     middle_column_texts = []
 
@@ -148,10 +151,10 @@ def extract_middle_column_text(doc):
 
                         # Ignore lines that contain bracketed phrases
                         if '~~' in line:
-                            line = re.sub(r'~~\(.*?\)~~', '', line)  # Non-greedy regex to remove all bracketed text
+                            line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all bracketed text
                         else:
-                            line = re.sub(r'\(.*?\)', '', line)  # Non-greedy regex to remove all bracketed text
-                            line = re.sub(r'\[.*?\]', '', line)  # Non-greedy regex to remove all square bracketed text
+                            line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all bracketed text
+                            line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
 
                         if line:
                             desired_text = line
@@ -166,7 +169,7 @@ def extract_middle_column_text(doc):
             # Check if name contains '~~'
             if '~~' in name:
                 # Remove '~~' from the name
-                name = re.sub(r'~~(.*?)~~', r'\1', name).strip()  # Added strip() to remove leading/trailing spaces
+                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()  # Added strip() to remove leading/trailing spaces
                 if name:  # Only add the suffix if the name is not empty
                     name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
                   
