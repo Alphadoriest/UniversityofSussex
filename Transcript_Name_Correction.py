@@ -294,11 +294,11 @@ def reformat_subtitles(text: str) -> str:
     if text.startswith('WEBVTT'):
         text = text.replace('WEBVTT', 'WEBVTT\n', 1)
 
-    blocks = re.split(r'(\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d)', text)
+    blocks = re.split(r'((?:\d\d:)?\d\d:\d\d\.\d\d\d --> (?:\d\d:)?\d\d:\d\d\.\d\d\d)', text)
     formatted_blocks = []
 
     for block in blocks:
-        if re.match(r'\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d', block):
+        if re.match(r'(?:\d\d:)?\d\d:\d\d\.\d\d\d --> (?:\d\d:)?\d\d:\d\d\.\d\d\d', block):
             formatted_blocks.append(block.strip() + '\n')
             continue
 
@@ -310,24 +310,24 @@ def reformat_subtitles(text: str) -> str:
             words = line.split()
             if words:
                 formatted_line = ' '.join(words)
-        formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
-        formatted_line = re.sub(r'\((applause|ALL APPLAUD|APPLAUSE CONTINUES)\)|\[(applause|ALL APPLAUD|APPLAUSE CONTINUES)\]|applause|ALL APPLAUD|APPLAUSE CONTINUES', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
-        formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music )\)|\[(Music|MUSIC|MUSIC PLAYING|ORCHESTRAL MUSIC| Music )\]|¶ ¶|Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
-        formatted_line = re.sub(r'\((laughter|ALL LAUGH)\)|\[(laughter|ALL LAUGH)\]|laughter|ALL LAUGH', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
-        formatted_line = re.sub(r'\((cheering|audience cheering|CHEERING AND APPLAUSE|INDISTINCT CHATTER)\)|\[(cheering|audience cheering|CHEERING AND APPLAUSE|INDISTINCT CHATTER)\]|CHEERING AND APPLAUSE', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
-        formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]|shouting|audience shouting', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
-        formatted_line = re.sub(r'\((pause)\)|\[(pause)\]|pause', '[Pause]', formatted_line, flags=re.IGNORECASE)
-        formatted_line = re.sub(r'\((exhale)\)|\[(exhale)\]|exhale', '[They Exhale]', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\((applause|ALL APPLAUD|APPLAUSE CONTINUES)\)|\[(applause|ALL APPLAUD|APPLAUSE CONTINUES)\]|applause|ALL APPLAUD|APPLAUSE CONTINUES', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music )\)|\[(Music|MUSIC|MUSIC PLAYING|ORCHESTRAL MUSIC| Music )\]|¶ ¶|Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\((laughter|ALL LAUGH)\)|\[(laughter|ALL LAUGH)\]|laughter|ALL LAUGH', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\((cheering|audience cheering|CHEERING AND APPLAUSE|INDISTINCT CHATTER)\)|\[(cheering|audience cheering|CHEERING AND APPLAUSE|INDISTINCT CHATTER)\]|CHEERING AND APPLAUSE', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]|shouting|audience shouting', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\((pause)\)|\[(pause)\]|pause', '[Pause]', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\((exhale)\)|\[(exhale)\]|exhale', '[They Exhale]', formatted_line, flags=re.IGNORECASE)
 
-        # Convert dict keys/values to lowercase
-        local_american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
+            # Convert dict keys/values to lowercase
+            local_american_to_british_dict = {k.lower(): v.lower() for k, v in american_to_british_dict.items()}
 
-        # American to British replacement
-        for american, british in local_american_to_british_dict.items():
-            # Replace whole words only
-            formatted_line = re.sub(rf'\b{american}\b', british, formatted_line, flags=re.IGNORECASE)
+            # American to British replacement
+            for american, british in local_american_to_british_dict.items():
+                # Replace whole words only
+                formatted_line = re.sub(rf'\b{american}\b', british, formatted_line, flags=re.IGNORECASE)
 
-        formatted_lines.append(formatted_line)
+            formatted_lines.append(formatted_line)
 
         formatted_block = '\n'.join(formatted_lines) + '\n\n'
         formatted_blocks.append(formatted_block)
