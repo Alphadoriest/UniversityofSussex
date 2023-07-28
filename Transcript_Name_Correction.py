@@ -130,25 +130,38 @@ def extract_middle_column_text(doc):
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
+                desired_text = ''
+                inside_brackets = False  # Initialize bracket flag
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
-
-                    # Ignore lines that contain full bracketed phrases
-                    bracket_removed_text = re.sub(r'\(.*?\)', '', clean_paragraph_text)
-                    bracket_removed_text = re.sub(r'\[.*?\]', '', bracket_removed_text)
-
-                    desired_text = ''
-                    for run in paragraph.runs:
-                        run_text = run.text.replace(bracket_removed_text, '')
-                        if run.font.strike and run_text.strip():  # Check if the text is strikethrough
-                            desired_text += '~~' + run_text + '~~'  # Mark strikethrough text with ~~
+                        if run.font.strike:  # Check if the text is strikethrough
+                            clean_paragraph_text += '~~' + run.text + '~~'  # Mark strikethrough text with ~~
                         else:
-                            desired_text += run_text  # Append the text of run to the desired_text
+                            clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
 
-                    if desired_text:
-                        middle_column_texts.append(desired_text.strip())  # Remove leading and trailing spaces
+                    lines = clean_paragraph_text.split('\n')
+                    for line in lines:
+                        line = line.strip()
+
+                        # Update bracket flag
+                        if line.startswith('('):
+                            inside_brackets = True
+                        if line.endswith(')'):
+                            inside_brackets = False
+                            continue
+
+                        # Ignore lines inside brackets
+                        if inside_brackets:
+                            continue
+
+                        # Ignore lines that contain full bracketed phrases
+                        line = re.sub(r'\(.*?\)', '', line)
+                        line = re.sub(r'\[.*?\]', '', line)
+
+                        if line:
+                            desired_text = line
+                middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
@@ -159,13 +172,13 @@ def extract_middle_column_text(doc):
             # Check if name contains '~~'
             if '~~' in name:
                 # Remove '~~' from the name
-                name = re.sub(r'~~(.*?)~~', r'\1', name).strip()  # Added strip() to remove leading/trailing spaces
+                name = re.sub(r'~~(.*?)~~', r'\1', name).strip() # Added strip() to remove leading/trailing spaces
                 if name:  # Only add the suffix if the name is not empty
                     name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
-
+                  
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
-
+          
             cleaned_names.append(decapitalize(name))  # Apply decapitalize here
 
     return cleaned_names
