@@ -133,25 +133,24 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 for paragraph in paragraphs:
-                    clean_paragraph_text = ''
-                    for run in paragraph.runs:
-                        if run.font.strike:  # Check if the text is strikethrough
-                            continue  # Skip strikethrough text
-                        clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
+                    lines = paragraph.text.split('\n')  # Split the paragraph by newline
 
-                    # Remove bracketed text
-                    clean_paragraph_text = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)
-
-                    # Split the cleaned paragraph by newline
-                    lines = clean_paragraph_text.split('\n')
-
-                    # Iterate through the lines and take the first one that looks like a name
                     for line in lines:
-                        if re.match(r'^[A-Za-z\s]*$', line.strip()):
-                            desired_text = line.strip()
-                            break
+                        line = line.strip()  # Remove leading/trailing spaces
+                        if line and re.match(r'^[A-Za-z\s]*$', line):  # If line is not empty after stripping spaces and looks like a name
+                            clean_line_text = ''
+                            strikethrough_present = False
+                            for run in paragraph.runs:
+                                if run.text.strip() == line:
+                                    if run.font.strike:  # If the text is strikethrough
+                                        strikethrough_present = True
+                                    clean_line_text += run.text  # Append the text of run to the clean_line_text
 
-                    middle_column_texts.append(desired_text)
+                            if strikethrough_present:
+                                clean_line_text += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
+
+                            middle_column_texts.append(clean_line_text)
+                            break  # Break the loop once we've found a valid name
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
@@ -159,13 +158,6 @@ def extract_middle_column_text(doc):
     cleaned_names = []
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
-            # Check if name contains '~~'
-            if '~~' in name:
-                # Remove '~~' from the name
-                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()  # Added strip() to remove leading/trailing spaces
-                if name:  # Only add the suffix if the name is not empty
-                    name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
-
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
 
