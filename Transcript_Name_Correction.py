@@ -159,7 +159,7 @@ def extract_middle_column_text(doc):
                         if line:
                             desired_text = line  # Always update desired_text if line is not empty
                             break  # Once we find the first non-empty line, break the loop
-                            middle_column_texts.append(desired_text)
+                middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
