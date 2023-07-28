@@ -117,6 +117,7 @@ american_to_british_dict = {
   'dependent':'dependant',
   'judgmental':'judgemental',
   'apologize':'apologise',
+  'somber':'sombre',
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
