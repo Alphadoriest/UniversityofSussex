@@ -160,9 +160,7 @@ def extract_middle_column_text(doc):
                         line = re.sub(r'\[.*?\]', '', line)
 
                         if line:
-                            # Remove single-letter words from the line
-                            line = re.sub(r'\b\w\b', '', line)
-                            desired_text = line.strip()
+                            desired_text = line
                 middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
@@ -177,7 +175,10 @@ def extract_middle_column_text(doc):
                 name = re.sub(r'~~(.*?)~~', r'\1', name).strip() # Added strip() to remove leading/trailing spaces
                 if name:  # Only add the suffix if the name is not empty
                     name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
-                    
+                  
+            words = name.split()
+            name = ' '.join(word for word in words if len(word) > 1)
+          
             cleaned_names.append(decapitalize(name))  # Apply decapitalize here
 
     return cleaned_names
