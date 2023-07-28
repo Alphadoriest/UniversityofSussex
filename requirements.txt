@@ -4,3 +4,4 @@ fuzzywuzzy
 metaphone
 python-Levenshtein
 lxml
+regex
