@@ -133,7 +133,6 @@ def extract_middle_column_text(doc):
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
-                desired_text = ''
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
@@ -144,21 +143,19 @@ def extract_middle_column_text(doc):
                             clean_paragraph_text += '\n'.join(strikethrough_lines)
                         else:
                             clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
-                        
+                    
                     lines = clean_paragraph_text.split('\n')
-                    for line in lines:
+                    for i, line in enumerate(lines):
                         line = line.strip()
-                    
-                        # Remove bracketed text regardless of strikethrough
-                        line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
-                        line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
-                    
-                        # Ignore lines that contain strikethrough
-                        if '~~' in line:
-                            line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
-                            line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
-                    
-                        # Update desired_text only if line is not empty after all removals
+
+                        if i != len(lines) - 1:  # If this is not the last line, remove bracketed and strikethrough text
+                            line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)
+                            line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)
+                            line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)
+                            line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)
+                        else:  # If this is the last line, only remove strikethrough text
+                            line = regex.sub(r'~~(.*?)~~', '', line)
+
                         if line:
                             desired_text = line  # Store the valid line
 
