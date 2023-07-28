@@ -175,6 +175,10 @@ def extract_middle_column_text(doc):
                 name = re.sub(r'~~(.*?)~~', r'\1', name).strip() # Added strip() to remove leading/trailing spaces
                 if name:  # Only add the suffix if the name is not empty
                     name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
+            
+            # Split the name into words, remove single-letter words, then join them back into a name
+            name = ' '.join([word for word in name.split() if len(word) > 1])
+            
             cleaned_names.append(decapitalize(name))  # Apply decapitalize here
 
     return cleaned_names
