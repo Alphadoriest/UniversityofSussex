@@ -146,17 +146,14 @@ def extract_middle_column_text(doc):
                     lines = [line.strip() for line in lines if line.strip() and not line.endswith(')')]
 
                     # Start capturing lines after 'For the thesis;' is encountered
-                    # and then capture the 4th line (1 line for 'For the thesis;' + 1-3 lines after)
                     name_line = ""
                     capture_lines = False
-                    line_counter = 0
                     for line in lines:
                         if 'For the thesis;' in line:
                             capture_lines = True
-                        elif capture_lines and line_counter < 4 and not line.startswith('('):
-                            line_counter += 1
-                            if line_counter == 4:
-                                name_line = line
+                        elif capture_lines and not line.startswith('('):
+                            name_line = line
+                            break
 
                     if name_line:
                         middle_column_texts.append(name_line)
