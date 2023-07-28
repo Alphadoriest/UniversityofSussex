@@ -144,9 +144,9 @@ def extract_middle_column_text(doc):
 
                     desired_text += clean_paragraph_text
 
-                # Remove multiline bracketed phrases
-                desired_text = re.sub(r'\(.*?\)', '', desired_text, flags=re.DOTALL)
-                desired_text = re.sub(r'\[.*?\]', '', desired_text, flags=re.DOTALL)
+                # Remove multiline bracketed phrases that immediately follow a name
+                desired_text = re.sub(r'[^\n]*?\(.*?\)', '', desired_text, flags=re.DOTALL)
+                desired_text = re.sub(r'[^\n]*?\[.*?\]', '', desired_text, flags=re.DOTALL)
 
                 # Split the cleaned text by newline and ignore the empty lines
                 lines = desired_text.split('\n')
@@ -154,6 +154,8 @@ def extract_middle_column_text(doc):
 
                 middle_column_texts.extend(lines)
 
+    # Filter out lines that are likely not names
+    middle_column_texts = [line for line in middle_column_texts if line.isupper() or line.istitle() and len(line.split()) <= 4]
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
     # Remove single letters from names
