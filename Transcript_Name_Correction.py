@@ -131,7 +131,6 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 desired_text = ''
-                inside_brackets = False  # Initialize bracket flag
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
@@ -147,12 +146,12 @@ def extract_middle_column_text(doc):
                     for line in lines:
                         line = line.strip()
 
-                        # Ignore lines that contain full bracketed phrases
+                        # Ignore lines that contain bracketed phrases
                         if '~~' in line:
-                            line = re.sub(r'~~\(.*?\)~~', '', line)
+                            line = re.sub(r'~~\(.*?\)~~', '', line)  # Non-greedy regex to remove all bracketed text
                         else:
-                            line = re.sub(r'\(.*?\)', '', line)
-                            line = re.sub(r'\[.*?\]', '', line)
+                            line = re.sub(r'\(.*?\)', '', line)  # Non-greedy regex to remove all bracketed text
+                            line = re.sub(r'\[.*?\]', '', line)  # Non-greedy regex to remove all square bracketed text
 
                         if line:
                             desired_text = line
@@ -167,7 +166,7 @@ def extract_middle_column_text(doc):
             # Check if name contains '~~'
             if '~~' in name:
                 # Remove '~~' from the name
-                name = re.sub(r'~~(.*?)~~', r'\1', name).strip() # Added strip() to remove leading/trailing spaces
+                name = re.sub(r'~~(.*?)~~', r'\1', name).strip()  # Added strip() to remove leading/trailing spaces
                 if name:  # Only add the suffix if the name is not empty
                     name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
                   
