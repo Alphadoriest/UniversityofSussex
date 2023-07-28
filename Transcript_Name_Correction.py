@@ -294,10 +294,7 @@ def reformat_subtitles(text: str) -> str:
     if text.startswith('WEBVTT'):
         text = text.replace('WEBVTT', 'WEBVTT\n', 1)
 
-    # Adjusted regex pattern to handle different timestamp formats
-    pattern = r'(\d\d:\d\d:\d\d(?:.\d\d\d)?\s*-->\s*\d\d:\d\d:\d\d(?:.\d\d\d)?)'
-
-    blocks = re.split(pattern, text)
+    blocks = re.split(r'(\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d)', text)
     formatted_blocks = []
 
     for block in blocks:
