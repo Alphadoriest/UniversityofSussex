@@ -161,8 +161,8 @@ def extract_middle_column_text(doc):
 
                         if line:
                             # Remove single-letter words from the line
-                            line = ' '.join([word for word in line.split() if not (len(word) == 1 and word.isalpha())])
-                            desired_text = line
+                            line = re.sub(r'\b\w\b', '', line)
+                            desired_text = line.strip()
                 middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
