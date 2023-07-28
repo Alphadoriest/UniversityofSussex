@@ -156,6 +156,9 @@ def extract_middle_column_text(doc):
 
     # Filter out lines that are likely not names
     middle_column_texts = [line for line in middle_column_texts if line.isupper() or (line.istitle() and len(line.split()) <= 4)]
+    
+    # Join the cleaned lines with commas, and replace any multiple consecutive commas with a single comma
+    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))
 
     # Remove single letters from names
     cleaned_names = []
