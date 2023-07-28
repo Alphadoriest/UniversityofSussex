@@ -428,9 +428,6 @@ if names_list:  # Check if names_list is not empty
     # Remove single-letter words from each name and apply decapitalize
     names_list = [' '.join(word for word in name.split() if len(word) > 1) for name in names_list if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]]
     names_list = [decapitalize(name) for name in names_list]
-
-    # Check if names_list contains meaningful entries
-    if any(name for name in names_list):
     
     # Check if names_list contains meaningful entries
     if any(name for name in names_list):
