@@ -131,7 +131,7 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 desired_text = ''
-                inside_brackets = False  # Initialize bracket flag     
+                inside_brackets = False  # Initialize bracket flag
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
@@ -142,25 +142,17 @@ def extract_middle_column_text(doc):
                             clean_paragraph_text += '\n'.join(strikethrough_lines)
                         else:
                             clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
-
+                        
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
 
-                        # Update bracket flag
-                        if line.startswith('('):
-                            inside_brackets = True
-                        if line.endswith(')'):
-                            inside_brackets = False
-                            continue
-
-                        # Ignore lines inside brackets
-                        if inside_brackets:
-                            continue
-
                         # Ignore lines that contain full bracketed phrases
-                        line = re.sub(r'\(.*?\)', '', line)
-                        line = re.sub(r'\[.*?\]', '', line)
+                        if '~~' in line:
+                            line = re.sub(r'~~\(.*?\)~~', '', line)
+                        else:
+                            line = re.sub(r'\(.*?\)', '', line)
+                            line = re.sub(r'\[.*?\]', '', line)
 
                         if line:
                             desired_text = line
