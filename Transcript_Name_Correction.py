@@ -136,30 +136,21 @@ def extract_middle_column_text(doc):
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         if run.font.strike:  # Check if the text is strikethrough
-                            # Split the strikethrough text by newline and wrap each line with '~~'
-                            strikethrough_lines = run.text.split('\n')
-                            strikethrough_lines = ['~~' + line + '~~' for line in strikethrough_lines]
-                            clean_paragraph_text += '\n'.join(strikethrough_lines)
-                        else:
-                            clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
+                            continue  # Skip strikethrough text
+                        clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
 
-                    # Remove bracketed and strikethrough text
-                    clean_paragraph_text = regex.sub(r'\((?:[^()]|(?R))*\)', '', clean_paragraph_text)
+                    # Remove bracketed text
                     clean_paragraph_text = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)
-                    clean_paragraph_text = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', clean_paragraph_text)
-                    clean_paragraph_text = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', clean_paragraph_text)
-                    clean_paragraph_text = regex.sub(r'~~(.*?)~~', '', clean_paragraph_text)
 
                     # Split the cleaned paragraph by newline
                     lines = clean_paragraph_text.split('\n')
-
-                    # Iterate through the lines and take the first one that looks like a name
+                    valid_lines = []
                     for line in lines:
-                        if re.match(r'^[A-Za-z\s]*$', line.strip()):
-                            desired_text = line.strip()
-                            break
-
-                middle_column_texts.append(desired_text)
+                        if line.strip():  # If line is not empty after removal of bracketed text
+                            valid_lines.append(line.strip())
+                    if valid_lines:  # If there are any valid lines
+                        desired_text = valid_lines[-1]  # Take the last valid line
+                        middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
@@ -173,10 +164,10 @@ def extract_middle_column_text(doc):
                 name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()  # Added strip() to remove leading/trailing spaces
                 if name:  # Only add the suffix if the name is not empty
                     name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
-                  
+
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
-          
+
             cleaned_names.append(decapitalize(name))  # Apply decapitalize here
 
     return cleaned_names
