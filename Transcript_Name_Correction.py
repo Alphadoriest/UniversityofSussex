@@ -122,8 +122,6 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-import regex
-
 def extract_middle_column_text(doc):
     middle_column_texts = []
 
@@ -148,15 +146,16 @@ def extract_middle_column_text(doc):
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
-
-                        # Ignore lines that contain bracketed phrases
+                    
+                        # Remove bracketed text regardless of strikethrough
+                        line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
+                        line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
+                    
+                        # Ignore lines that contain strikethrough
                         if '~~' in line:
                             line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
                             line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
-                        else:
-                            line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
-                            line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
-
+                    
                         if line:
                             desired_text = line
                 middle_column_texts.append(desired_text)
