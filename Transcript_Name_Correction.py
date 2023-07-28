@@ -231,7 +231,8 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
         max_similarity = 0
         most_similar_name = None
         for name in names_list:
-            clean_name = name.replace(' (Marked as not present)', '')  # Remove the marker for comparison
+            # Remove the "(Marked As Not Present)" marker for comparison
+            clean_name = name.replace(' (Marked As Not Present)', '')
             sim = similarity(full_name, clean_name)
             if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(name.split())):
                 max_similarity = sim
