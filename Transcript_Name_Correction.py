@@ -131,25 +131,34 @@ def extract_middle_column_text(doc):
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
+                desired_text = ''
                 for paragraph in paragraphs:
-                    lines = paragraph.text.split('\n')  # Split the paragraph by newline
-
+                    clean_paragraph_text = ''
+                    for run in paragraph.runs:
+                        if run.font.strike:  # Check if the text is strikethrough
+                            # Split the strikethrough text by newline and wrap each line with '~~'
+                            strikethrough_lines = run.text.split('\n')
+                            strikethrough_lines = ['~~' + line + '~~' for line in strikethrough_lines]
+                            clean_paragraph_text += '\n'.join(strikethrough_lines)
+                        else:
+                            clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
+                        
+                    lines = clean_paragraph_text.split('\n')
                     for line in lines:
-                        line = line.strip()  # Remove leading/trailing spaces
-                        if line and re.match(r'^[A-Za-z-\s]*$', line):  # If line is not empty after stripping spaces and looks like a name
-                            clean_line_text = ''
-                            strikethrough_present = False
-                            for run in paragraph.runs:
-                                if run.text.strip() == line:
-                                    if run.font.strike:  # If the text is strikethrough
-                                        strikethrough_present = True
-                                    clean_line_text += run.text  # Append the text of run to the clean_line_text
-
-                            if strikethrough_present:
-                                clean_line_text += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
-
-                            middle_column_texts.append(clean_line_text)
-                            break  # Break the loop once we've found a valid name
+                        line = line.strip()
+                    
+                        # Remove bracketed text regardless of strikethrough
+                        line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
+                        line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
+                    
+                        # Ignore lines that contain strikethrough
+                        if '~~' in line:
+                            line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
+                            line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
+                    
+                        if line:
+                            desired_text = line
+                middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
@@ -157,9 +166,16 @@ def extract_middle_column_text(doc):
     cleaned_names = []
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
+            # Check if name contains '~~'
+            if '~~' in name:
+                # Remove '~~' from the name
+                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()  # Added strip() to remove leading/trailing spaces
+                if name:  # Only add the suffix if the name is not empty
+                    name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
+                  
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
-
+          
             cleaned_names.append(decapitalize(name))  # Apply decapitalize here
 
     return cleaned_names
