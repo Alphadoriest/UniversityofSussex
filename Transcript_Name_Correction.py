@@ -141,8 +141,10 @@ def extract_middle_column_text(doc):
                             clean_paragraph_text += '\n'.join(strikethrough_lines)
                         else:
                             clean_paragraph_text += run.text
-                    # Remove any text within parentheses
-                    clean_paragraph_text = re.sub(r'\(.*?\)', '', clean_paragraph_text)
+                
+                    # Remove the pronunciation part here
+                    clean_paragraph_text = clean_paragraph_text.split('\n')[0]
+                
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
