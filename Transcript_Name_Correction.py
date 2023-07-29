@@ -135,48 +135,43 @@ def extract_middle_column_text(doc):
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        if run.font.strike:  # Check if the text is strikethrough
-                            # Split the strikethrough text by newline and wrap each line with '~~'
+                        if run.font.strike:
                             strikethrough_lines = run.text.split('\n')
                             strikethrough_lines = ['~~' + line + '~~' for line in strikethrough_lines]
                             clean_paragraph_text += '\n'.join(strikethrough_lines)
                         else:
-                            clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
+                            clean_paragraph_text += run.text
                         
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
-                    
-                        # Remove bracketed text regardless of strikethrough
-                        line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
-                        line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
-                    
-                        # Ignore lines that contain strikethrough
+
+                        # Extract name before newline character
+                        match = re.match(r'(.+?)\n', line)
+                        if match:
+                            line = match.group(1)
+                       
+                        line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)
+                        line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)
                         if '~~' in line:
-                            line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
-                            line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
-                    
+                            line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)
+                            line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)
                         if line:
                             desired_text = line
                 middle_column_texts.append(desired_text)
 
-    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
+    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))
 
-    # Remove single letters from names
     cleaned_names = []
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
-            # Check if name contains '~~'
             if '~~' in name:
-                # Remove '~~' from the name
-                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()  # Added strip() to remove leading/trailing spaces
-                if name:  # Only add the suffix if the name is not empty
-                    name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
-                  
+                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
+                if name:
+                    name += ' (Marked As Not Present)'
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
-          
-            cleaned_names.append(decapitalize(name))  # Apply decapitalize here
+            cleaned_names.append(decapitalize(name))
 
     return cleaned_names
   
