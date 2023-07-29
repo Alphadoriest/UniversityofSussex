@@ -142,14 +142,15 @@ def extract_middle_column_text(doc):
                         else:
                             clean_paragraph_text += run.text
 
-                    lines = clean_paragraph_text.split('\n')
+                    raw_lines = clean_paragraph_text.split('\n')
                     lines_to_keep = []
-                    for i in range(len(lines)):
-                        if i > 0 and (lines[i-1].strip().startswith('(') or lines[i-1].strip().endswith(')')):
+
+                    # Remove lines with parentheses, and the lines above and below them
+                    parenthesis_lines = [i for i, line in enumerate(raw_lines) if line.strip().startswith('(') or line.strip().endswith(')')]
+                    for i in range(len(raw_lines)):
+                        if i in parenthesis_lines or (i > 0 and i-1 in parenthesis_lines) or (i < len(raw_lines) - 1 and i+1 in parenthesis_lines):
                             continue
-                        if i < len(lines) - 1 and (lines[i+1].strip().startswith('(') or lines[i+1].strip().endswith(')')):
-                            continue
-                        lines_to_keep.append(lines[i])
+                        lines_to_keep.append(raw_lines[i])
                     clean_paragraph_text = '\n'.join(lines_to_keep)
                     
                     lines = clean_paragraph_text.split('\n')
