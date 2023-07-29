@@ -141,16 +141,14 @@ def extract_middle_column_text(doc):
                             clean_paragraph_text += '\n'.join(strikethrough_lines)
                         else:
                             clean_paragraph_text += run.text
-                        
+
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
 
-                        # Extract name before newline character
-                        match = re.match(r'(.+?)\n', line)
-                        if match:
-                            line = match.group(1)
-                       
+                        # Split name at the first newline character
+                        line = re.split('\n', line)[0]
+                        
                         line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)
                         line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)
                         if '~~' in line:
