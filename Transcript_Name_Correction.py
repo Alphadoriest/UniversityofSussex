@@ -131,6 +131,7 @@ def extract_middle_column_text(doc):
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
+                desired_text = ''
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
@@ -141,28 +142,23 @@ def extract_middle_column_text(doc):
                             clean_paragraph_text += '\n'.join(strikethrough_lines)
                         else:
                             clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
-
-                    # Split the clean_paragraph_text by newline and process each line
+                        
                     lines = clean_paragraph_text.split('\n')
-                    desired_text = ''
                     for line in lines:
                         line = line.strip()
-
+                    
                         # Remove bracketed text regardless of strikethrough
                         line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
                         line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
-
+                    
                         # Ignore lines that contain strikethrough
                         if '~~' in line:
                             line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
                             line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
-
-                        # Assign line to desired_text only when line is not empty
+                    
                         if line:
                             desired_text = line
-
-                    if desired_text:
-                        middle_column_texts.append(desired_text)
+                middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
@@ -176,10 +172,10 @@ def extract_middle_column_text(doc):
                 name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()  # Added strip() to remove leading/trailing spaces
                 if name:  # Only add the suffix if the name is not empty
                     name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
-
+                  
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
-
+          
             cleaned_names.append(decapitalize(name))  # Apply decapitalize here
 
     return cleaned_names
@@ -316,7 +312,7 @@ def reformat_subtitles(text: str) -> str:
                 formatted_line = ' '.join(words)
             formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
             formatted_line = re.sub(r'\((applause|ALL APPLAUD|APPLAUSE CONTINUES)\)|\[(applause|ALL APPLAUD|APPLAUSE CONTINUES)\]|applause|ALL APPLAUD|APPLAUSE CONTINUES', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
-            formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music )\)|\[(Music|MUSIC|MUSIC PLAYING|ORCHESTRAL MUSIC| Music )\]|¶ ¶|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music )\)|\[(Music|MUSIC|MUSIC PLAYING|ORCHESTRAL MUSIC| Music )\]|¶ ¶|Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
             formatted_line = re.sub(r'\((laughter|ALL LAUGH)\)|\[(laughter|ALL LAUGH)\]|laughter|ALL LAUGH', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
             formatted_line = re.sub(r'\((cheering|audience cheering|CHEERING AND APPLAUSE|INDISTINCT CHATTER)\)|\[(cheering|audience cheering|CHEERING AND APPLAUSE|INDISTINCT CHATTER)\]|CHEERING AND APPLAUSE', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
             formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]|shouting|audience shouting', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
