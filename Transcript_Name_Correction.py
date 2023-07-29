@@ -141,10 +141,17 @@ def extract_middle_column_text(doc):
                             clean_paragraph_text += '\n'.join(strikethrough_lines)
                         else:
                             clean_paragraph_text += run.text
-                
-                    # Remove the pronunciation part here
-                    clean_paragraph_text = clean_paragraph_text.split('\n')[0]
-                
+
+                    lines = clean_paragraph_text.split('\n')
+                    lines_to_keep = []
+                    for i in range(len(lines)):
+                        if i > 0 and (lines[i-1].strip().startswith('(') or lines[i-1].strip().endswith(')')):
+                            continue
+                        if i < len(lines) - 1 and (lines[i+1].strip().startswith('(') or lines[i+1].strip().endswith(')')):
+                            continue
+                        lines_to_keep.append(lines[i])
+                    clean_paragraph_text = '\n'.join(lines_to_keep)
+                    
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
