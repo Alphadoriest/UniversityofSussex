@@ -122,7 +122,6 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-
 def extract_middle_column_text(doc):
     middle_column_texts = []
 
@@ -137,7 +136,7 @@ def extract_middle_column_text(doc):
 
                     for line in lines:
                         line = line.strip()  # Remove leading/trailing spaces
-                        if line and re.match(r'^[A-Za-z\s]*$', line):  # If line is not empty after stripping spaces and looks like a name
+                        if line and re.match(r'^[A-Za-z-\s]*$', line):  # If line is not empty after stripping spaces and looks like a name
                             clean_line_text = ''
                             strikethrough_present = False
                             for run in paragraph.runs:
