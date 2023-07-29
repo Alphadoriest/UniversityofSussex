@@ -131,7 +131,6 @@ def extract_middle_column_text(doc):
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
-                paragraph_texts = []
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
@@ -145,6 +144,7 @@ def extract_middle_column_text(doc):
 
                     # Split the clean_paragraph_text by newline and process each line
                     lines = clean_paragraph_text.split('\n')
+                    desired_text = ''
                     for line in lines:
                         line = line.strip()
 
@@ -157,12 +157,12 @@ def extract_middle_column_text(doc):
                             line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
                             line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
 
-                        # Append line to paragraph_texts only when line is not empty
+                        # Assign line to desired_text only when line is not empty
                         if line:
-                            paragraph_texts.append(line)
+                            desired_text = line
 
-                if paragraph_texts:
-                    middle_column_texts.append(' '.join(paragraph_texts))
+                    if desired_text:
+                        middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
