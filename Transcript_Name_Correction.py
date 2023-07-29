@@ -156,8 +156,10 @@ def extract_middle_column_text(doc):
                             line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
                             line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
                     
+                        # Assign line to desired_text only when line is not empty
                         if line:
                             desired_text = line
+
                 middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
