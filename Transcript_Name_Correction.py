@@ -143,18 +143,23 @@ def extract_middle_column_text(doc):
                         else:
                             clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
 
-                    # Remove bracketed text regardless of strikethrough
-                    clean_paragraph_text = regex.sub(r'\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
-                    clean_paragraph_text = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
+                    # Split the clean_paragraph_text by newline and process each line
+                    lines = clean_paragraph_text.split('\n')
+                    for line in lines:
+                        line = line.strip()
 
-                    # Ignore lines that contain strikethrough
-                    if '~~' in clean_paragraph_text:
-                        clean_paragraph_text = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
-                        clean_paragraph_text = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
+                        # Remove bracketed text regardless of strikethrough
+                        line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
+                        line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
 
-                    # Assign clean_paragraph_text to desired_text only when clean_paragraph_text is not empty
-                    if clean_paragraph_text.strip():
-                        desired_text = clean_paragraph_text.strip()
+                        # Ignore lines that contain strikethrough
+                        if '~~' in line:
+                            line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
+                            line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
+
+                        # Assign line to desired_text only when line is not empty
+                        if line:
+                            desired_text = line
 
                 middle_column_texts.append(desired_text)
 
