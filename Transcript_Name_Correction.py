@@ -129,7 +129,7 @@ strikethrough_pattern = re.compile(r'~~(.*?)~~', re.DOTALL)
 bracket_pattern = re.compile(r'\[([^[\]]*)\]|\(([^()]*)\)', re.DOTALL)
 
 # Regex pattern to match unwanted text before the desired text
-unwanted_text_pattern = re.compile(r'^(For the thesis;.*?[\r\n]+)+', re.MULTILINE)
+unwanted_text_pattern = re.compile(r'^(For the thesis;.*?[\r\n]+)+|^(Also the recipient.*?[\r\n]+)+', re.MULTILINE)
 
 def extract_middle_column_text(doc):
     middle_column_texts = []
@@ -145,19 +145,21 @@ def extract_middle_column_text(doc):
                     paragraph_text = ' '.join(run.text for run in paragraph.runs if not run.font.strike)
                     strikethrough_text = ' '.join(run.text for run in paragraph.runs if run.font.strike)
                     
-                    # Remove bracketed text
-                    paragraph_text = bracket_pattern.sub('', paragraph_text)
-                    strikethrough_text = bracket_pattern.sub('', strikethrough_text)
-                    
                     # Remove unwanted text before the desired text
                     paragraph_text = unwanted_text_pattern.sub('', paragraph_text)
                     strikethrough_text = unwanted_text_pattern.sub('', strikethrough_text)
-                    
+
                     # Add the suffix to strikethrough text
                     strikethrough_text = strikethrough_pattern.sub(r'\1 (Marked As Not Present)', strikethrough_text)
                     
                     # Combine the paragraph text and the strikethrough text
-                    desired_text = paragraph_text + strikethrough_text
+                    combined_text = paragraph_text + strikethrough_text
+
+                    # Extract the name from the first line of the combined text
+                    desired_text = combined_text.split('\n')[0]
+
+                    # Remove bracketed text from the desired text
+                    desired_text = bracket_pattern.sub('', desired_text)
 
                 middle_column_texts.append(desired_text)
 
