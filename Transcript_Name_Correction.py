@@ -147,7 +147,7 @@ def extract_middle_column_text(doc):
                         line = line.strip()
 
                         # Split name at the first newline character
-                        line = re.split('\n', line)[0]
+                        line = line.split('\n', 1)[0]
                         
                         line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)
                         line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)
