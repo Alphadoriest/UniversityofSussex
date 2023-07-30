@@ -146,13 +146,13 @@ def extract_middle_column_text(doc):
                     thesis_match = thesis_prefix_pattern.match(paragraph_text)
                     recipient_match = recipient_prefix_pattern.match(paragraph_text)
                     if thesis_match or recipient_match:
-                        paragraph_text = (thesis_match or recipient_match).group(2)
+                        lines = (thesis_match or recipient_match).group(2).split('\n')
+                        # If the last line contains bracketed text, extract the line above it and remove the rest
+                        if bracket_pattern.search(lines[-1]) and len(lines) > 1:
+                            paragraph_text = lines[-2]
+                        else:
+                            paragraph_text = lines[-1]
 
-                    # If the last line contains bracketed text, extract the line above it and remove the rest
-                    lines = paragraph_text.split('\n')
-                    if bracket_pattern.search(lines[-1]) and len(lines) > 1:
-                        paragraph_text = lines[-2]
-                    
                     # Remove bracketed text
                     cleaned_line = bracket_pattern.sub('', paragraph_text).strip()
 
