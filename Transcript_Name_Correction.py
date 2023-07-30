@@ -122,14 +122,11 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-# Regex pattern to match strikethrough text
-strikethrough_pattern = re.compile(r'~~(.*?)~~', re.DOTALL)
+# Regex pattern to match bracketed text
+bracket_pattern = re.compile(r'\[.*?\]|\(.*?\)')
 
-# Regex pattern to match nested brackets or square brackets
-bracket_pattern = re.compile(r'\[([^[\]]*)\]|\(([^()]*)\)', re.DOTALL)
-
-# Regex pattern to match unwanted text before the desired text
-unwanted_text_pattern = re.compile(r'^(For the thesis;.*?[\r\n]+)+', re.MULTILINE)
+# Regex pattern to match unwanted prefixes
+unwanted_prefix_pattern = re.compile(r'^(For the thesis;.*?[\r\n]+)+|^(Also the recipient.*?[\r\n]+)+', re.MULTILINE)
 
 def extract_middle_column_text(doc):
     middle_column_texts = []
@@ -140,32 +137,26 @@ def extract_middle_column_text(doc):
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
-                desired_text = ''
+                
                 for paragraph in paragraphs:
-                    paragraph_text = ' '.join(run.text for run in paragraph.runs if not run.font.strike)
-                    strikethrough_text = ' '.join(run.text for run in paragraph.runs if run.font.strike)
+                    # Ignore unwanted prefixes
+                    paragraph_text = unwanted_prefix_pattern.sub('', paragraph.text)
+                    
+                    # Extract the first line
+                    first_line = paragraph_text.split('\n')[0]
                     
                     # Remove bracketed text
-                    paragraph_text = bracket_pattern.sub('', paragraph_text)
-                    strikethrough_text = bracket_pattern.sub('', strikethrough_text)
-                    
-                    # Remove unwanted text before the desired text
-                    paragraph_text = unwanted_text_pattern.sub('', paragraph_text)
-                    strikethrough_text = unwanted_text_pattern.sub('', strikethrough_text)
-                    
-                    # Add the suffix to strikethrough text
-                    strikethrough_text = strikethrough_pattern.sub(r'\1 (Marked As Not Present)', strikethrough_text)
-                    
-                    # Combine the paragraph text and the strikethrough text
-                    desired_text = paragraph_text + strikethrough_text
+                    cleaned_line = bracket_pattern.sub('', first_line).strip()
 
-                middle_column_texts.append(desired_text)
+                    # Check if the text was strikethrough
+                    if any(run.font.strike for run in paragraph.runs):
+                        cleaned_line += ' (Marked As Not Present)'
 
-    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
+                    middle_column_texts.append(cleaned_line)
 
     # Remove single letters from names
     cleaned_names = []
-    for name in cleaned_text.split(', '):
+    for name in middle_column_texts:
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
