@@ -122,10 +122,11 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-# Regex pattern to match bracketed text
 bracket_pattern = re.compile(r'\[.*?\]|\(.*?\)')
-# Ignore unwanted prefixes
 unwanted_prefix_pattern = re.compile(r'^(unwanted_prefix1|unwanted_prefix2)')
+# New regex patterns
+thesis_prefix_pattern = re.compile(r'^For the thesis;')
+recipient_prefix_pattern = re.compile(r'^Also the recipient...')
 
 def extract_middle_column_text(doc):
     middle_column_texts = []
@@ -149,6 +150,11 @@ def extract_middle_column_text(doc):
                             break
                         first_line += ' ' + line
                     
+                    # If the first line starts with 'For the thesis;' or 'Also the recipient...'
+                    # remove everything up to the last newline character
+                    if thesis_prefix_pattern.match(first_line) or recipient_prefix_pattern.match(first_line):
+                        first_line = first_line.rsplit('\n', 1)[-1]
+
                     # Remove bracketed text
                     cleaned_line = bracket_pattern.sub('', first_line).strip()
 
