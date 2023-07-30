@@ -150,7 +150,7 @@ def extract_middle_column_text(doc):
 
                     # If the last line contains bracketed text, extract the line above it and remove the rest
                     lines = paragraph_text.split('\n')
-                    if bracket_pattern.search(lines[-1]):
+                    if bracket_pattern.search(lines[-1]) and len(lines) > 1:
                         paragraph_text = lines[-2]
                     
                     # Remove bracketed text
