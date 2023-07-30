@@ -137,18 +137,20 @@ def extract_middle_column_text(doc):
                 for paragraph in paragraphs:
                     paragraph_text = paragraph.text
 
-                    # If the paragraph starts with 'For the thesis;'
-                    if paragraph_text.startswith('For the thesis;'):
-                        # Split the text into lines and extract the last line as the author name
-                        lines = paragraph_text.split('\n')
-                        paragraph_text = lines[-1]
-                        cleaned_line = bracket_pattern.sub('', paragraph_text).strip()
-                        
-                        # Check if the text was strikethrough
-                        if all(run.font.strike for run in paragraph.runs):
-                            cleaned_line += ' (Marked As Not Present)'
+                    # Remove bracketed text
+                    cleaned_line = bracket_pattern.sub('', paragraph_text).strip()
 
-                        middle_column_texts.append(cleaned_line)
+                    # Check if the text was strikethrough
+                    if all(run.font.strike for run in paragraph.runs):
+                        cleaned_line += ' (Marked As Not Present)'
+                    
+                    # If the paragraph starts with 'For the thesis;'
+                    if cleaned_line.startswith('For the thesis;'):                        
+                        # Split the cleaned_line into lines and extract the last line as the author name
+                        lines = cleaned_line.split('\n')
+                        cleaned_line = lines[-1]
+
+                    middle_column_texts.append(cleaned_line)
 
     # Further process the names
     cleaned_names = []
