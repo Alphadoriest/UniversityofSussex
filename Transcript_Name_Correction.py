@@ -122,6 +122,15 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
+# Regex pattern to match strikethrough text
+strikethrough_pattern = re.compile(r'~~(.*?)~~', re.DOTALL)
+
+# Regex pattern to match nested brackets or square brackets
+bracket_pattern = re.compile(r'\[([^[\]]*)\]|\(([^()]*)\)', re.DOTALL)
+
+# Regex pattern to match unwanted text before the desired text
+unwanted_text_pattern = re.compile(r'^(For the thesis;.*?[\r\n]+)+', re.MULTILINE)
+
 def extract_middle_column_text(doc):
     middle_column_texts = []
 
@@ -133,31 +142,23 @@ def extract_middle_column_text(doc):
                 paragraphs = middle_cell.paragraphs
                 desired_text = ''
                 for paragraph in paragraphs:
-                    clean_paragraph_text = ''
-                    for run in paragraph.runs:
-                        if run.font.strike:  # Check if the text is strikethrough
-                            # Split the strikethrough text by newline and wrap each line with '~~'
-                            strikethrough_lines = run.text.split('\n')
-                            strikethrough_lines = ['~~' + line + '~~' for line in strikethrough_lines]
-                            clean_paragraph_text += '\n'.join(strikethrough_lines)
-                        else:
-                            clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
-                        
-                    lines = clean_paragraph_text.split('\n')
-                    for line in lines:
-                        line = line.strip()
+                    paragraph_text = ' '.join(run.text for run in paragraph.runs if not run.font.strike)
+                    strikethrough_text = ' '.join(run.text for run in paragraph.runs if run.font.strike)
                     
-                        # Remove bracketed text regardless of strikethrough
-                        line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
-                        line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
+                    # Remove bracketed text
+                    paragraph_text = bracket_pattern.sub('', paragraph_text)
+                    strikethrough_text = bracket_pattern.sub('', strikethrough_text)
                     
-                        # Ignore lines that contain strikethrough
-                        if '~~' in line:
-                            line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
-                            line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
+                    # Remove unwanted text before the desired text
+                    paragraph_text = unwanted_text_pattern.sub('', paragraph_text)
+                    strikethrough_text = unwanted_text_pattern.sub('', strikethrough_text)
                     
-                        if line:
-                            desired_text = line
+                    # Add the suffix to strikethrough text
+                    strikethrough_text = strikethrough_pattern.sub(r'\1 (Marked As Not Present)', strikethrough_text)
+                    
+                    # Combine the paragraph text and the strikethrough text
+                    desired_text = paragraph_text + strikethrough_text
+
                 middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
@@ -166,16 +167,8 @@ def extract_middle_column_text(doc):
     cleaned_names = []
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
-            # Check if name contains '~~'
-            if '~~' in name:
-                # Remove '~~' from the name
-                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()  # Added strip() to remove leading/trailing spaces
-                if name:  # Only add the suffix if the name is not empty
-                    name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
-                  
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
-          
             cleaned_names.append(decapitalize(name))  # Apply decapitalize here
 
     return cleaned_names
