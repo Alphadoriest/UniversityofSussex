@@ -122,11 +122,10 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-# Regex pattern to match unwanted prefixes
-unwanted_prefix_pattern = re.compile(r'^(For the thesis;.*?[\r\n]+)+', re.MULTILINE)
-
 # Regex pattern to match bracketed text
 bracket_pattern = re.compile(r'\[.*?\]|\(.*?\)')
+# Ignore unwanted prefixes
+unwanted_prefix_pattern = re.compile(r'^(unwanted_prefix1|unwanted_prefix2)')
 
 def extract_middle_column_text(doc):
     middle_column_texts = []
@@ -139,16 +138,20 @@ def extract_middle_column_text(doc):
                 paragraphs = middle_cell.paragraphs
                 
                 for paragraph in paragraphs:
-                    # Remove unwanted prefixes
+                    # Ignore unwanted prefixes
                     paragraph_text = unwanted_prefix_pattern.sub('', paragraph.text)
                     
-                    # Remove bracketed text
-                    cleaned_paragraph = bracket_pattern.sub('', paragraph_text).strip()
-
-                    # Extract last line of the cleaned paragraph
-                    lines = cleaned_paragraph.split('\n')
-                    cleaned_line = lines[-1]
+                    # Extract all lines before the first bracketed text
+                    lines = paragraph_text.split('\n')
+                    first_line = lines[0]
+                    for line in lines[1:]:
+                        if bracket_pattern.search(line):
+                            break
+                        first_line += ' ' + line
                     
+                    # Remove bracketed text
+                    cleaned_line = bracket_pattern.sub('', first_line).strip()
+
                     # Check if the text was strikethrough
                     if all(run.font.strike for run in paragraph.runs):
                         cleaned_line += ' (Marked As Not Present)'
