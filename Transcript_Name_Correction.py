@@ -124,9 +124,8 @@ american_to_british_dict = {
 # Name Extractor for graduation ceremony in-person lists functions
 # Regex pattern to match bracketed text
 bracket_pattern = re.compile(r'\[.*?\]|\(.*?\)')
-
-# Regex pattern to match unwanted prefixes
-unwanted_prefix_pattern = re.compile(r'^(For the thesis;.*?[\r\n]+)+|^(Also the recipient.*?[\r\n]+)+', re.MULTILINE)
+# Ignore unwanted prefixes
+unwanted_prefix_pattern = re.compile(r'^(unwanted_prefix1|unwanted_prefix2)')
 
 def extract_middle_column_text(doc):
     middle_column_texts = []
@@ -142,14 +141,19 @@ def extract_middle_column_text(doc):
                     # Ignore unwanted prefixes
                     paragraph_text = unwanted_prefix_pattern.sub('', paragraph.text)
                     
-                    # Extract the first line
-                    first_line = paragraph_text.split('\n')[0]
+                    # Extract all lines before the first bracketed text
+                    lines = paragraph_text.split('\n')
+                    first_line = lines[0]
+                    for line in lines[1:]:
+                        if bracket_pattern.search(line):
+                            break
+                        first_line += ' ' + line
                     
                     # Remove bracketed text
                     cleaned_line = bracket_pattern.sub('', first_line).strip()
 
                     # Check if the text was strikethrough
-                    if any(run.font.strike for run in paragraph.runs):
+                    if all(run.font.strike for run in paragraph.runs):
                         cleaned_line += ' (Marked As Not Present)'
 
                     middle_column_texts.append(cleaned_line)
@@ -172,6 +176,24 @@ def format_names(names_list):
         formatted_name = (name, color)
         formatted_names.append(formatted_name)
     return formatted_names
+
+def decapitalize(text):
+    roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
+    words = text.split()
+    for i, word in enumerate(words):
+        if word not in roman_numerals:
+
+            # Split hyphenated words and capitalize each part
+            hyphen_parts = word.split('-')
+            hyphen_parts = [part.lower().title() for part in hyphen_parts]
+            word = '-'.join(hyphen_parts)
+
+            # Split words with apostrophes and capitalize each part
+            apostrophe_parts = word.split("'")
+            apostrophe_parts = [part.lower().title() for part in apostrophe_parts]
+            words[i] = "'".join(apostrophe_parts)
+
+    return ' '.join(words)
 
 #Correct all names in graduation subtitles (find and replace) functions
 
@@ -255,24 +277,6 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
         return replaced_names, new_text, unmatched_names  # Return unmatched_names as well
     else:
         return [], '', unmatched_names  # Return unmatched_names as well
-
-def decapitalize(text):
-    roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
-    words = text.split()
-    for i, word in enumerate(words):
-        if word not in roman_numerals:
-
-            # Split hyphenated words and capitalize each part
-            hyphen_parts = word.split('-')
-            hyphen_parts = [part.lower().title() for part in hyphen_parts]
-            word = '-'.join(hyphen_parts)
-
-            # Split words with apostrophes and capitalize each part
-            apostrophe_parts = word.split("'")
-            apostrophe_parts = [part.lower().title() for part in apostrophe_parts]
-            words[i] = "'".join(apostrophe_parts)
-
-    return ' '.join(words)
 
 def reformat_subtitles(text: str) -> str:
     if text.startswith('WEBVTT'):
