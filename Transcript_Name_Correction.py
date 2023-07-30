@@ -149,8 +149,10 @@ def extract_middle_column_text(doc):
                     # Check if the text was strikethrough
                     if all(run.font.strike for run in paragraph.runs):
                         cleaned_line += ' (Marked As Not Present)'
-
-                    middle_column_texts.append(cleaned_line)
+                    
+                    # Only append the cleaned_line if it is not part of the thesis description
+                    if not cleaned_line.startswith("For the thesis;"):
+                        middle_column_texts.append(cleaned_line)
 
     # Further process the names
     cleaned_names = []
