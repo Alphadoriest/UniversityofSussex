@@ -141,9 +141,9 @@ def extract_middle_column_text(doc):
                     # extract the last line, if not, leave it as is
                     if paragraph_text.startswith('For the thesis;'):
                         lines = paragraph_text.split('\n')
-                        # If the last line contains bracketed text, remove the bracketed line
-                        if bracket_pattern.search(lines[-1]) and len(lines) > 1:
-                            paragraph_text = lines[-2]
+                        # Remove bracketed text in the last line
+                        if bracket_pattern.search(lines[-1]):
+                            paragraph_text = bracket_pattern.sub('', lines[-1]).strip()
                         else:
                             paragraph_text = lines[-1]
 
