@@ -131,7 +131,6 @@ def extract_middle_column_text(doc):
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
-                desired_text = ''
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
@@ -142,23 +141,22 @@ def extract_middle_column_text(doc):
                             clean_paragraph_text += '\n'.join(strikethrough_lines)
                         else:
                             clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
-                        
+                
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
-                    
+
                         # Remove bracketed text regardless of strikethrough
                         line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
                         line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
-                    
+                
                         # Ignore lines that contain strikethrough
                         if '~~' in line:
                             line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
                             line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
                     
                         if line:
-                            desired_text = line
-                middle_column_texts.append(desired_text)
+                            middle_column_texts.append(line)  # Append the line to middle_column_texts if it's not empty
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
