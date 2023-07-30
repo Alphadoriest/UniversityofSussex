@@ -147,22 +147,18 @@ def extract_middle_column_text(doc):
                     for line in lines:
                         line = line.strip()
                     
-                        # Assign line to desired_text before removing bracketed text
-                        if line:
-                            desired_text = line
-                    
                         # Remove bracketed text regardless of strikethrough
-                        line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
-                        line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
+                        clean_line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
+                        clean_line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', clean_line)  # Recursive regex to remove all square bracketed text
                     
                         # Ignore lines that contain strikethrough
-                        if '~~' in line:
-                            line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
-                            line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
+                        if '~~' in clean_line:
+                            clean_line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', clean_line)  # Recursive regex to remove all round bracketed text
+                            clean_line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', clean_line)  # Recursive regex to remove all square bracketed text
                     
-                        # If line is not empty after removing bracketed text, update desired_text
-                        if line:
-                            desired_text = line
+                        # Assign line to desired_text if it is not empty after cleaning
+                        if clean_line:
+                            desired_text = clean_line    
                 middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
