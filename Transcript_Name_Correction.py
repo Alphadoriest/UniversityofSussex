@@ -142,16 +142,12 @@ def extract_middle_column_text(doc):
                         # Split the text into lines and extract the last line as the author name
                         lines = paragraph_text.split('\n')
                         paragraph_text = lines[-1]
+                        cleaned_line = bracket_pattern.sub('', paragraph_text).strip()
                         
-                    # Remove bracketed text
-                    cleaned_line = bracket_pattern.sub('', paragraph_text).strip()
+                        # Check if the text was strikethrough
+                        if all(run.font.strike for run in paragraph.runs):
+                            cleaned_line += ' (Marked As Not Present)'
 
-                    # Check if the text was strikethrough
-                    if all(run.font.strike for run in paragraph.runs):
-                        cleaned_line += ' (Marked As Not Present)'
-                    
-                    # Only append the cleaned_line if it is not part of the thesis description
-                    if not cleaned_line.startswith("For the thesis;"):
                         middle_column_texts.append(cleaned_line)
 
     # Further process the names
