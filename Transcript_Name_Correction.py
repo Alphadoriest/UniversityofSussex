@@ -125,6 +125,9 @@ american_to_british_dict = {
 # Regex pattern to match bracketed text
 bracket_pattern = re.compile(r'\[.*?\]|\(.*?\)')
 
+# Regex pattern to match unwanted prefixes
+unwanted_prefix_pattern = re.compile(r'^(For the thesis;.*?[\r\n]+)+|^(Also the recipient.*?[\r\n]+)+', re.MULTILINE)
+
 def extract_middle_column_text(doc):
     middle_column_texts = []
 
@@ -136,24 +139,20 @@ def extract_middle_column_text(doc):
                 paragraphs = middle_cell.paragraphs
                 
                 for paragraph in paragraphs:
-                    # Split the paragraph into lines
-                    lines = paragraph.text.split('\n')
-
-                    # If the first line starts with 'For the thesis;' or 'Also the recipient...', remove it.
-                    if lines[0].startswith('For the thesis;') or lines[0].startswith('Also the recipient'):
-                        lines.pop(0)
+                    # Ignore unwanted prefixes
+                    paragraph_text = unwanted_prefix_pattern.sub('', paragraph.text)
                     
-                    # If the last line starts with an opening parenthesis, remove it.
-                    if lines[-1].strip().startswith('('):
-                        lines.pop()
+                    # Extract the first line
+                    first_line = paragraph_text.split('\n')[0]
                     
-                    # The remaining last line is the name.
-                    cleaned_name = lines[-1].strip()
-
                     # Remove bracketed text
-                    cleaned_name = bracket_pattern.sub('', cleaned_name).strip()
+                    cleaned_line = bracket_pattern.sub('', first_line).strip()
 
-                    middle_column_texts.append(cleaned_name)
+                    # Check if the text was strikethrough
+                    if any(run.font.strike for run in paragraph.runs):
+                        cleaned_line += ' (Marked As Not Present)'
+
+                    middle_column_texts.append(cleaned_line)
 
     # Remove single letters from names
     cleaned_names = []
