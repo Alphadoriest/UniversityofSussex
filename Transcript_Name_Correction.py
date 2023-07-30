@@ -124,9 +124,8 @@ american_to_british_dict = {
 # Name Extractor for graduation ceremony in-person lists functions
 bracket_pattern = re.compile(r'\[.*?\]|\(.*?\)')
 unwanted_prefix_pattern = re.compile(r'^(unwanted_prefix1|unwanted_prefix2)')
-# New regex patterns
-thesis_prefix_pattern = re.compile(r'^(For the thesis;.*?\n)(.*?)(\n|$)', re.DOTALL)
-recipient_prefix_pattern = re.compile(r'^(Also the recipient.*?\n)(.*?)(\n|$)', re.DOTALL)
+thesis_prefix_pattern = re.compile(r'^(For the thesis;.*\n)([^\n]*)(\n|$)', re.DOTALL)
+recipient_prefix_pattern = re.compile(r'^(Also the recipient.*\n)([^\n]*)(\n|$)', re.DOTALL)
 
 def extract_middle_column_text(doc):
     middle_column_texts = []
@@ -148,17 +147,14 @@ def extract_middle_column_text(doc):
                     recipient_match = recipient_prefix_pattern.match(paragraph_text)
                     if thesis_match or recipient_match:
                         paragraph_text = (thesis_match or recipient_match).group(2)
-                    
-                    # Extract all lines before the first bracketed text
-                    lines = paragraph_text.split('\n')
-                    first_line = lines[0]
-                    for line in lines[1:]:
-                        if bracket_pattern.search(line):
-                            break
-                        first_line += ' ' + line
 
+                    # If the last line contains bracketed text, extract the line above it and remove the rest
+                    lines = paragraph_text.split('\n')
+                    if bracket_pattern.search(lines[-1]):
+                        paragraph_text = lines[-2]
+                    
                     # Remove bracketed text
-                    cleaned_line = bracket_pattern.sub('', first_line).strip()
+                    cleaned_line = bracket_pattern.sub('', paragraph_text).strip()
 
                     # Check if the text was strikethrough
                     if all(run.font.strike for run in paragraph.runs):
