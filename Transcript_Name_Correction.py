@@ -123,7 +123,6 @@ american_to_british_dict = {
 
 # Name Extractor for graduation ceremony in-person lists functions
 bracket_pattern = re.compile(r'\[.*?\]|\(.*?\)')
-unwanted_prefix_pattern = re.compile(r'^(unwanted_prefix1|unwanted_prefix2)')
 
 def extract_middle_column_text(doc):
     middle_column_texts = []
@@ -136,14 +135,13 @@ def extract_middle_column_text(doc):
                 paragraphs = middle_cell.paragraphs
 
                 for paragraph in paragraphs:
-                    # Ignore unwanted prefixes
-                    paragraph_text = unwanted_prefix_pattern.sub('', paragraph.text)
+                    paragraph_text = paragraph.text
 
                     # If the paragraph starts with 'For the thesis;'
                     # extract the last line, if not, leave it as is
                     if paragraph_text.startswith('For the thesis;'):
                         lines = paragraph_text.split('\n')
-                        # If the last line contains bracketed text and there are more than one lines, extract the line above it and remove the rest
+                        # If the last line contains bracketed text, remove the bracketed line
                         if bracket_pattern.search(lines[-1]) and len(lines) > 1:
                             paragraph_text = lines[-2]
                         else:
