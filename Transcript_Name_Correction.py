@@ -127,6 +127,9 @@ unwanted_prefix_pattern = re.compile(r'^(unwanted_prefix1|unwanted_prefix2)')
 thesis_prefix_pattern = re.compile(r'^(For the thesis;.*\n)([^\n]*)(\n|$)', re.DOTALL)
 recipient_prefix_pattern = re.compile(r'^(Also the recipient.*\n)([^\n]*)(\n|$)', re.DOTALL)
 
+bracket_pattern = re.compile(r'\[.*?\]|\(.*?\)')
+unwanted_prefix_pattern = re.compile(r'^(unwanted_prefix1|unwanted_prefix2)')
+
 def extract_middle_column_text(doc):
     middle_column_texts = []
 
@@ -141,13 +144,11 @@ def extract_middle_column_text(doc):
                     # Ignore unwanted prefixes
                     paragraph_text = unwanted_prefix_pattern.sub('', paragraph.text)
 
-                    # If the paragraph starts with 'For the thesis;' or 'Also the recipient...'
-                    # extract just the name
-                    thesis_match = thesis_prefix_pattern.match(paragraph_text)
-                    recipient_match = recipient_prefix_pattern.match(paragraph_text)
-                    if thesis_match or recipient_match:
-                        lines = (thesis_match or recipient_match).group(2).split('\n')
-                        # If the last line contains bracketed text, extract the line above it and remove the rest
+                    # If the paragraph starts with 'For the thesis;'
+                    # extract the last line, if not, leave it as is
+                    if paragraph_text.startswith('For the thesis;'):
+                        lines = paragraph_text.split('\n')
+                        # If the last line contains bracketed text and there are more than one lines, extract the line above it and remove the rest
                         if bracket_pattern.search(lines[-1]) and len(lines) > 1:
                             paragraph_text = lines[-2]
                         else:
