@@ -143,7 +143,8 @@ def extract_middle_column_text(doc):
                             clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
                 
                     lines = clean_paragraph_text.split('\n')
-                    for line in lines:
+                    desired_text = ''
+                    for i, line in enumerate(lines):
                         line = line.strip()
 
                         # Remove bracketed text regardless of strikethrough
@@ -156,7 +157,13 @@ def extract_middle_column_text(doc):
                             line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
                     
                         if line:
-                            middle_column_texts.append(line)  # Append the line to middle_column_texts if it's not empty
+                            if line.lower().startswith('for the thesis;'):  # If the line starts with 'for the thesis;', remember the last line
+                                desired_text = lines[-1]
+                            elif i == 0:  # If it's the first line and does not start with 'for the thesis;', remember the line
+                                desired_text = line
+
+                    if desired_text:
+                        middle_column_texts.append(desired_text)  # Append the line to middle_column_texts if it's not empty
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
