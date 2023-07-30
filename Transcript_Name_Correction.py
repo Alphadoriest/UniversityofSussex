@@ -122,8 +122,8 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-def extract_middle_column_text(doc):
-    middle_column_texts = []
+def extract_names(doc):
+    names = []
 
     for table in doc.tables:
         for row in table.rows:
@@ -132,38 +132,18 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 for paragraph in paragraphs:
-                    clean_paragraph_text = ''
-                    for run in paragraph.runs:
-                        if run.font.strike:
-                            strikethrough_lines = run.text.split('\n')
-                            strikethrough_lines = ['~~' + line + '~~' for line in strikethrough_lines]
-                            clean_paragraph_text += '\n'.join(strikethrough_lines)
-                        else:
-                            clean_paragraph_text += run.text
-                
-                    lines = clean_paragraph_text.split('\n')
-                    desired_text = ''
-                    for i, line in enumerate(lines):
-                        line = line.strip()
-                        line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)
-                        line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)
-                        if '~~' in line:
-                            line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)
-                            line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)
-                    
-                        if line:
-                            if line.lower().startswith('for the thesis;'):
-                                # If the line starts with 'for the thesis;', remember the last non-empty line
-                                for rev_line in reversed(lines):
-                                    rev_line = rev_line.strip()
-                                    if rev_line:
-                                        desired_text = rev_line
-                                        break
-                            elif i == 0:
-                                desired_text = line
+                    lines = [run.text for run in paragraph.runs if not run.font.strike]
+                    for line in reversed(lines):
+                        stripped_line = line.strip()
+                        if stripped_line and not stripped_line.startswith('For the thesis;') and not stripped_line.startswith('('):
+                            names.append(stripped_line)
+                            break
 
-                    if desired_text:
-                        middle_column_texts.append(desired_text)
+    cleaned_names = []
+    for name in names:
+        name_parts = name.split()
+        cleaned_name = ' '.join(part for part in name_parts if len(part) > 1)
+        cleaned_names.append(cleaned_name)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))
 
