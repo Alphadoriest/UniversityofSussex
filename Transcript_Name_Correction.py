@@ -122,64 +122,23 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-def extract_middle_column_text(doc):
-    middle_column_texts = []
+for line in lines:
+    line = line.strip()
 
-    for table in doc.tables:
-        for row in table.rows:
-            cells = row.cells
-            if len(cells) > 1:
-                middle_cell = cells[len(cells) // 2]
-                paragraphs = middle_cell.paragraphs
-                desired_text = ''
-                for paragraph in paragraphs:
-                    clean_paragraph_text = ''
-                    for run in paragraph.runs:
-                        if run.font.strike:  # Check if the text is strikethrough
-                            # Split the strikethrough text by newline and wrap each line with '~~'
-                            strikethrough_lines = run.text.split('\n')
-                            strikethrough_lines = ['~~' + line + '~~' for line in strikethrough_lines]
-                            clean_paragraph_text += '\n'.join(strikethrough_lines)
-                        else:
-                            clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
-                        
-                    lines = clean_paragraph_text.split('\n')
-                    for line in lines:
-                        line = line.strip()
-                    
-                        # Remove bracketed text regardless of strikethrough
-                        clean_line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
-                        clean_line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', clean_line)  # Recursive regex to remove all square bracketed text
-                    
-                        # Ignore lines that contain strikethrough
-                        if '~~' in clean_line:
-                            clean_line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', clean_line)  # Recursive regex to remove all round bracketed text
-                            clean_line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', clean_line)  # Recursive regex to remove all square bracketed text
-                    
-                        # Assign line to desired_text if it is not empty after cleaning
-                        if clean_line:
-                            desired_text = clean_line    
-                middle_column_texts.append(desired_text)
+    # Remove bracketed text regardless of strikethrough
+    clean_line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
+    clean_line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', clean_line)  # Recursive regex to remove all square bracketed text
 
-    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
+    # Ignore lines that contain strikethrough
+    if '~~' in clean_line:
+        clean_line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', clean_line)  # Recursive regex to remove all round bracketed text
+        clean_line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', clean_line)  # Recursive regex to remove all square bracketed text
 
-    # Remove single letters from names
-    cleaned_names = []
-    for name in cleaned_text.split(', '):
-        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
-            # Check if name contains '~~'
-            if '~~' in name:
-                # Remove '~~' from the name
-                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()  # Added strip() to remove leading/trailing spaces
-                if name:  # Only add the suffix if the name is not empty
-                    name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
-                  
-            words = name.split()
-            name = ' '.join(word for word in words if len(word) > 1)
-          
-            cleaned_names.append(decapitalize(name))  # Apply decapitalize here
-
-    return cleaned_names
+    # Assign line to desired_text if it is not empty after cleaning
+    if clean_line:
+        desired_text = clean_line
+    elif not clean_line and not desired_text:
+        desired_text = clean_line
   
 def format_names(names_list):
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
