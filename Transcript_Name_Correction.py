@@ -137,22 +137,23 @@ def extract_middle_column_text(doc):
                 for paragraph in paragraphs:
                     paragraph_text = paragraph.text
 
-                    # Skip paragraph if it does not start with 'For the thesis;'
-                    if not paragraph_text.startswith('For the thesis;'):
-                        continue
+                    # Process the paragraph if it starts with 'For the thesis;'
+                    if paragraph_text.startswith('For the thesis;'):
+                        # Remove bracketed text
+                        cleaned_line = bracket_pattern.sub('', paragraph_text).strip()
 
-                    # Remove bracketed text
-                    cleaned_line = bracket_pattern.sub('', paragraph_text).strip()
+                        # Check if the text was strikethrough
+                        if all(run.font.strike for run in paragraph.runs):
+                            cleaned_line += ' (Marked As Not Present)'
+                        
+                        # Remove 'For the thesis;' from the start of the line
+                        cleaned_line = cleaned_line.replace('For the thesis;', '', 1).strip()
 
-                    # Check if the text was strikethrough
-                    if all(run.font.strike for run in paragraph.runs):
-                        cleaned_line += ' (Marked As Not Present)'
-
-                    # Split the cleaned_line into lines 
-                    lines = cleaned_line.split(',')
-
-                    # The author's name should be the last item after splitting by comma
-                    author_name = lines[-1].strip()
+                        # Split the cleaned line into lines
+                        lines = cleaned_line.split('\n')
+                        
+                        # The author's name should be the last non-empty line
+                        author_name = next((line for line in reversed(lines) if line.strip()), None)
 
                     # Only append author_name if it's not empty
                     if author_name:
