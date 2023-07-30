@@ -124,11 +124,6 @@ american_to_british_dict = {
 # Name Extractor for graduation ceremony in-person lists functions
 bracket_pattern = re.compile(r'\[.*?\]|\(.*?\)')
 unwanted_prefix_pattern = re.compile(r'^(unwanted_prefix1|unwanted_prefix2)')
-thesis_prefix_pattern = re.compile(r'^(For the thesis;.*\n)([^\n]*)(\n|$)', re.DOTALL)
-recipient_prefix_pattern = re.compile(r'^(Also the recipient.*\n)([^\n]*)(\n|$)', re.DOTALL)
-
-bracket_pattern = re.compile(r'\[.*?\]|\(.*?\)')
-unwanted_prefix_pattern = re.compile(r'^(unwanted_prefix1|unwanted_prefix2)')
 
 def extract_middle_column_text(doc):
     middle_column_texts = []
