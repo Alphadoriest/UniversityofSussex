@@ -125,8 +125,8 @@ american_to_british_dict = {
 bracket_pattern = re.compile(r'\[.*?\]|\(.*?\)')
 unwanted_prefix_pattern = re.compile(r'^(unwanted_prefix1|unwanted_prefix2)')
 # New regex patterns
-thesis_prefix_pattern = re.compile(r'^For the thesis;')
-recipient_prefix_pattern = re.compile(r'^Also the recipient...')
+thesis_prefix_pattern = re.compile(r'^(For the thesis;.*?\n)(.*?)(\n|$)', re.DOTALL)
+recipient_prefix_pattern = re.compile(r'^(Also the recipient.*?\n)(.*?)(\n|$)', re.DOTALL)
 
 def extract_middle_column_text(doc):
     middle_column_texts = []
@@ -137,10 +137,17 @@ def extract_middle_column_text(doc):
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
-                
+
                 for paragraph in paragraphs:
                     # Ignore unwanted prefixes
                     paragraph_text = unwanted_prefix_pattern.sub('', paragraph.text)
+
+                    # If the paragraph starts with 'For the thesis;' or 'Also the recipient...'
+                    # extract just the name
+                    thesis_match = thesis_prefix_pattern.match(paragraph_text)
+                    recipient_match = recipient_prefix_pattern.match(paragraph_text)
+                    if thesis_match or recipient_match:
+                        paragraph_text = (thesis_match or recipient_match).group(2)
                     
                     # Extract all lines before the first bracketed text
                     lines = paragraph_text.split('\n')
@@ -149,11 +156,6 @@ def extract_middle_column_text(doc):
                         if bracket_pattern.search(line):
                             break
                         first_line += ' ' + line
-                    
-                    # If the first line starts with 'For the thesis;' or 'Also the recipient...'
-                    # remove everything up to the last newline character
-                    if thesis_prefix_pattern.match(first_line) or recipient_prefix_pattern.match(first_line):
-                        first_line = first_line.rsplit('\n', 1)[-1]
 
                     # Remove bracketed text
                     cleaned_line = bracket_pattern.sub('', first_line).strip()
