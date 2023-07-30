@@ -138,15 +138,11 @@ def extract_middle_column_text(doc):
                     paragraph_text = paragraph.text
 
                     # If the paragraph starts with 'For the thesis;'
-                    # extract the last line, if not, leave it as is
                     if paragraph_text.startswith('For the thesis;'):
+                        # Split the text into lines and extract the last line as the author name
                         lines = paragraph_text.split('\n')
-                        # Remove bracketed text in the last line
-                        if bracket_pattern.search(lines[-1]):
-                            paragraph_text = bracket_pattern.sub('', lines[-1]).strip()
-                        else:
-                            paragraph_text = lines[-1]
-
+                        paragraph_text = lines[-1]
+                        
                     # Remove bracketed text
                     cleaned_line = bracket_pattern.sub('', paragraph_text).strip()
 
@@ -156,7 +152,7 @@ def extract_middle_column_text(doc):
 
                     middle_column_texts.append(cleaned_line)
 
-    # Remove single letters from names
+    # Further process the names
     cleaned_names = []
     for name in middle_column_texts:
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
