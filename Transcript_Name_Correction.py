@@ -147,6 +147,10 @@ def extract_middle_column_text(doc):
                     for line in lines:
                         line = line.strip()
                     
+                        # Assign line to desired_text before removing bracketed text
+                        if line:
+                            desired_text = line
+                    
                         # Remove bracketed text regardless of strikethrough
                         line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
                         line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
@@ -156,6 +160,7 @@ def extract_middle_column_text(doc):
                             line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
                             line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
                     
+                        # If line is not empty after removing bracketed text, update desired_text
                         if line:
                             desired_text = line
                 middle_column_texts.append(desired_text)
