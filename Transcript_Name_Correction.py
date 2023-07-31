@@ -150,18 +150,18 @@ def extract_middle_column_text(doc):
                     
                         # If the line is not empty before cleaning
                         if line: 
-                            # Update the last non-empty line if it does not contain brackets or strikethrough
+                            # Update the last non_empty_line if it does not contain brackets or strikethrough
                             if not ('(' in line or '[' in line or '~~' in line):
                                 last_non_empty_line = line
                     
-                            # Remove bracketed text regardless of strikethrough
-                            clean_line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
-                            clean_line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', clean_line)  # Recursive regex to remove all square bracketed text
+                        # Remove bracketed text regardless of strikethrough
+                        line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
+                        line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
                     
-                            # Ignore lines that contain strikethrough
-                            if '~~' in clean_line:
-                                clean_line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', clean_line)  # Recursive regex to remove all round bracketed text
-                                clean_line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', clean_line)  # Recursive regex to remove all square bracketed text
+                        # Ignore lines that contain strikethrough
+                        if '~~' in line:
+                            line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
+                            line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
                     
                     # Outside the loop, set the desired_text to last_non_empty_line
                     desired_text = last_non_empty_line
