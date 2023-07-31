@@ -131,28 +131,21 @@ def extract_middle_column_text(doc):
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
-                for paragraph in paragraphs:
+                for idx, paragraph in enumerate(paragraphs):
                     paragraph_text = ' '.join(run.text for run in paragraph.runs)
-                    clean_paragraph_text = ''
-                    for run in paragraph.runs:
-                        if run.font.strike:  # Check if the text is strikethrough
-                            # Ignore lines that are fully enclosed in brackets
-                            if not (run.text.startswith('(') and run.text.endswith(')')) and not (run.text.startswith('[') and run.text.endswith(']')):
-                                clean_paragraph_text += '~~' + run.text + '~~' + ' '
-                        else:
-                            clean_paragraph_text += run.text + ' '
 
                     # If the text starts with "Also awarded the" or "For the thesis;", add the last line
                     if paragraph_text.strip().lower().startswith('also awarded the') or paragraph_text.strip().lower().startswith('for the thesis;'):
-                        lines = clean_paragraph_text.split('\n')
-                        for line in reversed(lines):  # Check lines from the end
-                            if not (line.startswith('(') and line.endswith(')')) and not (line.startswith('[') and line.endswith(']')):  # Ignore lines that are fully enclosed in brackets
-                                middle_column_texts.append(line.strip())
+                        # Assume each paragraph is a new line, get the last non-bracketed line
+                        for p in reversed(paragraphs[idx:]):  # Check paragraphs from the current to the end
+                            last_line = ' '.join(run.text for run in p.runs)
+                            if not (last_line.startswith('(') and last_line.endswith(')')) and not (last_line.startswith('[') and last_line.endswith(']')):
+                                middle_column_texts.append(last_line.strip())
                                 break  # Stop after finding the last non-bracketed line
 
                     else:
                         # Remove brackets from the whole paragraph
-                        clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
+                        clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', paragraph_text)  # Recursive regex to remove all round bracketed text
                         clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
 
                         # Add the cleaned text to the list
