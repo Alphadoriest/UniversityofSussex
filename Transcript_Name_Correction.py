@@ -134,18 +134,18 @@ def extract_middle_column_text(doc):
                 for paragraph in paragraphs:
                     paragraph_text = ' '.join(run.text for run in paragraph.runs)
                     clean_paragraph_text = ''
-                    if paragraph_text.strip().lower().startswith('also awarded the'):
-                        # If the text starts with "Also awarded the", store only the last line of the paragraph
-                        middle_column_texts.append(paragraph_text.split('\n')[-1].strip())
-                    else:
-                        for run in paragraph.runs:
-                            if run.font.strike:  # Check if the text is strikethrough
-                                # Ignore lines that are fully enclosed in brackets
-                                if not (run.text.startswith('(') and run.text.endswith(')')) and not (run.text.startswith('[') and run.text.endswith(']')):
-                                    clean_paragraph_text += '~~' + run.text + '~~' + ' '
-                            else:
-                                clean_paragraph_text += run.text + ' '
+                    for run in paragraph.runs:
+                        if run.font.strike:  # Check if the text is strikethrough
+                            # Ignore lines that are fully enclosed in brackets
+                            if not (run.text.startswith('(') and run.text.endswith(')')) and not (run.text.startswith('[') and run.text.endswith(']')):
+                                clean_paragraph_text += '~~' + run.text + '~~' + ' '
+                        else:
+                            clean_paragraph_text += run.text + ' '
 
+                    if paragraph_text.strip().lower().startswith('also awarded the'):
+                        # If the text starts with "Also awarded the", store the whole paragraph text
+                        middle_column_texts.append(paragraph_text)
+                    else:
                         # Remove brackets from the whole paragraph
                         clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
                         clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
@@ -153,6 +153,11 @@ def extract_middle_column_text(doc):
                         # Add the cleaned text to the list
                         if clean_paragraph_text.strip():
                             middle_column_texts.append(clean_paragraph_text.strip())
+
+    # If any text starts with "Also awarded the", only keep the last line
+    for i in range(len(middle_column_texts)):
+        if middle_column_texts[i].strip().lower().startswith('also awarded the'):
+            middle_column_texts[i] = middle_column_texts[i].split('\n')[-1].strip()  # Keep only the last line
           
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
     # Remove single letters from names
