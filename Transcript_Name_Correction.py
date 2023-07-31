@@ -132,24 +132,15 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 for paragraph in paragraphs:
-                    clean_paragraph_text = ''
-                    unbracketed_runs = []
-                    for run in paragraph.runs:
-                        if run.font.strike:  # Check if the text is strikethrough
-                            # Ignore runs that are fully enclosed in brackets
-                            if not (run.text.startswith('(') and run.text.endswith(')')) and not (run.text.startswith('[') and run.text.endswith(']')):
-                                clean_paragraph_text += '~~' + run.text + '~~' + ' '
+                    # Split paragraph into lines
+                    lines = paragraph.text.split('\n')
+                    # The last line
+                    last_line = lines[-1]
+                    # Ignore lines enclosed in brackets
+                    if not (last_line.startswith('(') and last_line.endswith(')')) and not (last_line.startswith('[') and last_line.endswith(']')):
+                        if paragraph.text.strip().startswith('For the thesis;') or paragraph.text.strip().startswith('Also awarded the'):
+                            middle_column_texts.append(last_line)
                         else:
-                            clean_paragraph_text += run.text + ' '
-
-                        # Check if the run is not enclosed in brackets
-                        if not (run.text.startswith('(') and run.text.endswith(')')) and not (run.text.startswith('[') and run.text.endswith(']')):
-                            unbracketed_runs.append(run)
-
-                    # If the text starts with "For the thesis;", only keep the last unbracketed run
-                    if paragraph.text.strip().startswith('For the thesis;') and unbracketed_runs:
-                        middle_column_texts.append(unbracketed_runs[-1].text.strip())
-                    else:
                         # Remove brackets from the whole paragraph
                         clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
                         clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
