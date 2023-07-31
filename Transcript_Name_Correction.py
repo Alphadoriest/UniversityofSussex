@@ -157,7 +157,6 @@ def extract_middle_column_text(doc):
                 middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
-
     # Remove single letters from names
     cleaned_names = []
     for name in cleaned_text.split(', '):
