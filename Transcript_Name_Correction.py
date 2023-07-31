@@ -135,18 +135,16 @@ def extract_middle_column_text(doc):
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         text = run.text
-                        lines = text.split('\n')
-                        for line in lines:
-                            line = line.strip()
-                            if line and not (line.startswith('(') and line.endswith(')')) and not (line.startswith('[') and line.endswith(']')):
-                                if run.font.strike:  # Check if the text is strikethrough
-                                    clean_paragraph_text += '~~' + line + '~~'
-                                else:
-                                    # Recursive regex to remove all round bracketed text
-                                    line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)
-                                    # Recursive regex to remove all square bracketed text
-                                    line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)
-                                    clean_paragraph_text += line
+                        # Recursive regex to remove all round bracketed text
+                        text = regex.sub(r'\((?:[^()]|(?R))*\)', '', text)
+                        # Recursive regex to remove all square bracketed text
+                        text = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', text)
+
+                        if run.font.strike:  # Check if the text is strikethrough
+                            clean_paragraph_text += '~~' + text + '~~'
+                        else:
+                            clean_paragraph_text += text
+
                     middle_column_texts.append(clean_paragraph_text.strip())
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
