@@ -137,10 +137,10 @@ def extract_middle_column_text(doc):
                         lines = run.text.split('\n')
                         for line in lines:
                             line = line.strip()
-                            # Remove lines that are fully enclosed in brackets
-                            line = regex.sub(r'^\((?:[^()]|(?R))*\)$', '', line)  # Recursive regex to remove all round bracketed text
-                            line = regex.sub(r'^\[(?:[^\[\]]|(?R))*\]$', '', line)  # Recursive regex to remove all square bracketed text
-                            if line:
+                            # Ignore lines that are fully enclosed in brackets
+                            if not (line.startswith('(') and line.endswith(')')) and not (line.startswith('[') and line.endswith(']')):
+                                line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
+                                line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
                                 if run.font.strike:  # Check if the text is strikethrough
                                     desired_text += '~~' + line + '~~\n'
                                 else:
