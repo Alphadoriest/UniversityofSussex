@@ -189,6 +189,24 @@ def format_names(names_list):
         formatted_names.append(formatted_name)
     return formatted_names
 
+def decapitalize(text):
+    roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
+    words = text.split()
+    for i, word in enumerate(words):
+        if word not in roman_numerals:
+
+            # Split hyphenated words and capitalize each part
+            hyphen_parts = word.split('-')
+            hyphen_parts = [part.lower().title() for part in hyphen_parts]
+            word = '-'.join(hyphen_parts)
+
+            # Split words with apostrophes and capitalize each part
+            apostrophe_parts = word.split("'")
+            apostrophe_parts = [part.lower().title() for part in apostrophe_parts]
+            words[i] = "'".join(apostrophe_parts)
+
+    return ' '.join(words)
+
 #Correct all names in graduation subtitles (find and replace) functions
 
 def get_similar_names(text: str, name: str) -> List[str]:
@@ -271,24 +289,6 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
         return replaced_names, new_text, unmatched_names  # Return unmatched_names as well
     else:
         return [], '', unmatched_names  # Return unmatched_names as well
-
-def decapitalize(text):
-    roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
-    words = text.split()
-    for i, word in enumerate(words):
-        if word not in roman_numerals:
-
-            # Split hyphenated words and capitalize each part
-            hyphen_parts = word.split('-')
-            hyphen_parts = [part.lower().title() for part in hyphen_parts]
-            word = '-'.join(hyphen_parts)
-
-            # Split words with apostrophes and capitalize each part
-            apostrophe_parts = word.split("'")
-            apostrophe_parts = [part.lower().title() for part in apostrophe_parts]
-            words[i] = "'".join(apostrophe_parts)
-
-    return ' '.join(words)
 
 def reformat_subtitles(text: str) -> str:
     if text.startswith('WEBVTT'):
