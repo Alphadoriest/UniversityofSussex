@@ -133,7 +133,7 @@ def extract_middle_column_text(doc):
                 paragraphs = middle_cell.paragraphs
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
-                    last_unbracketed_run = None
+                    unbracketed_runs = []
                     for run in paragraph.runs:
                         if run.font.strike:  # Check if the text is strikethrough
                             # Ignore runs that are fully enclosed in brackets
@@ -144,11 +144,11 @@ def extract_middle_column_text(doc):
 
                         # Check if the run is not enclosed in brackets
                         if not (run.text.startswith('(') and run.text.endswith(')')) and not (run.text.startswith('[') and run.text.endswith(']')):
-                            last_unbracketed_run = run
+                            unbracketed_runs.append(run)
 
                     # If the text starts with "For the thesis;", only keep the last unbracketed run
-                    if paragraph.text.strip().startswith('For the thesis;') and last_unbracketed_run is not None:
-                        middle_column_texts.append(last_unbracketed_run.text.strip())
+                    if paragraph.text.strip().startswith('For the thesis;') and unbracketed_runs:
+                        middle_column_texts.append(unbracketed_runs[-1].text.strip())
                     else:
                         # Remove brackets from the whole paragraph
                         clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
