@@ -138,23 +138,18 @@ def extract_middle_column_text(doc):
                         if run.font.strike:  # Check if the text is strikethrough
                             # Split the strikethrough text by newline and wrap each line with '~~'
                             strikethrough_lines = run.text.split('\n')
-                            strikethrough_lines = ['~~' + line + '~~' for line in strikethrough_lines]
+                            # For each strikethrough line, remove bracketed content
+                            strikethrough_lines = ['~~' + regex.sub(r'\((?:[^()]|(?R))*\)', '', line) + '~~' for line in strikethrough_lines]
                             clean_paragraph_text += '\n'.join(strikethrough_lines)
                         else:
-                            clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
+                            # Remove bracketed text
+                            line = regex.sub(r'\((?:[^()]|(?R))*\)', '', run.text)  # Recursive regex to remove all round bracketed text
+                            line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
+                            clean_paragraph_text += line
                         
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
-                    
-                        # Remove bracketed text regardless of strikethrough
-                        line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
-                        line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
-                    
-                        # Ignore lines that contain strikethrough
-                        if '~~' in line:
-                            line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
-                            line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
                     
                         if line:
                             desired_text = line
