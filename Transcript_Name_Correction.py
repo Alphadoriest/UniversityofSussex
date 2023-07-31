@@ -154,11 +154,10 @@ def extract_middle_column_text(doc):
                         if clean_paragraph_text.strip():
                             middle_column_texts.append(clean_paragraph_text.strip())
 
-    # If any text starts with "Also awarded the", only keep the last line
+    # If any text starts with "Also awarded the", only keep the last paragraph
     for i in range(len(middle_column_texts)):
         if middle_column_texts[i].strip().lower().startswith('also awarded the'):
-            lines = middle_column_texts[i].split('\n')
-            middle_column_texts[i] = lines[-1].strip()  # Keep only the last line
+            middle_column_texts[i] = middle_column_texts[i].split()[-1]  # Keep only the last word
           
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
     # Remove single letters from names
