@@ -132,6 +132,7 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 for paragraph in paragraphs:
+                    paragraph_text = ' '.join(run.text for run in paragraph.runs)
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         if run.font.strike:  # Check if the text is strikethrough
@@ -141,13 +142,30 @@ def extract_middle_column_text(doc):
                         else:
                             clean_paragraph_text += run.text + ' '
 
-                    # Remove brackets from the whole paragraph
-                    clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
-                    clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
+                    # If the text starts with "For the thesis;", only keep the last unbracketed line
+                    if paragraph_text.strip().startswith('For the thesis;'):
+                        last_unbracketed_line = None
+                        for line in reversed(paragraph_text.split('\n')):
+                            if not (line.strip().startswith('(') and line.strip().endswith(')')):
+                                last_unbracketed_line = line.strip()
+                                break
+                        if last_unbracketed_line is not None:
+                            middle_column_texts.append(last_unbracketed_line)
+                    elif paragraph_text.strip().lower().startswith('also awarded the'):
+                        middle_column_texts.append(paragraph_text)
+                    else:
+                        # Remove brackets from the whole paragraph
+                        clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
+                        clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
 
-                    # Add the cleaned text to the list
-                    if clean_paragraph_text.strip():
-                        middle_column_texts.append(clean_paragraph_text.strip())
+                        # Add the cleaned text to the list
+                        if clean_paragraph_text.strip():
+                            middle_column_texts.append(clean_paragraph_text.strip())
+
+    # If any text starts with "Also awarded the", only keep the last paragraph
+    for i in range(len(middle_column_texts)):
+        if middle_column_texts[i].strip().lower().startswith('also awarded the'):
+            middle_column_texts[i] = middle_column_texts[i].split()[-1]  # Keep only the last word
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
     # Remove single letters from names
