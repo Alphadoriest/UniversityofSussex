@@ -136,13 +136,11 @@ def extract_middle_column_text(doc):
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         if run.font.strike:  # Check if the text is strikethrough
-                            # Split the strikethrough text by newline and wrap each line with '~~'
                             strikethrough_lines = run.text.split('\n')
                             # For each strikethrough line, remove bracketed content
                             strikethrough_lines = ['~~' + regex.sub(r'\((?:[^()]|(?R))*\)', '', line) + '~~' for line in strikethrough_lines]
                             clean_paragraph_text += '\n'.join(strikethrough_lines)
                         else:
-                            # Remove bracketed text
                             line = regex.sub(r'\((?:[^()]|(?R))*\)', '', run.text)  # Recursive regex to remove all round bracketed text
                             line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
                             clean_paragraph_text += line
@@ -152,7 +150,9 @@ def extract_middle_column_text(doc):
                         line = line.strip()
                     
                         if line:
-                            desired_text = line
+                            # Ignore lines that are fully enclosed in brackets
+                            if not (line.startswith('(') and line.endswith(')')) and not (line.startswith('[') and line.endswith(']')):
+                                desired_text = line
                 middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
@@ -161,12 +161,10 @@ def extract_middle_column_text(doc):
     cleaned_names = []
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
-            # Check if name contains '~~'
             if '~~' in name:
-                # Remove '~~' from the name
-                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()  # Added strip() to remove leading/trailing spaces
-                if name:  # Only add the suffix if the name is not empty
-                    name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
+                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
+                if name: 
+                    name += ' (Marked As Not Present)'
                   
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
