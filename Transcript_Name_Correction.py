@@ -138,9 +138,9 @@ def extract_middle_column_text(doc):
                         lines = run.text.split('\n')
                         for line in lines:
                             line = line.strip()
-                            # Remove lines that are fully enclosed in brackets
-                            line = regex.sub(r'^\((?:[^()]|(?R))*\)$', '', line)  # Recursive regex to remove all round bracketed text
-                            line = regex.sub(r'^\[(?:[^\[\]]|(?R))*\]$', '', line)  # Recursive regex to remove all square bracketed text
+                            # Remove any bracketed text in lines
+                            line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
+                            line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
                             if line:
                                 if run.font.strike:  # Check if the text is strikethrough
                                     clean_paragraph_text += '~~' + line + '~~'
@@ -161,10 +161,7 @@ def extract_middle_column_text(doc):
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
             if '~~' in name:
-                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
-                if name: 
-                    name += ' (Marked As Not Present)'
-                  
+                name = regex.sub(r'~~(.*?)~~', r'\1 (Marked As Not Present)', name).strip()  # Remove the strikethrough marks and add (Marked As Not Present)
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
           
