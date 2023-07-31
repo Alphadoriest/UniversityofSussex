@@ -135,22 +135,24 @@ def extract_middle_column_text(doc):
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        lines = run.text.split('\n')
-                        for line in lines:
-                            line = line.strip()
-                            # Remove all round and square bracketed text
-                            line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
+                        if run.font.strike:  # Check if the text is strikethrough
+                            lines = run.text.split('\n')
+                            for line in lines:
+                                line = line.strip()
+                                # Ignore lines that are fully enclosed in brackets
+                                if not (line.startswith('(') and line.endswith(')')) and not (line.startswith('[') and line.endswith(']')):
+                                    clean_paragraph_text += '~~' + line + '~~'
+                        else:
+                            line = regex.sub(r'\((?:[^()]|(?R))*\)', '', run.text)  # Recursive regex to remove all round bracketed text
                             line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
-                            # Check if the text is strikethrough
-                            if run.font.strike:
-                                clean_paragraph_text += '~~' + line + '~~'
-                            else:
-                                clean_paragraph_text += line
+                            clean_paragraph_text += line
                         
-                        lines = clean_paragraph_text.split('\n')
-                        for line in lines:
-                            line = line.strip()
-                            if line:
+                    lines = clean_paragraph_text.split('\n')
+                    for line in lines:
+                        line = line.strip()
+                        if line:
+                            # Ignore lines that are fully enclosed in brackets
+                            if not (line.startswith('(') and line.endswith(')')) and not (line.startswith('[') and line.endswith(']')):
                                 desired_text = line
                 middle_column_texts.append(desired_text)
 
