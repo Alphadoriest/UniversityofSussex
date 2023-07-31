@@ -136,7 +136,7 @@ def extract_middle_column_text(doc):
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         if run.font.strike:  # Check if the text is strikethrough
-                            # Split the strikethrough text by newline and wrap each line with '~~'
+                            # Split the strikethrough text and wrap each line with '~~'
                             strikethrough_lines = run.text.split('\n')
                             strikethrough_lines = ['~~' + line + '~~' for line in strikethrough_lines]
                             clean_paragraph_text += '\n'.join(strikethrough_lines)
@@ -147,22 +147,21 @@ def extract_middle_column_text(doc):
                     last_non_empty_line = ''  # Stores the last non-empty line
                     for line in lines:
                         line = line.strip()
-                    
-                        # If the line is not empty before cleaning
-                        if line: 
-                            # Update the last non_empty_line if it does not contain brackets or strikethrough
-                            if not ('(' in line or '[' in line or '~~' in line):
-                                last_non_empty_line = line
-                    
+
                         # Remove bracketed text regardless of strikethrough
                         line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
                         line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
-                    
+                        
                         # Ignore lines that contain strikethrough
                         if '~~' in line:
                             line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
                             line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
-                    
+
+                        # If the line is not empty after cleaning
+                        if line: 
+                            # Update the last_non_empty_line
+                            last_non_empty_line = line
+
                     # Outside the loop, set the desired_text to last_non_empty_line
                     desired_text = last_non_empty_line
                 middle_column_texts.append(desired_text)
