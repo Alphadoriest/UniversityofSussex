@@ -148,20 +148,18 @@ def extract_middle_column_text(doc):
                     for line in lines:
                         line = line.strip()
                     
-                        # Check if the line is not empty before cleaning
-                        if line:  
-                            # Remove bracketed text regardless of strikethrough
-                            clean_line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
-                            clean_line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', clean_line)  # Recursive regex to remove all square bracketed text
+                        # Remove bracketed text regardless of strikethrough
+                        clean_line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
+                        clean_line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', clean_line)  # Recursive regex to remove all square bracketed text
                     
-                            # Ignore lines that contain strikethrough
-                            if '~~' in clean_line:
-                                clean_line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', clean_line)  # Recursive regex to remove all round bracketed text
-                                clean_line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', clean_line)  # Recursive regex to remove all square bracketed text
+                        # Ignore lines that contain strikethrough
+                        if '~~' in clean_line:
+                            clean_line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', clean_line)  # Recursive regex to remove all round bracketed text
+                            clean_line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', clean_line)  # Recursive regex to remove all square bracketed text
                     
-                            # Update the last non-empty line if it is not empty after cleaning
-                            if clean_line:
-                                last_non_empty_line = clean_line
+                        # If the clean_line is not empty, update the last_non_empty_line
+                        if clean_line:
+                            last_non_empty_line = clean_line
                     
                     # Outside the loop, set the desired_text to last_non_empty_line
                     desired_text = last_non_empty_line
