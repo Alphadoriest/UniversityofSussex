@@ -141,7 +141,7 @@ def extract_middle_column_text(doc):
                                 line = line.strip()
                                 # Ignore lines that are fully enclosed in brackets
                                 if not (line.startswith('(') and line.endswith(')')) and not (line.startswith('[') and line.endswith(']')):
-                                    clean_paragraph_text += '~~' + regex.sub(r'\((?:[^()]|(?R))*\)', '', line) + '~~'
+                                    clean_paragraph_text += '~~' + line + '~~'
                         else:
                             line = regex.sub(r'\((?:[^()]|(?R))*\)', '', run.text)  # Recursive regex to remove all round bracketed text
                             line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
