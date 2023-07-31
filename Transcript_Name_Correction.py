@@ -145,6 +145,10 @@ def extract_middle_column_text(doc):
                     clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
                     clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
 
+                    # If the text starts with 'Also awarded the', take the last line
+                    if clean_paragraph_text.strip().startswith('Also awarded the'):
+                        clean_paragraph_text = clean_paragraph_text.strip().split('\n')[-1]
+
                     # Add the cleaned text to the list
                     if clean_paragraph_text.strip():
                         middle_column_texts.append(clean_paragraph_text.strip())
