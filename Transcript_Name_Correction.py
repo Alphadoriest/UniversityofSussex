@@ -135,15 +135,15 @@ def extract_middle_column_text(doc):
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         text = run.text
-                        # Recursive regex to remove all round bracketed text
-                        text = regex.sub(r'\((?:[^()]|(?R))*\)', '', text)
-                        # Recursive regex to remove all square bracketed text
-                        text = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', text)
-
                         lines = text.split('\n')
                         for line in lines:
                             line = line.strip()
-                            if line and not (line.startswith('(') and line.endswith(')')) and not (line.startswith('[') and line.endswith(']')):
+                            # if line starts or ends with brackets, remove
+                            if line and not line.startswith('(') and not line.startswith('[') and not line.endswith(')') and not line.endswith(']'):
+                                # Recursive regex to remove all round bracketed text
+                                line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)
+                                # Recursive regex to remove all square bracketed text
+                                line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)
                                 if run.font.strike:  # Check if the text is strikethrough
                                     clean_paragraph_text += '~~' + line + '~~'
                                 else:
