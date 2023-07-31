@@ -160,8 +160,9 @@ def extract_middle_column_text(doc):
                         # Assign line to desired_text if it is not empty after cleaning
                         if clean_line:
                             last_non_empty_line = clean_line  # Update the last non-empty line
-                        elif not clean_line and not last_non_empty_line:
-                            desired_text = last_non_empty_line  # If the current line is empty, use the last non-empty line
+                    
+                    # Outside the loop, set the desired_text to last non-empty line
+                    desired_text = last_non_empty_line
                 middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
