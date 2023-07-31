@@ -145,7 +145,7 @@ def extract_middle_column_text(doc):
                     # If the text starts with "For the thesis;", only keep the last unbracketed line
                     if paragraph_text.strip().startswith('For the thesis;'):
                         last_unbracketed_line = None
-                        for line in reversed(paragraph_text.split('\n')):
+                        for line in reversed(clean_paragraph_text.split('\n')):
                             if not (line.strip().startswith('(') and line.strip().endswith(')')):
                                 last_unbracketed_line = line.strip()
                                 break
