@@ -133,14 +133,13 @@ def extract_middle_column_text(doc):
                 paragraphs = middle_cell.paragraphs
                 for idx, paragraph in enumerate(paragraphs):
                     paragraph_text = ' '.join(run.text for run in paragraph.runs)
+                    lines = paragraph_text.splitlines()  # Split the paragraph text into lines
 
                     # If the text starts with "Also awarded the" or "For the thesis;", add the last line
-                    if paragraph_text.strip().lower().startswith('also awarded the') or paragraph_text.strip().lower().startswith('for the thesis;'):
-                        # Assume each paragraph is a new line, get the last non-bracketed line
-                        for p in reversed(paragraphs[idx:]):  # Check paragraphs from the current to the end
-                            last_line = ' '.join(run.text for run in p.runs)
-                            if not (last_line.startswith('(') and last_line.endswith(')')) and not (last_line.startswith('[') and last_line.endswith(']')):
-                                middle_column_texts.append(last_line.strip())
+                    if lines[0].strip().lower().startswith('also awarded the') or lines[0].strip().lower().startswith('for the thesis;'):
+                        for line in reversed(lines):  # Check lines from the end
+                            if not (line.startswith('(') and line.endswith(')')) and not (line.startswith('[') and line.endswith(']')):  # Ignore lines that are fully enclosed in brackets
+                                middle_column_texts.append(line.strip())
                                 break  # Stop after finding the last non-bracketed line
 
                     else:
