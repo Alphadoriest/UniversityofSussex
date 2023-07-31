@@ -133,22 +133,26 @@ def extract_middle_column_text(doc):
                 paragraphs = middle_cell.paragraphs
                 desired_text = ''
                 for paragraph in paragraphs:
+                    clean_paragraph_text = ''
                     for run in paragraph.runs:
                         lines = run.text.split('\n')
                         for line in lines:
                             line = line.strip()
-                            # Ignore lines that are fully enclosed in brackets
-                            if not (line.startswith('(') and line.endswith(')')) and not (line.startswith('[') and line.endswith(']')):
-                                line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
-                                line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
+                            # Remove lines that are fully enclosed in brackets
+                            line = regex.sub(r'^\((?:[^()]|(?R))*\)$', '', line)  # Recursive regex to remove all round bracketed text
+                            line = regex.sub(r'^\[(?:[^\[\]]|(?R))*\]$', '', line)  # Recursive regex to remove all square bracketed text
+                            if line:
                                 if run.font.strike:  # Check if the text is strikethrough
-                                    desired_text += '~~' + line + '~~\n'
+                                    clean_paragraph_text += '~~' + line + '~~'
                                 else:
-                                    desired_text += line + '\n'
-                    
-                desired_text = desired_text.strip()
-                if desired_text:
-                    middle_column_texts.append(desired_text)
+                                    clean_paragraph_text += line
+
+                    lines = clean_paragraph_text.split('\n')
+                    for line in lines:
+                        line = line.strip()
+                        if line:
+                            desired_text = line
+                middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
 
