@@ -132,6 +132,7 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 for paragraph in paragraphs:
+                    paragraph_text = ' '.join(run.text for run in paragraph.runs)
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         if run.font.strike:  # Check if the text is strikethrough
@@ -141,17 +142,18 @@ def extract_middle_column_text(doc):
                         else:
                             clean_paragraph_text += run.text + ' '
 
-                    # Remove brackets from the whole paragraph
-                    clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
-                    clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
+                    # If the text starts with "Also awarded the", extract the last line
+                    if paragraph_text.strip().startswith('Also awarded the'):
+                        desired_text = paragraph_text.strip().split('\n')[-1]
+                        middle_column_texts.append(desired_text)
+                    else:
+                        # Remove brackets from the whole paragraph
+                        clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
+                        clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
 
-                    # If the text starts with 'Also awarded the', take the last line
-                    if clean_paragraph_text.strip().startswith('Also awarded the'):
-                        clean_paragraph_text = clean_paragraph_text.strip().split('\n')[-1]
-
-                    # Add the cleaned text to the list
-                    if clean_paragraph_text.strip():
-                        middle_column_texts.append(clean_paragraph_text.strip())
+                        # Add the cleaned text to the list
+                        if clean_paragraph_text.strip():
+                            middle_column_texts.append(clean_paragraph_text.strip())
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
     # Remove single letters from names
