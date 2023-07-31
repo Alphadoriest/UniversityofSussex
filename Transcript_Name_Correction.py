@@ -144,6 +144,7 @@ def extract_middle_column_text(doc):
                             clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
                         
                     lines = clean_paragraph_text.split('\n')
+                    last_non_empty_line = ''  # Stores the last non-empty line
                     for line in lines:
                         line = line.strip()
                     
@@ -158,7 +159,9 @@ def extract_middle_column_text(doc):
                     
                         # Assign line to desired_text if it is not empty after cleaning
                         if clean_line:
-                            desired_text = clean_line  # This will always keep the last non-empty line
+                            last_non_empty_line = clean_line  # Update the last non-empty line
+                        elif not clean_line and not last_non_empty_line:
+                            desired_text = last_non_empty_line  # If the current line is empty, use the last non-empty line
                 middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
