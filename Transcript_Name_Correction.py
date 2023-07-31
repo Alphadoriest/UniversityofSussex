@@ -136,35 +136,42 @@ def extract_middle_column_text(doc):
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         if run.font.strike:  # Check if the text is strikethrough
-                            lines = run.text.split('\n')
-                            for line in lines:
-                                line = line.strip()
-                                # Ignore lines that are fully enclosed in brackets
-                                if not (line.startswith('(') and line.endswith(')')) and not (line.startswith('[') and line.endswith(']')):
-                                    clean_paragraph_text += '~~' + line + '~~'
+                            # Split the strikethrough text by newline and wrap each line with '~~'
+                            strikethrough_lines = run.text.split('\n')
+                            strikethrough_lines = ['~~' + line + '~~' for line in strikethrough_lines]
+                            clean_paragraph_text += '\n'.join(strikethrough_lines)
                         else:
-                            line = regex.sub(r'\((?:[^()]|(?R))*\)', '', run.text)  # Recursive regex to remove all round bracketed text
-                            line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
-                            clean_paragraph_text += line
+                            clean_paragraph_text += run.text  # Append the text of run to the clean_paragraph_text
                         
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
+                    
+                        # Remove bracketed text regardless of strikethrough
+                        line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
+                        line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
+                    
+                        # Ignore lines that contain strikethrough
+                        if '~~' in line:
+                            line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', line)  # Recursive regex to remove all round bracketed text
+                            line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', line)  # Recursive regex to remove all square bracketed text
+                    
                         if line:
-                            # Ignore lines that are fully enclosed in brackets
-                            if not (line.startswith('(') and line.endswith(')')) and not (line.startswith('[') and line.endswith(']')):
-                                desired_text = line
+                            desired_text = line
                 middle_column_texts.append(desired_text)
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
+
     # Remove single letters from names
     cleaned_names = []
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
+            # Check if name contains '~~'
             if '~~' in name:
-                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
-                if name: 
-                    name += ' (Marked As Not Present)'
+                # Remove '~~' from the name
+                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()  # Added strip() to remove leading/trailing spaces
+                if name:  # Only add the suffix if the name is not empty
+                    name += ' (Marked As Not Present)'  # Add '(Marked As Not Present)' suffix
                   
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
@@ -181,24 +188,6 @@ def format_names(names_list):
         formatted_name = (name, color)
         formatted_names.append(formatted_name)
     return formatted_names
-
-def decapitalize(text):
-    roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
-    words = text.split()
-    for i, word in enumerate(words):
-        if word not in roman_numerals:
-
-            # Split hyphenated words and capitalize each part
-            hyphen_parts = word.split('-')
-            hyphen_parts = [part.lower().title() for part in hyphen_parts]
-            word = '-'.join(hyphen_parts)
-
-            # Split words with apostrophes and capitalize each part
-            apostrophe_parts = word.split("'")
-            apostrophe_parts = [part.lower().title() for part in apostrophe_parts]
-            words[i] = "'".join(apostrophe_parts)
-
-    return ' '.join(words)
 
 #Correct all names in graduation subtitles (find and replace) functions
 
@@ -282,6 +271,24 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
         return replaced_names, new_text, unmatched_names  # Return unmatched_names as well
     else:
         return [], '', unmatched_names  # Return unmatched_names as well
+
+def decapitalize(text):
+    roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
+    words = text.split()
+    for i, word in enumerate(words):
+        if word not in roman_numerals:
+
+            # Split hyphenated words and capitalize each part
+            hyphen_parts = word.split('-')
+            hyphen_parts = [part.lower().title() for part in hyphen_parts]
+            word = '-'.join(hyphen_parts)
+
+            # Split words with apostrophes and capitalize each part
+            apostrophe_parts = word.split("'")
+            apostrophe_parts = [part.lower().title() for part in apostrophe_parts]
+            words[i] = "'".join(apostrophe_parts)
+
+    return ' '.join(words)
 
 def reformat_subtitles(text: str) -> str:
     if text.startswith('WEBVTT'):
