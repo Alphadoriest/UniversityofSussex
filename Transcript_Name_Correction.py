@@ -131,30 +131,23 @@ def extract_middle_column_text(doc):
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
-                desired_text = ''
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        lines = run.text.split('\n')
-                        for line in lines:
-                            line = line.strip()
-                            if run.font.strike:  # Check if the text is strikethrough
-                                # Ignore lines that are fully enclosed in brackets
-                                if not (line.startswith('(') and line.endswith(')')) and not (line.startswith('[') and line.endswith(']')):
-                                    clean_paragraph_text += '~~' + line + '~~' + ' '
-                            else:
-                                line = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
-                                line = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', line)  # Recursive regex to remove all square bracketed text
-                                clean_paragraph_text += line + ' '
-                        
-                    lines = clean_paragraph_text.split('\n')
-                    for line in lines:
-                        line = line.strip()
-                        if line:
+                        if run.font.strike:  # Check if the text is strikethrough
                             # Ignore lines that are fully enclosed in brackets
-                            if not (line.startswith('(') and line.endswith(')')) and not (line.startswith('[') and line.endswith(']')):
-                                desired_text = line
-                middle_column_texts.append(desired_text)
+                            if not (run.text.startswith('(') and run.text.endswith(')')) and not (run.text.startswith('[') and run.text.endswith(']')):
+                                clean_paragraph_text += '~~' + run.text + '~~' + ' '
+                        else:
+                            clean_paragraph_text += run.text + ' '
+
+                    # Remove brackets from the whole paragraph
+                    clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
+                    clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
+
+                    # Add the cleaned text to the list
+                    if clean_paragraph_text.strip():
+                        middle_column_texts.append(clean_paragraph_text.strip())
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
     # Remove single letters from names
