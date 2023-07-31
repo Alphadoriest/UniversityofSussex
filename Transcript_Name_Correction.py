@@ -146,20 +146,18 @@ def extract_middle_column_text(doc):
                     lines = clean_paragraph_text.split('\n')
                     for line in lines:
                         line = line.strip()
-                    
+                                    
                         # Remove bracketed text regardless of strikethrough
                         clean_line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)  # Recursive regex to remove all round bracketed text
                         clean_line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', clean_line)  # Recursive regex to remove all square bracketed text
-                    
+                                    
                         # Ignore lines that contain strikethrough
                         if '~~' in clean_line:
                             clean_line = regex.sub(r'~~\((?:[^()]|(?R))*\)~~', '', clean_line)  # Recursive regex to remove all round bracketed text
                             clean_line = regex.sub(r'~~\[(?:[^\[\]]|(?R))*\]~~', '', clean_line)  # Recursive regex to remove all square bracketed text
-                    
+                                    
                         # Assign line to desired_text if it is not empty after cleaning
-                        if clean_line:
-                            desired_text = clean_line
-                        elif not clean_line and not desired_text:
+                        if clean_line.strip():  # Check if the cleaned line is not empty after removing leading/trailing spaces
                             desired_text = clean_line
                 middle_column_texts.append(desired_text)
 
