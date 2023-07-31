@@ -131,33 +131,26 @@ def extract_middle_column_text(doc):
             if len(cells) > 1:
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
-                for idx, paragraph in enumerate(paragraphs):
-                    paragraph_text = ' '.join(run.text for run in paragraph.runs)
-                    lines = paragraph_text.splitlines()  # Split the paragraph text into lines
+                for paragraph in paragraphs:
+                    clean_paragraph_text = ''
+                    for run in paragraph.runs:
+                        text = run.text
+                        lines = text.split('\n')
+                        for line in lines:
+                            line = line.strip()
+                            # if line starts or ends with brackets, remove
+                            if line and not line.startswith('(') and not line.startswith('[') and not line.endswith(')') and not line.endswith(']'):
+                                # Recursive regex to remove all round bracketed text
+                                line = regex.sub(r'\((?:[^()]|(?R))*\)', '', line)
+                                # Recursive regex to remove all square bracketed text
+                                line = regex.sub(r'\[(?:[^\[\]]|(?R))*\]', '', line)
+                                if run.font.strike:  # Check if the text is strikethrough
+                                    clean_paragraph_text += '~~' + line + '~~' + ' '
+                                else:
+                                    clean_paragraph_text += line + ' '
+                    middle_column_texts.append(clean_paragraph_text.strip())
 
-                    # If the text starts with "Also awarded the" or "For the thesis;", add the last line
-                    if lines[0].strip().lower().startswith('also awarded the') or lines[0].strip().lower().startswith('for the thesis;'):
-                        for line in reversed(lines):  # Check lines from the end
-                            if not (line.startswith('(') and line.endswith(')')) and not (line.startswith('[') and line.endswith(']')):  # Ignore lines that are fully enclosed in brackets
-                                middle_column_texts.append(line.strip())
-                                break  # Stop after finding the last non-bracketed line
-
-                    else:
-                        # Remove brackets from the whole paragraph
-                        clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', paragraph_text)  # Recursive regex to remove all round bracketed text
-                        clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
-
-                        # Add the cleaned text to the list
-                        if clean_paragraph_text.strip():
-                            middle_column_texts.append(clean_paragraph_text.strip())
-
-    # If any text starts with "Also awarded the" or "For the thesis;", only keep the last paragraph
-    for i in range(len(middle_column_texts)):
-        if middle_column_texts[i].strip().lower().startswith('also awarded the') or middle_column_texts[i].strip().lower().startswith('for the thesis;'):
-            middle_column_texts[i] = middle_column_texts[i].split('\n')[-1].strip()  # Keep only the last line
-          
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
-    # Remove single letters from names
     cleaned_names = []
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
@@ -165,10 +158,8 @@ def extract_middle_column_text(doc):
                 name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
                 if name: 
                     name += ' (Marked As Not Present)'
-                  
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
-          
             cleaned_names.append(decapitalize(name))  # Apply decapitalize here
 
     return cleaned_names
