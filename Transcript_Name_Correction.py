@@ -134,7 +134,7 @@ def extract_middle_column_text(doc):
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        text = run.text.replace('\r', '\n')  # Replace any carriage return characters with new line characters
+                        text = run.text
                         # Recursive regex to remove all round bracketed text
                         text = regex.sub(r'\((?:[^()]|(?R))*\)', '', text)
                         # Recursive regex to remove all square bracketed text
@@ -153,7 +153,9 @@ def extract_middle_column_text(doc):
     # If any text starts with "Also awarded the", only keep the last line
     for i in range(len(middle_column_texts)):
         if middle_column_texts[i].strip().lower().startswith('also awarded the'):
+            print(f'Original text: {middle_column_texts[i]}')  # Print the original text
             middle_column_texts[i] = middle_column_texts[i].split('\n')[-1].strip()  # Keep only the last line
+            print(f'Processed text: {middle_column_texts[i]}')  # Print the processed text
           
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
     # Remove single letters from names
