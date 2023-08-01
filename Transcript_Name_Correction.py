@@ -303,7 +303,7 @@ def reformat_subtitles(text: str) -> str:
             formatted_line = re.sub(r'\((laughter|ALL LAUGH)\)|\[(laughter|ALL LAUGH)\]|laughter|ALL LAUGH', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
             formatted_line = re.sub(r'\((cheering|audience cheering|CHEERING AND APPLAUSE|INDISTINCT CHATTER)\)|\[(cheering|audience cheering|CHEERING AND APPLAUSE|INDISTINCT CHATTER)\]|CHEERING AND APPLAUSE', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
             formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]|shouting|audience shouting', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
-            formatted_line = re.sub(r'\((pause)\)|\[(pause)\]|pause', '[Pause]', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\((pause)\)|\[(pause)\]', '[Pause]', formatted_line, flags=re.IGNORECASE)
             formatted_line = re.sub(r'\((exhale)\)|\[(exhale)\]|exhale', '[They Exhale]', formatted_line, flags=re.IGNORECASE)
 
             # Convert dict keys/values to lowercase
