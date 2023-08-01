@@ -119,6 +119,7 @@ american_to_british_dict = {
   'judgmental':'judgemental',
   'apologize':'apologise',
   'somber':'sombre',
+  'fulfill':'fulfil',
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
