@@ -122,14 +122,6 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-def remove_brackets(text):
-    # Matches '(...)', '[...]', '{...}', including cases with nested brackets
-    bracket_pattern = r'\([^()]*\)|\[[^\[\]]*\]|\{[^{}]*\}'
-
-    while re.search(bracket_pattern, text):
-        text = re.sub(bracket_pattern, '', text)
-    return text
-
 def extract_middle_column_text(doc):
     middle_column_texts = []
 
@@ -140,27 +132,22 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 for paragraph in paragraphs:
-                    # Replace '\r\n' with '\n' and split paragraph into lines
-                    lines = paragraph.text.replace('\r\n', '\n').split('\n')
-                    # The last line
-                    last_line = lines[-1]
-                    # Ignore lines enclosed in brackets
-                    if not (last_line.startswith('(') and last_line.endswith(')')) and not (last_line.startswith('[') and last_line.endswith(']')):
-                        if paragraph.text.strip().startswith('For the thesis;') or paragraph.text.strip().startswith('Also awarded the'):
-                            last_line = lines[-1]
-                            middle_column_texts.append(last_line)
+                    clean_paragraph_text = ''
+                    for run in paragraph.runs:
+                        if run.font.strike:  # Check if the text is strikethrough
+                            # Ignore lines that are fully enclosed in brackets
+                            if not (run.text.startswith('(') and run.text.endswith(')')) and not (run.text.startswith('[') and run.text.endswith(']')):
+                                clean_paragraph_text += '~~' + run.text + '~~' + ' '
                         else:
-                            clean_paragraph_text = paragraph.text
-                            clean_paragraph_text = remove_brackets(clean_paragraph_text)
-  
-                            # Add the cleaned text to the list
-                            if clean_paragraph_text.strip():
-                                middle_column_texts.append(clean_paragraph_text.strip())
+                            clean_paragraph_text += run.text + ' '
 
-    # If any text starts with "Also awarded the", only keep the last paragraph
-    for i in range(len(middle_column_texts)):
-        if middle_column_texts[i].strip().lower().startswith('also awarded the'):
-            middle_column_texts[i] = middle_column_texts[i].replace('\r\n', '\n').split('\n')[-1]  # Keep only the last paragraph
+                    # Remove brackets from the whole paragraph
+                    clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
+                    clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
+
+                    # Add the cleaned text to the list
+                    if clean_paragraph_text.strip():
+                        middle_column_texts.append(clean_paragraph_text.strip())
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
     # Remove single letters from names
@@ -168,7 +155,7 @@ def extract_middle_column_text(doc):
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
             if '~~' in name:
-                name = re.sub(r'~~(.*?)~~', r'\1', name).strip()
+                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
                 if name: 
                     name += ' (Marked As Not Present)'
                   
