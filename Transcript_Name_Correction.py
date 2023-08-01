@@ -147,6 +147,7 @@ def extract_middle_column_text(doc):
                     # Ignore lines enclosed in brackets
                     if not (last_line.startswith('(') and last_line.endswith(')')) and not (last_line.startswith('[') and last_line.endswith(']')):
                         if paragraph.text.strip().startswith('For the thesis;') or paragraph.text.strip().startswith('Also awarded the'):
+                            last_line = lines[-1]
                             middle_column_texts.append(last_line)
                         else:
                             clean_paragraph_text = paragraph.text
