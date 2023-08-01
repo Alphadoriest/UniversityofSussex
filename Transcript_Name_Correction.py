@@ -141,13 +141,13 @@ def extract_middle_column_text(doc):
                         if paragraph.text.strip().startswith('For the thesis;') or paragraph.text.strip().startswith('Also awarded the'):
                             middle_column_texts.append(last_line)
                         else:
-                        # Remove brackets from the whole paragraph
-                        clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
-                        clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
-
-                        # Add the cleaned text to the list
-                        if clean_paragraph_text.strip():
-                            middle_column_texts.append(clean_paragraph_text.strip())
+                          # Remove brackets from the whole paragraph
+                          clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
+                          clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
+  
+                          # Add the cleaned text to the list
+                          if clean_paragraph_text.strip():
+                              middle_column_texts.append(clean_paragraph_text.strip())
 
     # If any text starts with "Also awarded the", only keep the last paragraph
     for i in range(len(middle_column_texts)):
