@@ -141,9 +141,10 @@ def extract_middle_column_text(doc):
                         if paragraph.text.strip().startswith('For the thesis;') or paragraph.text.strip().startswith('Also awarded the'):
                             middle_column_texts.append(last_line)
                         else:
+                          clean_paragraph_text = paragraph.text
                           # Remove brackets from the whole paragraph
-                          clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
-                          clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
+                          clean_paragraph_text = re.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
+                          clean_paragraph_text = re.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
   
                           # Add the cleaned text to the list
                           if clean_paragraph_text.strip():
@@ -152,7 +153,7 @@ def extract_middle_column_text(doc):
     # If any text starts with "Also awarded the", only keep the last paragraph
     for i in range(len(middle_column_texts)):
         if middle_column_texts[i].strip().lower().startswith('also awarded the'):
-            middle_column_texts[i] = middle_column_texts[i].split()[-1]  # Keep only the last word
+            middle_column_texts[i] = middle_column_texts[i].split('\n')[-1]  # Keep only the last paragraph
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
     # Remove single letters from names
@@ -160,7 +161,7 @@ def extract_middle_column_text(doc):
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
             if '~~' in name:
-                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
+                name = re.sub(r'~~(.*?)~~', r'\1', name).strip()
                 if name: 
                     name += ' (Marked As Not Present)'
                   
