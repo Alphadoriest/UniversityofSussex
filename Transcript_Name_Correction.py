@@ -140,8 +140,8 @@ def extract_middle_column_text(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 for paragraph in paragraphs:
-                    # Split paragraph into lines
-                    lines = paragraph.text.split('\n')
+                    # Replace '\r\n' with '\n' and split paragraph into lines
+                    lines = paragraph.text.replace('\r\n', '\n').split('\n')
                     # The last line
                     last_line = lines[-1]
                     # Ignore lines enclosed in brackets
@@ -160,7 +160,7 @@ def extract_middle_column_text(doc):
     # If any text starts with "Also awarded the", only keep the last paragraph
     for i in range(len(middle_column_texts)):
         if middle_column_texts[i].strip().lower().startswith('also awarded the'):
-            middle_column_texts[i] = middle_column_texts[i].split('\n')[-1]  # Keep only the last paragraph
+            middle_column_texts[i] = middle_column_texts[i].replace('\r\n', '\n').split('\n')[-1]  # Keep only the last paragraph
 
     cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
     # Remove single letters from names
