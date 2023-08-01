@@ -326,7 +326,7 @@ def reformat_transcript(text: str):
     text = text.replace('WEBVTT', '')
 
     # Remove timestamps, and empty lines
-    text = re.sub(r'\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d\s', '', text)
+    text = re.sub(r'(\d\d:\d\d:\d\d\.\d\d\d\s-->\s\d\d:\d\d:\d\d\.\d\d\d|\d\d:\d\d\.\d\d\d\s-->\s\d\d:\d\d\.\d\d\d)\n?', '', text)
     
     # Replace paragraph breaks and multiple spaces with single spaces
     formatted_text = re.sub(r'\s+', ' ', text)
