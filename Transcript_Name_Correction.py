@@ -299,10 +299,10 @@ def reformat_subtitles(text: str) -> str:
                 formatted_line = ' '.join(words)
             formatted_line = re.sub(r'\[no audio\]', '', formatted_line, flags=re.IGNORECASE)
             formatted_line = re.sub(r'\((applause|ALL APPLAUD|APPLAUSE CONTINUES)\)|\[(applause|ALL APPLAUD|APPLAUSE CONTINUES)\]|ALL APPLAUD|APPLAUSE CONTINUES', '[Audience Applauds]', formatted_line, flags=re.IGNORECASE)
-            formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music )\)|\[(Music|MUSIC|MUSIC PLAYING|ORCHESTRAL MUSIC| Music )\]|¶ ¶|Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\((Music|MUSIC|MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC| Music )\)|\[(Music|MUSIC|MUSIC PLAYING|ORCHESTRAL MUSIC| Music )\]|¶ ¶||MUSIC PLAYING|ORGAN MUSIC|ORGAN MUSIC CONTINUES|ORCHESTRAL MUSIC|', '[Music Playing]', formatted_line, flags=re.IGNORECASE)
             formatted_line = re.sub(r'\((laughter|ALL LAUGH)\)|\[(laughter|ALL LAUGH)\]|laughter|ALL LAUGH', '[Audience Laughing]', formatted_line, flags=re.IGNORECASE)
             formatted_line = re.sub(r'\((cheering|audience cheering|CHEERING AND APPLAUSE|INDISTINCT CHATTER)\)|\[(cheering|audience cheering|CHEERING AND APPLAUSE|INDISTINCT CHATTER)\]|CHEERING AND APPLAUSE', '[Audience Cheers]', formatted_line, flags=re.IGNORECASE)
-            formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]|shouting|audience shouting', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
+            formatted_line = re.sub(r'\((shouting|audience shouting)\)|\[(shouting|audience shouting)\]|audience shouting', '[Audience Shouts]', formatted_line, flags=re.IGNORECASE)
             formatted_line = re.sub(r'\((pause)\)|\[(pause)\]', '[Pause]', formatted_line, flags=re.IGNORECASE)
             formatted_line = re.sub(r'\((exhale)\)|\[(exhale)\]|exhale', '[They Exhale]', formatted_line, flags=re.IGNORECASE)
 
@@ -414,10 +414,6 @@ names_list = st.text_area("Alternatively, enter names, separated by commas:", ',
 if names_list:  # Check if names_list is not empty
     names_list = names_list.split(',')
     names_list = [name.strip() for name in names_list]
-
-    # Remove single-letter words from each name and apply decapitalize
-    names_list = [' '.join(word for word in name.split() if len(word) > 1) for name in names_list if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]]
-    names_list = [decapitalize(name) for name in names_list]
     
     # Check if names_list contains meaningful entries
     if any(name for name in names_list):
