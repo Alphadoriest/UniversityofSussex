@@ -135,7 +135,7 @@ def extract_info(doc):
                 middle_cell = cells[len(cells) // 2]
                 paragraphs = middle_cell.paragraphs
                 
-                info = {}
+                processed_paragraphs = []
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
@@ -145,11 +145,13 @@ def extract_info(doc):
                                 clean_paragraph_text += '~~' + run.text + '~~' + ' '
                         else:
                             clean_paragraph_text += run.text + ' '
+                    processed_paragraphs.append(clean_paragraph_text.strip())
 
-                    text = clean_paragraph_text.strip()
+                info = {}
+                for text in processed_paragraphs:
                     if text.lower() in excluded_phrases:
                         continue
-                    
+
                     if re.match(r'[AB]\d+', text):
                         if info:
                             middle_column_texts.append(info)
@@ -167,7 +169,7 @@ def extract_info(doc):
                             info['Name'] = name
                         elif text:
                             info['Info'].append(text)
-                        
+
                 if info:
                     middle_column_texts.append(info)
 
