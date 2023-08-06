@@ -129,7 +129,7 @@ def extract_info(doc):
     excluded_phrases = ["vacant seat", "carer's seat", "child", "seat for pa companion", 
                         "pa companion", "pa companion seat", "companion seat"]
 
-    # Iterate over all tables and rows
+# Iterate over all tables and rows
     for table in doc.tables:
         for row in table.rows:
             cells = row.cells
@@ -157,8 +157,8 @@ def extract_info(doc):
                             info = {'Identifier': None, 'Info': [], 'Name': None}
 
                         if re.search(r'\b[A-Z]+\b$', text):
-                            # This line contains the name
-                            info['Name'] = text
+                            # This line contains the name. Decapitalize it before storing.
+                            info['Name'] = decapitalize(text)
                         elif text:
                             # This line contains information for the current entry
                             info['Info'].append(text)
