@@ -170,7 +170,8 @@ def extract_info(doc):
     return middle_column_texts
   
 def format_names(names_list):
-    colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
+    # Add more colors if needed
+    colors = ['red', 'green', 'blue', 'yellow', 'purple', 'orange', 'pink', 'cyan', 'magenta', 'lime', 'teal', 'lavender', 'maroon', 'navy', 'olive', 'silver', 'turquoise', 'violet', 'indigo', 'coral', 'crimson']
     formatted_names = []
     for i, name in enumerate(names_list):
         color = colors[i % len(colors)]
@@ -427,8 +428,8 @@ if names_list:  # Check if names_list is not empty
         formatted_names = format_names(names_list)
     
         # Create the names list as a Markdown string
-        names_md = ', '.join([f'<span style="color:{color};"><strong><u>{name}</u></strong></span>' if '(Marked As Not Present)' not in name and (len(name.split()) > 4 or len(name.split()) < 2 or any(len(word) < 3 for word in name.split()) or re.search(r'[^a-zA-Z\s]', name)) else f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
-          
+        names_md = ', '.join([f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
+        
         # Display the names list using st.markdown
         st.markdown(names_md, unsafe_allow_html=True)
 
