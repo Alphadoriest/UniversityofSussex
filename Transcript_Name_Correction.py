@@ -118,7 +118,6 @@ american_to_british_dict = {
   'dependent':'dependant',
   'judgmental':'judgemental',
   'apologize':'apologise',
-  'somber':'sombre',
   'fulfill':'fulfil',
 }
 
