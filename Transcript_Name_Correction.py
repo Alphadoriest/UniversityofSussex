@@ -124,53 +124,46 @@ american_to_british_dict = {
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_info(doc):
     middle_column_texts = []
-    
+
+    # List of phrases to exclude
     excluded_phrases = ["vacant seat", "carer's seat", "child", "seat for pa companion", 
                         "pa companion", "pa companion seat", "companion seat"]
 
+    # Iterate over all tables and rows
     for table in doc.tables:
         for row in table.rows:
             cells = row.cells
             if len(cells) > 1:
+                # Grab the middle cell
                 middle_cell = cells[len(cells) // 2]
+                
+                # Get all the paragraphs in the middle cell
                 paragraphs = middle_cell.paragraphs
                 
-                processed_paragraphs = []
-                for paragraph in paragraphs:
-                    clean_paragraph_text = ''
-                    for run in paragraph.runs:
-                        text = run.text
-                        is_strikethrough = run.font.strike
-                        if is_strikethrough and not (text.startswith('(') and text.endswith(')')) and not (text.startswith('[') and text.endswith(']')):
-                            text = '~~' + text + '~~'
-                        else:
-                            clean_paragraph_text += run.text + ' '
-                    processed_paragraphs.append(clean_paragraph_text.strip())
-
                 info = {}
-                for text in processed_paragraphs:
-                    if text.lower() in excluded_phrases:
-                        continue
-
+                for paragraph in paragraphs:
+                    text = paragraph.text.strip()
+                    
+                    # Check for identifier (like "A32", "B26" etc.) indicating start of new entry
                     if re.match(r'[AB]\d+', text):
+                        # If there is information from a previous entry, save it
                         if info:
                             middle_column_texts.append(info)
+                        # Start a new dictionary for the new entry
                         info = {'Identifier': text, 'Info': [], 'Name': None}
                     else:
+                        # If info is empty, initialize it with default values
                         if not info:
                             info = {'Identifier': None, 'Info': [], 'Name': None}
 
-                        # Check if the text is a name
-                        if re.search(r'[A-Z]+', text):
-                            name = decapitalize(text.strip())
-                            if is_strikethrough:
-                                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
-                                if name: 
-                                    name += ' (Marked As Not Present)'
-                            info['Name'] = name
+                        if re.search(r'\b[A-Z]+\b$', text):
+                            # This line contains the name
+                            info['Name'] = text
                         elif text:
+                            # This line contains information for the current entry
                             info['Info'].append(text)
-
+                        
+                # Save information from the last entry in the cell
                 if info:
                     middle_column_texts.append(info)
 
@@ -421,7 +414,6 @@ if uploaded_file is not None:
 names_list = [entry['Name'] for entry in data]
 
 # Use names_list as the default value for the names_list text_area
-names_list = [name for name in names_list if name is not None]
 names_list = st.text_area("Alternatively, enter names, separated by commas:", ', '.join(names_list), key='names_list')
 
 if names_list:  # Check if names_list is not empty
@@ -432,12 +424,10 @@ if names_list:  # Check if names_list is not empty
     if any(name for name in names_list):
         # Assuming format_names now returns a list of tuples like [(name, color), ...]
         formatted_names = format_names(names_list)
-        
+    
         # Create the names list as a Markdown string
         names_md = ', '.join([f'<span style="color:{color};"><strong><u>{name}</u></strong></span>' if '(Marked As Not Present)' not in name and (len(name.split()) > 4 or len(name.split()) < 2 or any(len(word) < 3 for word in name.split()) or re.search(r'[^a-zA-Z\s]', name)) else f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
           
-        print(f"Formatted names: {names_md}")  # Debug message
-        
         # Display the names list using st.markdown
         st.markdown(names_md, unsafe_allow_html=True)
 
