@@ -455,7 +455,7 @@ if names_list:  # Check if names_list is not empty
         entry['Info'] = [decapitalize(text) for text in entry['Info']]
 
     # Display the modified data
-    st.write(data)
+    # st.write(data)  # Commented out to stop printing dictionary results
 
 st.header("Graduation Subtitles Name Corrector")
 # Initialize subtitles_text as an empty string
