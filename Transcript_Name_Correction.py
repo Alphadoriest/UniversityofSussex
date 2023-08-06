@@ -171,7 +171,7 @@ def extract_info(doc):
   
 def format_names(names_list):
     # Add more colors if needed
-    colors = ['red', 'green', 'blue', 'yellow', 'purple', 'orange', 'pink', 'cyan', 'magenta', 'lime', 'teal', 'lavender', 'maroon', 'navy', 'olive', 'silver', 'turquoise', 'violet', 'indigo', 'coral', 'crimson']
+    colors = ['red', 'green', 'blue', 'yellow']
     formatted_names = []
     for i, name in enumerate(names_list):
         color = colors[i % len(colors)]
