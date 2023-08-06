@@ -144,12 +144,6 @@ def extract_info(doc):
                         else:
                             clean_paragraph_text += run.text + ' '
 
-                    # Handle strikethrough text
-                    if '~~' in clean_paragraph_text:
-                        clean_paragraph_text = regex.sub(r'~~(.*?)~~', r'\1', clean_paragraph_text).strip()
-                        if clean_paragraph_text: 
-                            clean_paragraph_text += ' (Marked As Not Present)'
-
                     text = clean_paragraph_text.strip()
                     if text.lower() in excluded_phrases:
                         continue
@@ -164,6 +158,11 @@ def extract_info(doc):
 
                         if re.search(r'\b[A-Z]+\b$', text):
                             name = decapitalize(text)
+                            # Handle strikethrough text for names
+                            if '~~' in name:
+                                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
+                                if name: 
+                                    name += ' (Marked As Not Present)'
                             info['Name'] = name
                         elif text:
                             info['Info'].append(text)
