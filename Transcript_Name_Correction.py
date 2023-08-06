@@ -129,7 +129,7 @@ def extract_info(doc):
     excluded_phrases = ["vacant seat", "carer's seat", "child", "seat for pa companion", 
                         "pa companion", "pa companion seat", "companion seat"]
 
-# Iterate over all tables and rows
+    # Iterate over all tables and rows
     for table in doc.tables:
         for row in table.rows:
             cells = row.cells
@@ -156,13 +156,19 @@ def extract_info(doc):
                         if not info:
                             info = {'Identifier': None, 'Info': [], 'Name': None}
 
+                        # Check if the text is strikethrough
+                        is_strikethrough = any(run.strikethrough for run in paragraph.runs)
+
                         if re.search(r'\b[A-Z]+\b$', text):
                             # This line contains the name. Decapitalize it before storing.
+                            # Add note if name is strikethrough
+                            if is_strikethrough:
+                                text += ' (Marked As Not Present)'
                             info['Name'] = decapitalize(text)
                         elif text:
                             # This line contains information for the current entry
                             info['Info'].append(text)
-                        
+
                 # Save information from the last entry in the cell
                 if info:
                     middle_column_texts.append(info)
