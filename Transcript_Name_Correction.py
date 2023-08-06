@@ -140,6 +140,7 @@ def extract_info(doc):
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         if run.font.strike:  # Check if the text is strikethrough
+                            print(f"Detected strikethrough text: {run.text}")  # Debug message
                             # Ignore lines that are fully enclosed in brackets
                             if not (run.text.startswith('(') and run.text.endswith(')')) and not (run.text.startswith('[') and run.text.endswith(']')):
                                 clean_paragraph_text += '~~' + run.text + '~~' + ' '
@@ -162,6 +163,7 @@ def extract_info(doc):
 
                         if re.search(r'\b[A-Z]+\b$', text):
                             name = decapitalize(text)
+                            print(f"Detected name: {name}")  # Debug message
                             if '~~' in name:
                                 name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
                                 if name: 
@@ -431,10 +433,12 @@ if names_list:  # Check if names_list is not empty
     if any(name for name in names_list):
         # Assuming format_names now returns a list of tuples like [(name, color), ...]
         formatted_names = format_names(names_list)
-    
+        
         # Create the names list as a Markdown string
         names_md = ', '.join([f'<span style="color:{color};"><strong><u>{name}</u></strong></span>' if '(Marked As Not Present)' not in name and (len(name.split()) > 4 or len(name.split()) < 2 or any(len(word) < 3 for word in name.split()) or re.search(r'[^a-zA-Z\s]', name)) else f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
           
+        print(f"Formatted names: {names_md}")  # Debug message
+        
         # Display the names list using st.markdown
         st.markdown(names_md, unsafe_allow_html=True)
 
