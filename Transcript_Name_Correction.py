@@ -122,6 +122,8 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
+from docx import Document
+
 def extract_info(doc):
     middle_column_texts = []
     
@@ -140,7 +142,7 @@ def extract_info(doc):
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
                         if run.font.strike:  
-                            clean_paragraph_text += '~~' + run.text + '~~' + ' '
+                            clean_paragraph_text += run.text + ' (Marked As Not Present)' + ' '
                         else:
                             clean_paragraph_text += run.text + ' '
 
@@ -158,11 +160,6 @@ def extract_info(doc):
 
                         if re.search(r'\b[A-Z]+\b$', text):
                             name = decapitalize(text)
-                            # Handle strikethrough text for names
-                            if '~~' in name:
-                                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
-                                if name: 
-                                    name += ' (Marked As Not Present)'
                             info['Name'] = name
                         elif text:
                             info['Info'].append(text)
