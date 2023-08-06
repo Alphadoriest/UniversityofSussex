@@ -124,6 +124,10 @@ american_to_british_dict = {
 # Name Extractor for graduation ceremony in-person lists functions
 def extract_info(doc):
     middle_column_texts = []
+    
+    # List of phrases to exclude
+    excluded_phrases = ["vacant seat", "carer's seat", "child", "seat for pa companion", 
+                        "pa companion", "pa companion seat", "companion seat"]
 
     # Iterate over all tables and rows
     for table in doc.tables:
@@ -138,7 +142,20 @@ def extract_info(doc):
                 
                 info = {}
                 for paragraph in paragraphs:
-                    text = paragraph.text.strip()
+                    clean_paragraph_text = ''
+                    for run in paragraph.runs:
+                        if run.font.strike:  # Check if the text is strikethrough
+                            # Ignore lines that are fully enclosed in brackets
+                            if not (run.text.startswith('(') and run.text.endswith(')')) and not (run.text.startswith('[') and run.text.endswith(']')):
+                                clean_paragraph_text += '~~' + run.text + '~~' + ' '
+                        else:
+                            clean_paragraph_text += run.text + ' '
+
+                    text = clean_paragraph_text.strip()
+
+                    # Skip the current iteration if the lowercased text is in the list of excluded phrases
+                    if text.lower() in excluded_phrases:
+                        continue
                     
                     # Check for identifier (like "A32", "B26" etc.) indicating start of new entry
                     if re.match(r'[AB]\d+', text):
@@ -153,8 +170,13 @@ def extract_info(doc):
                             info = {'Identifier': None, 'Info': [], 'Name': None}
 
                         if re.search(r'\b[A-Z]+\b$', text):
-                            # This line contains the name
-                            info['Name'] = text
+                            # This line contains the name. Decapitalize it before storing.
+                            name = decapitalize(text)
+                            if '~~' in name:
+                                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
+                                if name: 
+                                    name += ' (Marked As Not Present)'
+                            info['Name'] = name
                         elif text:
                             # This line contains information for the current entry
                             info['Info'].append(text)
