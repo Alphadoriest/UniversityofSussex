@@ -139,11 +139,10 @@ def extract_info(doc):
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        if run.font.strike:  # Check if the text is strikethrough
-                            print(f"Detected strikethrough text: {run.text}")  # Debug message
-                            # Ignore lines that are fully enclosed in brackets
-                            if not (run.text.startswith('(') and run.text.endswith(')')) and not (run.text.startswith('[') and run.text.endswith(']')):
-                                clean_paragraph_text += '~~' + run.text + '~~' + ' '
+                        text = run.text
+                        is_strikethrough = run.font.strike
+                        if is_strikethrough and not (text.startswith('(') and text.endswith(')')) and not (text.startswith('[') and text.endswith(']')):
+                            text = '~~' + text + '~~'
                         else:
                             clean_paragraph_text += run.text + ' '
                     processed_paragraphs.append(clean_paragraph_text.strip())
@@ -161,10 +160,10 @@ def extract_info(doc):
                         if not info:
                             info = {'Identifier': None, 'Info': [], 'Name': None}
 
-                        if re.search(r'\b[A-Z]+\b$', text):
-                            name = decapitalize(text)
-                            print(f"Detected name: {name}")  # Debug message
-                            if '~~' in name:
+                        # Check if the text is a name
+                        if re.search(r'[A-Z]+', text):
+                            name = decapitalize(text.strip())
+                            if is_strikethrough:
                                 name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
                                 if name: 
                                     name += ' (Marked As Not Present)'
