@@ -125,63 +125,49 @@ american_to_british_dict = {
 def extract_info(doc):
     middle_column_texts = []
     
-    # List of phrases to exclude
     excluded_phrases = ["vacant seat", "carer's seat", "child", "seat for pa companion", 
                         "pa companion", "pa companion seat", "companion seat"]
 
-    # Iterate over all tables and rows
     for table in doc.tables:
         for row in table.rows:
             cells = row.cells
             if len(cells) > 1:
-                # Grab the middle cell
                 middle_cell = cells[len(cells) // 2]
-                
-                # Get all the paragraphs in the middle cell
                 paragraphs = middle_cell.paragraphs
                 
                 info = {}
                 for paragraph in paragraphs:
                     clean_paragraph_text = ''
                     for run in paragraph.runs:
-                        if run.font.strike:  # Check if the text is strikethrough
-                            # Ignore lines that are fully enclosed in brackets
-                            if not (run.text.startswith('(') and run.text.endswith(')')) and not (run.text.startswith('[') and run.text.endswith(']')):
-                                clean_paragraph_text += '~~' + run.text + '~~' + ' '
+                        if run.font.strike:  
+                            clean_paragraph_text += '~~' + run.text + '~~' + ' '
                         else:
                             clean_paragraph_text += run.text + ' '
 
-                    text = clean_paragraph_text.strip()
+                    # Handle strikethrough text
+                    if '~~' in clean_paragraph_text:
+                        clean_paragraph_text = regex.sub(r'~~(.*?)~~', r'\1', clean_paragraph_text).strip()
+                        if clean_paragraph_text: 
+                            clean_paragraph_text += ' (Marked As Not Present)'
 
-                    # Skip the current iteration if the lowercased text is in the list of excluded phrases
+                    text = clean_paragraph_text.strip()
                     if text.lower() in excluded_phrases:
                         continue
                     
-                    # Check for identifier (like "A32", "B26" etc.) indicating start of new entry
                     if re.match(r'[AB]\d+', text):
-                        # If there is information from a previous entry, save it
                         if info:
                             middle_column_texts.append(info)
-                        # Start a new dictionary for the new entry
                         info = {'Identifier': text, 'Info': [], 'Name': None}
                     else:
-                        # If info is empty, initialize it with default values
                         if not info:
                             info = {'Identifier': None, 'Info': [], 'Name': None}
 
                         if re.search(r'\b[A-Z]+\b$', text):
-                            # This line contains the name. Decapitalize it before storing.
                             name = decapitalize(text)
-                            if '~~' in name:
-                                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
-                                if name: 
-                                    name += ' (Marked As Not Present)'
                             info['Name'] = name
                         elif text:
-                            # This line contains information for the current entry
                             info['Info'].append(text)
                         
-                # Save information from the last entry in the cell
                 if info:
                     middle_column_texts.append(info)
 
