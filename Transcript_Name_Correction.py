@@ -411,9 +411,7 @@ if uploaded_file is not None:
     data = extract_info(document)  # Keep data as a list
 
 # Extract the names_list from the data
-names_list = [entry['Name'] for entry in data]
-
-# Use names_list as the default value for the names_list text_area
+names_list = [name for name in names_list if name is not None]
 names_list = st.text_area("Alternatively, enter names, separated by commas:", ', '.join(names_list), key='names_list')
 
 if names_list:  # Check if names_list is not empty
