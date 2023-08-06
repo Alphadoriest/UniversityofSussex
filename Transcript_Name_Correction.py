@@ -122,51 +122,43 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-def extract_middle_column_text(doc):
+def extract_info(doc):
     middle_column_texts = []
 
+    # Iterate over all tables and rows
     for table in doc.tables:
         for row in table.rows:
             cells = row.cells
             if len(cells) > 1:
+                # Grab the middle cell
                 middle_cell = cells[len(cells) // 2]
+                
+                # Get all the paragraphs in the middle cell
                 paragraphs = middle_cell.paragraphs
+                
+                info = {}
                 for paragraph in paragraphs:
-                    clean_paragraph_text = ''
-                    for run in paragraph.runs:
-                        if run.font.strike:  # Check if the text is strikethrough
-                            # Ignore lines that are fully enclosed in brackets
-                            if not (run.text.startswith('(') and run.text.endswith(')')) and not (run.text.startswith('[') and run.text.endswith(']')):
-                                clean_paragraph_text += '~~' + run.text + '~~' + ' '
-                        else:
-                            clean_paragraph_text += run.text + ' '
+                    text = paragraph.text.strip()
+                    
+                    # Check for identifier (like "A32", "B26" etc.) indicating start of new entry
+                    if re.match(r'[AB]\d+', text):
+                        # If there is information from a previous entry, save it
+                        if info:
+                            middle_column_texts.append(info)
+                        # Start a new dictionary for the new entry
+                        info = {'Identifier': text, 'Info': [], 'Name': None}
+                    elif re.search(r'\b[A-Z]+\b$', text):
+                        # This line contains the name
+                        info['Name'] = text
+                    elif text:
+                        # This line contains information for the current entry
+                        info['Info'].append(text)
+                        
+                # Save information from the last entry in the cell
+                if info:
+                    middle_column_texts.append(info)
 
-                    # Remove brackets from the whole paragraph
-                    clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)
-                    clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)
-
-                    # Remove unwanted prefixes
-                    unwanted_prefixes = [r'Also The Recipient Of .*?(?=[A-Z]{2,})', r'For the thesis: .*?(?=[A-Z]{2,})', r'Thesis topic: .*?(?=[A-Z]{2,})']
-                    for prefix in unwanted_prefixes:
-                        clean_paragraph_text = regex.sub(prefix, '', clean_paragraph_text)
-
-                    # Add the cleaned text to the list
-                    if clean_paragraph_text.strip():
-                        middle_column_texts.append(clean_paragraph_text.strip())
-
-    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))
-    cleaned_names = []
-    for name in cleaned_text.split(', '):
-        if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
-            if '~~' in name:
-                name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
-                if name:
-                    name += ' (Marked As Not Present)'
-            words = name.split()
-            name = ' '.join(word for word in words if len(word) > 1)
-            cleaned_names.append(decapitalize(name))
-
-    return cleaned_names
+    return middle_column_texts
   
 def format_names(names_list):
     colors = ['red', 'green', 'blue', 'yellow']  # Add more colors if needed
@@ -402,12 +394,15 @@ st.header('Name Extractor for Graduation Ceremony In-Person Lists')
 
 uploaded_file = st.file_uploader("Choose a Ceremony In-Person List Word document", type="docx")
 
-# Initialize names_list as an empty string
-names_list = ''
+# Initialize data as an empty list
+data = []
 
 if uploaded_file is not None:
     document = Document(io.BytesIO(uploaded_file.read()))
-    names_list = extract_middle_column_text(document)  # Keep names_list as a list
+    data = extract_info(document)  # Keep data as a list
+
+# Extract the names_list from the data
+names_list = [entry['Name'] for entry in data]
 
 # Use names_list as the default value for the names_list text_area
 names_list = st.text_area("Alternatively, enter names, separated by commas:", ', '.join(names_list), key='names_list')
@@ -418,7 +413,6 @@ if names_list:  # Check if names_list is not empty
     
     # Check if names_list contains meaningful entries
     if any(name for name in names_list):
-    
         # Assuming format_names now returns a list of tuples like [(name, color), ...]
         formatted_names = format_names(names_list)
     
@@ -427,6 +421,13 @@ if names_list:  # Check if names_list is not empty
           
         # Display the names list using st.markdown
         st.markdown(names_md, unsafe_allow_html=True)
+
+    # Apply the decapitalize function to the 'Info' part of the data
+    for entry in data:
+        entry['Info'] = [decapitalize(text) for text in entry['Info']]
+
+    # Display the modified data
+    st.write(data)
 
 st.header("Graduation Subtitles Name Corrector")
 # Initialize subtitles_text as an empty string
