@@ -147,12 +147,17 @@ def extract_info(doc):
                             middle_column_texts.append(info)
                         # Start a new dictionary for the new entry
                         info = {'Identifier': text, 'Info': [], 'Name': None}
-                    elif re.search(r'\b[A-Z]+\b$', text):
-                        # This line contains the name
-                        info['Name'] = text
-                    elif text:
-                        # This line contains information for the current entry
-                        info['Info'].append(text)
+                    else:
+                        # If info is empty, initialize it with default values
+                        if not info:
+                            info = {'Identifier': None, 'Info': [], 'Name': None}
+
+                        if re.search(r'\b[A-Z]+\b$', text):
+                            # This line contains the name
+                            info['Name'] = text
+                        elif text:
+                            # This line contains information for the current entry
+                            info['Info'].append(text)
                         
                 # Save information from the last entry in the cell
                 if info:
