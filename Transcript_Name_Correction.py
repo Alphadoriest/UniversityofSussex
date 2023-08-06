@@ -142,27 +142,29 @@ def extract_middle_column_text(doc):
                             clean_paragraph_text += run.text + ' '
 
                     # Remove brackets from the whole paragraph
-                    clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)  # Recursive regex to remove all round bracketed text
-                    clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)  # Recursive regex to remove all square bracketed text
+                    clean_paragraph_text = regex.sub(r'(?s)\((?:[^()]|(?R))*\)', '', clean_paragraph_text)
+                    clean_paragraph_text = regex.sub(r'(?s)\[(?:[^\[\]]|(?R))*\]', '', clean_paragraph_text)
+
+                    # Remove unwanted prefixes
+                    unwanted_prefixes = [r'Also The Recipient Of .*?(?=[A-Z]{2,})', r'For the thesis: .*?(?=[A-Z]{2,})', r'Thesis topic: .*?(?=[A-Z]{2,})']
+                    for prefix in unwanted_prefixes:
+                        clean_paragraph_text = regex.sub(prefix, '', clean_paragraph_text)
 
                     # Add the cleaned text to the list
                     if clean_paragraph_text.strip():
                         middle_column_texts.append(clean_paragraph_text.strip())
 
-    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))  # Replace multiple commas with a single comma
-    # Remove single letters from names
+    cleaned_text = re.sub(r'(,\s*)+', ', ', ', '.join(middle_column_texts))
     cleaned_names = []
     for name in cleaned_text.split(', '):
         if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]:
             if '~~' in name:
                 name = regex.sub(r'~~(.*?)~~', r'\1', name).strip()
-                if name: 
+                if name:
                     name += ' (Marked As Not Present)'
-                  
             words = name.split()
             name = ' '.join(word for word in words if len(word) > 1)
-          
-            cleaned_names.append(decapitalize(name))  # Apply decapitalize here
+            cleaned_names.append(decapitalize(name))
 
     return cleaned_names
   
