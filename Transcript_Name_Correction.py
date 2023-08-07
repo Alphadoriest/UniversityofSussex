@@ -156,11 +156,11 @@ def extract_names(doc):
                     # Check if the text is not in excluded phrases and:
                     # 1. Starts with an uppercase word, or
                     # 2. Ends with an uppercase word, or
-                    # 3. Contains an uppercase word and the first cell is empty
+                    # 3. Matches a name pattern and the first cell is empty
                     if not excluded_phrases_regex.search(text) and \
                        (re.search(r'^\b[A-Z]+\b', text) or 
                         re.search(r'\b[A-Z]+\b$', text) or 
-                        (re.search(r'\b[A-Z]+\b', text) and not first_cell.text.strip())):
+                        (name_regex.search(text) and not first_cell.text.strip())):
                         # This line contains the name. 
                         # Add note if name is strikethrough
                         if is_strikethrough:
