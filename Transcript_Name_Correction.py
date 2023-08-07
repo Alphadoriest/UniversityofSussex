@@ -122,8 +122,6 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-import re
-
 def extract_names(doc):
     middle_column_texts = []
 
@@ -135,11 +133,7 @@ def extract_names(doc):
     for table in doc.tables:
         for row in table.rows:
             cells = row.cells
-            if len(cells) == 1:  # Handle single cell rows
-                text = cells[0].text.strip()
-                if not any(excluded_phrase in text for excluded_phrase in excluded_phrases) and re.search(r'\b[A-Z]+\b$', text):
-                    middle_column_texts.append(text)
-            elif len(cells) > 1:
+            if len(cells) > 1:
                 # Grab the middle cell
                 middle_cell = cells[len(cells) // 2]
                 
