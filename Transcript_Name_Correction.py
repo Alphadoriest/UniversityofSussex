@@ -156,9 +156,9 @@ def extract_names(doc):
                         if is_strikethrough:
                             text += ' (Marked As Not Present)'
                         
-                        # Remove single-letter words (accounting for periods)
-                        words = text.split()
-                        text = ' '.join(word for word in words if len(word.replace('.', '')) > 1)
+                        # Remove single-letter words (accounting for periods and spaces)
+                        words = re.split("[ .]", text)  # split on spaces and periods
+                        text = ' '.join(word for word in words if len(word) > 1)
                         
                         middle_column_texts.append(text)
 
