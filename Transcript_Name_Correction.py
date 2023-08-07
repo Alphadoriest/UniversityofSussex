@@ -122,7 +122,7 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-def extract_info(doc):
+def extract_names(doc):
     middle_column_texts = []
 
     # List of phrases to exclude
@@ -140,38 +140,20 @@ def extract_info(doc):
                 # Get all the paragraphs in the middle cell
                 paragraphs = middle_cell.paragraphs
                 
-                info = {'Identifier': None, 'Info': [], 'Name': None}  # Initialize the dictionary with default values
                 for paragraph in paragraphs:
                     text = paragraph.text.strip()
-                    
-                    # Check for identifier (like "A32", "B26" etc.) indicating start of new entry
-                    if re.match(r'[AB]\d+', text):
-                        # If there is information from a previous entry, save it
-                        if info['Name'] or info['Info']:
-                            middle_column_texts.append(info)
-                        # Start a new dictionary for the new entry
-                        info = {'Identifier': text, 'Info': [], 'Name': None}
-                    else:
-                        # Check if the text is strikethrough
-                        is_strikethrough = any(run.font.strike for run in paragraph.runs)
 
+                    # Check if the text is strikethrough
+                    is_strikethrough = any(run.font.strike for run in paragraph.runs)
+
+                    # Check if the text is not in the excluded phrases
+                    if not any(excluded_phrase in text for excluded_phrase in excluded_phrases):
                         if re.search(r'\b[A-Z]+\b$', text):
-                            # This line contains the name. Decapitalize it before storing.
+                            # This line contains the name. 
                             # Add note if name is strikethrough
                             if is_strikethrough:
                                 text += ' (Marked As Not Present)'
-                            # If there is information from a previous entry, save it
-                            if info['Name'] or info['Info']:
-                                middle_column_texts.append(info)
-                            # Start a new dictionary for the new entry
-                            info = {'Identifier': None, 'Info': [], 'Name': decapitalize(text)}
-                        elif text and not any(excluded_phrase in text for excluded_phrase in excluded_phrases):
-                            # This line contains information for the current entry
-                            info['Info'].append(text)
-
-                # Save information from the last entry in the cell
-                if info['Name'] or info['Info']:
-                    middle_column_texts.append(info)
+                            middle_column_texts.append(text)
 
     return middle_column_texts
   
@@ -415,7 +397,7 @@ data = []
 
 if uploaded_file is not None:
     document = Document(io.BytesIO(uploaded_file.read()))
-    data = extract_info(document)  # Keep data as a list
+    data = extract_names(document)  # Keep data as a list
 
 # Extract the names_list from the data
 names_list = [entry['Name'] for entry in data]
