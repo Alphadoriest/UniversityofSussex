@@ -4,6 +4,7 @@ import re
 from difflib import SequenceMatcher
 import streamlit as st
 from streamlit.components.v1 import html
+import docx
 from docx import Document
 from typing import List, Tuple
 from fuzzywuzzy import fuzz
