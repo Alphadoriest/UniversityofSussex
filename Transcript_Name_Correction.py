@@ -122,8 +122,6 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-import re
-
 def extract_names(doc):
     middle_column_texts = []
 
@@ -158,9 +156,9 @@ def extract_names(doc):
                         if is_strikethrough:
                             text += ' (Marked As Not Present)'
                         
-                        # Remove single-letter words
+                        # Remove single-letter words (accounting for periods)
                         words = text.split()
-                        text = ' '.join(word for word in words if len(word) > 1)
+                        text = ' '.join(word for word in words if len(word.replace('.', '')) > 1)
                         
                         middle_column_texts.append(text)
 
