@@ -159,22 +159,23 @@ def extract_names(doc):
                     word_count = len(words) - 4 if is_strikethrough else len(words)
 
                     # Check if the text is not in excluded phrases and:
-                    # 1. Starts with an uppercase word and the line of text is not longer than seven words, or
-                    # 2. Ends with an uppercase word and the line of text is not longer than seven words, or
+                    # 1. Starts with an uppercase word and the line of text is not longer than six words, or
+                    # 2. Ends with an uppercase word and the line of text is not longer than six words, or
                     # 3. Matches a name pattern and the first cell is empty
-                    if not excluded_phrases_regex.search(text) and word_count <= 7:
-                        if (words[0].isupper() or words[-1].isupper() or 
-                            (name_regex.search(text) and not first_cell.text.strip())):
-                            # This line contains the name. 
-                            # Add note if name is strikethrough
-                            if is_strikethrough:
-                                text += ' (Marked As Not Present)'
+                    if not excluded_phrases_regex.search(text) and \
+                       ((re.search(r'^\b[A-Z]+\b', text) and word_count <= 7) or 
+                        (re.search(r'\b[A-Z]+\b$', text) and word_count <= 7) or 
+                        (name_regex.search(text) and not first_cell.text.strip())):
+                        # This line contains the name. 
+                        # Add note if name is strikethrough
+                        if is_strikethrough:
+                            text += ' (Marked As Not Present)'
 
-                            # Remove single-letter words (accounting for periods and spaces)
-                            words = re.split("[ .]", text)  # split on spaces and periods
-                            text = ' '.join(word for word in words if len(word) > 1)
+                        # Remove single-letter words (accounting for periods and spaces)
+                        words = re.split("[ .]", text)  # split on spaces and periods
+                        text = ' '.join(word for word in words if len(word) > 1)
 
-                            middle_column_texts.append(text)
+                        middle_column_texts.append(text)
 
     # Decapitalize names before returning
     middle_column_texts = [decapitalize(name) for name in middle_column_texts]
