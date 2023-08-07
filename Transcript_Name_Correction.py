@@ -16,6 +16,8 @@ from pathlib import Path
 from docx.oxml.ns import nsdecls
 from docx.oxml import parse_xml
 import regex
+from docx.oxml.ns import nsdecls
+from docx.oxml import parse_xml
 
 american_to_british_dict = {
   'honored':'honoured',
@@ -126,29 +128,30 @@ american_to_british_dict = {
 def extract_info(doc):
     middle_column_texts = []
 
-    # Boolean flag for extraction
-    extract = True
-
     # Flag to indicate if we're in the 'Additional Requirements' section
     in_additional_requirements = False
 
-    # Iterate over all paragraphs and tables
-    for block in itertools.chain(doc.paragraphs, doc.tables):
+    # Directly access the XML structure of the Document
+    root = doc.element.body
+
+    # Iterate over all elements in the order they appear in the Document
+    for child in root:
         # If 'Additional Requirements' is in the paragraph, set the flag to skip the next table
-        if isinstance(block, docx.text.paragraph.Paragraph) and 'Additional requirements' in block.text:
+        if child.tag.endswith('}p') and 'Additional requirements' in child.text:
             in_additional_requirements = True
             continue
 
         # If this is a table and we're in the 'Additional Requirements' section, skip this table
-        if isinstance(block, docx.table.Table) and in_additional_requirements:
+        if child.tag.endswith('}tbl') and in_additional_requirements:
             in_additional_requirements = False
             continue
 
         # If this is a table and we're not in the 'Additional Requirements' section, process the table
-        if isinstance(block, docx.table.Table) and not in_additional_requirements:
-            for row in block.rows:
+        if child.tag.endswith('}tbl') and not in_additional_requirements:
+            table = docx.table.Table(child, doc)
+            for row in table.rows:
                 cells = row.cells
-                if len(cells) > 1 and extract:
+                if len(cells) > 1:
                     # Grab the middle cell
                     middle_cell = cells[len(cells) // 2]
 
@@ -159,30 +162,27 @@ def extract_info(doc):
                     for paragraph in paragraphs:
                         text = paragraph.text.strip()
 
-                        # Check for identifier (like "A32", "B26" etc.) indicating start of new entry
-                        if re.match(r'[AB]\d+', text):
+                        # Check if the text is strikethrough
+                        is_strikethrough = any(run.font.strike for run in paragraph.runs)
+
+                        if re.search(r'\b[A-Z]+\b$', text):
+                            # This line contains the name. Decapitalize it before storing.
+                            # Add note if name is strikethrough
+                            if is_strikethrough:
+                                text += ' (Marked As Not Present)'
+                            
                             # If there is information from a previous entry, save it
                             if info:
                                 middle_column_texts.append(info)
+                            
                             # Start a new dictionary for the new entry
-                            info = {'Identifier': text, 'Info': [], 'Name': None}
-                        else:
-                            # If info is empty, initialize it with default values
-                            if not info:
-                                info = {'Identifier': None, 'Info': [], 'Name': None}
-
-                            # Check if the text is strikethrough
-                            is_strikethrough = any(run.font.strike for run in paragraph.runs)
-
-                            if re.search(r'\b[A-Z]+\b$', text):
-                                # This line contains the name. Decapitalize it before storing.
-                                # Add note if name is strikethrough
-                                if is_strikethrough:
-                                    text += ' (Marked As Not Present)'
-                                info['Name'] = decapitalize(text)
-                            elif text:
-                                # This line contains information for the current entry
-                                info['Info'].append(text)
+                            info = {'Identifier': None, 'Info': [], 'Name': decapitalize(text)}
+                        elif re.match(r'[AB]\d+', text):
+                            # This line contains an identifier, store it
+                            info['Identifier'] = text
+                        elif text:
+                            # This line contains information for the current entry
+                            info['Info'].append(text)
 
                     # Save information from the last entry in the cell
                     if info:
