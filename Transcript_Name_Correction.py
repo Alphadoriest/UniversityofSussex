@@ -128,24 +128,32 @@ def extract_info(doc):
     # Boolean flag for extraction
     extract = True
 
-    for paragraph in doc.paragraphs:
-        if 'Additional requirements' in paragraph.text:
-            extract = False
-            break
+    # Flag to indicate if we're in the 'Additional Requirements' section
+    in_additional_requirements = False
 
-    # If 'Additional requirements' is not found in the paragraphs, proceed with table extraction
-    if extract:
-        # Iterate over all tables and rows
-        for table in doc.tables:
-            for row in table.rows:
+    # Iterate over all paragraphs and tables
+    for block in itertools.chain(doc.paragraphs, doc.tables):
+        # If 'Additional Requirements' is in the paragraph, set the flag to skip the next table
+        if isinstance(block, docx.text.paragraph.Paragraph) and 'Additional requirements' in block.text:
+            in_additional_requirements = True
+            continue
+
+        # If this is a table and we're in the 'Additional Requirements' section, skip this table
+        if isinstance(block, docx.table.Table) and in_additional_requirements:
+            in_additional_requirements = False
+            continue
+
+        # If this is a table and we're not in the 'Additional Requirements' section, process the table
+        if isinstance(block, docx.table.Table) and not in_additional_requirements:
+            for row in block.rows:
                 cells = row.cells
-                if len(cells) > 1:
+                if len(cells) > 1 and extract:
                     # Grab the middle cell
                     middle_cell = cells[len(cells) // 2]
-                    
+
                     # Get all the paragraphs in the middle cell
                     paragraphs = middle_cell.paragraphs
-                    
+
                     info = {}
                     for paragraph in paragraphs:
                         text = paragraph.text.strip()
@@ -178,7 +186,7 @@ def extract_info(doc):
                     # Save information from the last entry in the cell
                     if info:
                         middle_column_texts.append(info)
-                
+
     return middle_column_texts
   
 def format_names(names_list):
