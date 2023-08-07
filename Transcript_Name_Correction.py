@@ -122,6 +122,8 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
+import re
+
 def extract_names(doc):
     middle_column_texts = []
 
