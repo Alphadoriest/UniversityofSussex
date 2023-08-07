@@ -129,6 +129,9 @@ def extract_names(doc):
     excluded_phrases = ["vacant seat", "carer's seat", "child", "seat for pa companion", 
                         "pa companion", "pa companion seat", "companion seat"]
 
+    # Compile all excluded phrases into a single regular expression
+    excluded_phrases_regex = re.compile("|".join(excluded_phrases), re.IGNORECASE)
+
     # Iterate over all tables and rows
     for table in doc.tables:
         for row in table.rows:
@@ -136,7 +139,7 @@ def extract_names(doc):
             if len(cells) > 1:
                 # Grab the middle cell
                 middle_cell = cells[len(cells) // 2]
-                
+
                 # Get all the paragraphs in the middle cell
                 paragraphs = middle_cell.paragraphs
                 
@@ -147,7 +150,7 @@ def extract_names(doc):
                     is_strikethrough = any(run.font.strike for run in paragraph.runs)
 
                     # Check if the text is not in excluded phrases and ends with a uppercase word
-                    if not any(excluded_phrase in text for excluded_phrase in excluded_phrases) and re.search(r'\b[A-Z]+\b$', text):
+                    if not excluded_phrases_regex.search(text) and re.search(r'\b[A-Z]+\b$', text):
                         # This line contains the name. 
                         # Add note if name is strikethrough
                         if is_strikethrough:
