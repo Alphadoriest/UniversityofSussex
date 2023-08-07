@@ -122,9 +122,6 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-import re
-from docx import Document
-
 def extract_names(doc):
     middle_column_texts = []
 
@@ -137,9 +134,6 @@ def extract_names(doc):
 
     # Regular expression for name extraction
     name_regex = re.compile(r'\b[A-Z][a-zA-Z]*\b')
-
-    # Regular expression for all uppercase word
-    uppercase_regex = re.compile(r'\b[A-Z]+\b')
 
     # Iterate over all tables and rows
     for table in doc.tables:
@@ -159,29 +153,27 @@ def extract_names(doc):
                     # Check if the text is strikethrough
                     is_strikethrough = any(run.font.strike for run in paragraph.runs)
 
-                    # If first cell is empty
-                    if not first_cell.text.strip():
-                        lines = text.split('\n')
-                        for line in lines:
-                            words = line.split()
-                            word_count = len(words) - 4 if is_strikethrough else len(words)
-                            # If line begins or ends with an all uppercase word
-                            if (re.search(r'^' + uppercase_regex.pattern, line) or 
-                                re.search(uppercase_regex.pattern + r'$', line)) and word_count <= 7:
-                                if is_strikethrough:
-                                    line += ' (Marked As Not Present)'
-                                middle_column_texts.append(line)
-                                break
-                        else:
-                            # If no line satisfies the condition, fall back to regex
-                            if name_regex.search(text):
-                                if is_strikethrough:
-                                    text += ' (Marked As Not Present)'
-                                middle_column_texts.append(text)
-                    elif not excluded_phrases_regex.search(text):
-                        if name_regex.search(text):
+                    words = text.split()
+
+                    # Adjust word count if "(Marked As Not Present)" is in text
+                    word_count = len(words) - 4 if is_strikethrough else len(words)
+
+                    # Check if the text is not in excluded phrases and:
+                    # 1. Starts with an uppercase word and the line of text is not longer than seven words, or
+                    # 2. Ends with an uppercase word and the line of text is not longer than seven words, or
+                    # 3. Matches a name pattern and the first cell is empty
+                    if not excluded_phrases_regex.search(text) and word_count <= 7:
+                        if (words[0].isupper() or words[-1].isupper() or 
+                            (name_regex.search(text) and not first_cell.text.strip())):
+                            # This line contains the name. 
+                            # Add note if name is strikethrough
                             if is_strikethrough:
                                 text += ' (Marked As Not Present)'
+
+                            # Remove single-letter words (accounting for periods and spaces)
+                            words = re.split("[ .]", text)  # split on spaces and periods
+                            text = ' '.join(word for word in words if len(word) > 1)
+
                             middle_column_texts.append(text)
 
     # Decapitalize names before returning
