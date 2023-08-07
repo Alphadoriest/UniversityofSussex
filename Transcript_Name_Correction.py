@@ -140,14 +140,14 @@ def extract_info(doc):
                 # Get all the paragraphs in the middle cell
                 paragraphs = middle_cell.paragraphs
                 
-                info = {}
+                info = {'Identifier': None, 'Info': [], 'Name': None}  # Initialize the dictionary with default values
                 for paragraph in paragraphs:
                     text = paragraph.text.strip()
                     
                     # Check for identifier (like "A32", "B26" etc.) indicating start of new entry
                     if re.match(r'[AB]\d+', text):
                         # If there is information from a previous entry, save it
-                        if info:
+                        if info['Name'] or info['Info']:
                             middle_column_texts.append(info)
                         # Start a new dictionary for the new entry
                         info = {'Identifier': text, 'Info': [], 'Name': None}
@@ -160,9 +160,8 @@ def extract_info(doc):
                             # Add note if name is strikethrough
                             if is_strikethrough:
                                 text += ' (Marked As Not Present)'
-                            
                             # If there is information from a previous entry, save it
-                            if info:
+                            if info['Name'] or info['Info']:
                                 middle_column_texts.append(info)
                             # Start a new dictionary for the new entry
                             info = {'Identifier': None, 'Info': [], 'Name': decapitalize(text)}
@@ -171,7 +170,7 @@ def extract_info(doc):
                             info['Info'].append(text)
 
                 # Save information from the last entry in the cell
-                if info:
+                if info['Name'] or info['Info']:
                     middle_column_texts.append(info)
 
     return middle_column_texts
