@@ -126,8 +126,8 @@ def extract_names(doc):
     middle_column_texts = []
 
     # List of phrases to exclude
-    excluded_phrases = ["vacant seat", "carer's seat", "child", "seat for pa companion", 
-                        "pa companion", "pa companion seat", "companion seat"]
+    excluded_phrases = ["vacant seat", "carer's seat", "carers seat", "child", "seat for pa companion", 
+                        "pa companion", "pa companion seat", "companion seat", "pa companion's seat", "companion's seat"]
 
     # Compile all excluded phrases into a single regular expression
     excluded_phrases_regex = re.compile("|".join(excluded_phrases), re.IGNORECASE)
