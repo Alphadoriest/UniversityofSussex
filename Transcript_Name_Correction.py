@@ -140,27 +140,19 @@ def extract_names(doc):
                 # Get all the paragraphs in the middle cell
                 paragraphs = middle_cell.paragraphs
                 
-                is_name = False
                 for paragraph in paragraphs:
                     text = paragraph.text.strip()
 
                     # Check if the text is strikethrough
                     is_strikethrough = any(run.font.strike for run in paragraph.runs)
 
-                    # Check if the paragraph starts a new name
-                    if re.match(r'[AB]\d+', text):
-                        is_name = True
-                    elif not any(excluded_phrase in text for excluded_phrase in excluded_phrases):
-                        is_name = True
-
-                    if is_name:
-                        if re.search(r'\b[A-Z]+\b$', text):
-                            # This line contains the name. 
-                            # Add note if name is strikethrough
-                            if is_strikethrough:
-                                text += ' (Marked As Not Present)'
-                            middle_column_texts.append(text)
-                        is_name = False
+                    # Check if the text is not in excluded phrases
+                    if not any(excluded_phrase in text for excluded_phrase in excluded_phrases):
+                        # This line contains the name. 
+                        # Add note if name is strikethrough
+                        if is_strikethrough:
+                            text += ' (Marked As Not Present)'
+                        middle_column_texts.append(text)
 
     # Decapitalize names before returning
     middle_column_texts = [decapitalize(name) for name in middle_column_texts]
