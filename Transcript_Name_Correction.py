@@ -125,62 +125,60 @@ american_to_british_dict = {
 def extract_info(doc):
     middle_column_texts = []
 
-    # List of phrases to exclude
-    excluded_phrases = ["vacant seat", "carer's seat", "child", "seat for pa companion", 
-                        "pa companion", "pa companion seat", "companion seat"]
-
     # Boolean flag for extraction
     extract = True
 
-    # Iterate over all tables and rows
-    for table in doc.tables:
-        for row in table.rows:
-            cells = row.cells
-            if len(cells) > 1:
-                # Grab the middle cell
-                middle_cell = cells[len(cells) // 2]
+    for paragraph in doc.paragraphs:
+        if 'Additional requirements' in paragraph.text:
+            extract = False
+            break
+
+    # If 'Additional requirements' is not found in the paragraphs, proceed with table extraction
+    if extract:
+        # Iterate over all tables and rows
+        for table in doc.tables:
+            for row in table.rows:
+                cells = row.cells
+                if len(cells) > 1:
+                    # Grab the middle cell
+                    middle_cell = cells[len(cells) // 2]
+                    
+                    # Get all the paragraphs in the middle cell
+                    paragraphs = middle_cell.paragraphs
+                    
+                    info = {}
+                    for paragraph in paragraphs:
+                        text = paragraph.text.strip()
+
+                        # Check for identifier (like "A32", "B26" etc.) indicating start of new entry
+                        if re.match(r'[AB]\d+', text):
+                            # If there is information from a previous entry, save it
+                            if info:
+                                middle_column_texts.append(info)
+                            # Start a new dictionary for the new entry
+                            info = {'Identifier': text, 'Info': [], 'Name': None}
+                        else:
+                            # If info is empty, initialize it with default values
+                            if not info:
+                                info = {'Identifier': None, 'Info': [], 'Name': None}
+
+                            # Check if the text is strikethrough
+                            is_strikethrough = any(run.font.strike for run in paragraph.runs)
+
+                            if re.search(r'\b[A-Z]+\b$', text):
+                                # This line contains the name. Decapitalize it before storing.
+                                # Add note if name is strikethrough
+                                if is_strikethrough:
+                                    text += ' (Marked As Not Present)'
+                                info['Name'] = decapitalize(text)
+                            elif text:
+                                # This line contains information for the current entry
+                                info['Info'].append(text)
+
+                    # Save information from the last entry in the cell
+                    if info:
+                        middle_column_texts.append(info)
                 
-                # Get all the paragraphs in the middle cell
-                paragraphs = middle_cell.paragraphs
-                
-                info = {}
-                for paragraph in paragraphs:
-                    text = paragraph.text.strip()
-
-                    # Stop extracting if 'Additional requirements' is detected
-                    if 'Additional requirements' in text:
-                        extract = False
-                        break 
-
-                    # Check for identifier (like "A32", "B26" etc.) indicating start of new entry
-                    if re.match(r'[AB]\d+', text) and extract:
-                        # If there is information from a previous entry, save it
-                        if info:
-                            middle_column_texts.append(info)
-                        # Start a new dictionary for the new entry
-                        info = {'Identifier': text, 'Info': [], 'Name': None}
-                    else:
-                        # If info is empty, initialize it with default values
-                        if not info:
-                            info = {'Identifier': None, 'Info': [], 'Name': None}
-
-                        # Check if the text is strikethrough
-                        is_strikethrough = any(run.font.strike for run in paragraph.runs)
-
-                        if re.search(r'\b[A-Z]+\b$', text) and extract:
-                            # This line contains the name. Decapitalize it before storing.
-                            # Add note if name is strikethrough
-                            if is_strikethrough:
-                                text += ' (Marked As Not Present)'
-                            info['Name'] = decapitalize(text)
-                        elif text and extract:
-                            # This line contains information for the current entry
-                            info['Info'].append(text)
-
-                # Save information from the last entry in the cell
-                if info and extract:
-                    middle_column_texts.append(info)
-
     return middle_column_texts
   
 def format_names(names_list):
