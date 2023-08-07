@@ -132,6 +132,9 @@ def extract_names(doc):
     # Compile all excluded phrases into a single regular expression
     excluded_phrases_regex = re.compile("|".join(excluded_phrases), re.IGNORECASE)
 
+    # Regular expression for name extraction
+    name_regex = re.compile(r'\b[A-Z][a-zA-Z]*\b')
+
     # Iterate over all tables and rows
     for table in doc.tables:
         for row in table.rows:
@@ -149,8 +152,8 @@ def extract_names(doc):
                     # Check if the text is strikethrough
                     is_strikethrough = any(run.font.strike for run in paragraph.runs)
 
-                    # Check if the text is not in excluded phrases and ends with an uppercase word
-                    if not excluded_phrases_regex.search(text) and re.search(r'\b[A-Z]+\b$', text):
+                    # Check if the text is not in excluded phrases and matches a name pattern
+                    if not excluded_phrases_regex.search(text) and name_regex.search(text):
                         # This line contains the name. 
                         # Add note if name is strikethrough
                         if is_strikethrough:
