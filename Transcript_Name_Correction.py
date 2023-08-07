@@ -152,10 +152,6 @@ def extract_info(doc):
                         # Start a new dictionary for the new entry
                         info = {'Identifier': text, 'Info': [], 'Name': None}
                     else:
-                        # If info is empty, initialize it with default values
-                        if not info:
-                            info = {'Identifier': None, 'Info': [], 'Name': None}
-
                         # Check if the text is strikethrough
                         is_strikethrough = any(run.font.strike for run in paragraph.runs)
 
@@ -164,8 +160,13 @@ def extract_info(doc):
                             # Add note if name is strikethrough
                             if is_strikethrough:
                                 text += ' (Marked As Not Present)'
-                            info['Name'] = decapitalize(text)
-                        elif text:
+                            
+                            # If there is information from a previous entry, save it
+                            if info:
+                                middle_column_texts.append(info)
+                            # Start a new dictionary for the new entry
+                            info = {'Identifier': None, 'Info': [], 'Name': decapitalize(text)}
+                        elif text and not any(excluded_phrase in text for excluded_phrase in excluded_phrases):
                             # This line contains information for the current entry
                             info['Info'].append(text)
 
