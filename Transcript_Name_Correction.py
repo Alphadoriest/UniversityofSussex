@@ -155,13 +155,16 @@ def extract_names(doc):
 
                     words = text.split()
 
+                    # Adjust word count if "(Marked As Not Present)" is in text
+                    word_count = len(words) - 4 if is_strikethrough else len(words)
+
                     # Check if the text is not in excluded phrases and:
                     # 1. Starts with an uppercase word and the line of text is not longer than six words, or
                     # 2. Ends with an uppercase word and the line of text is not longer than six words, or
                     # 3. Matches a name pattern and the first cell is empty
                     if not excluded_phrases_regex.search(text) and \
-                       ((re.search(r'^\b[A-Z]+\b', text) and len(words) <= 6) or 
-                        (re.search(r'\b[A-Z]+\b$', text) and len(words) <= 6) or 
+                       ((re.search(r'^\b[A-Z]+\b', text) and word_count <= 6) or 
+                        (re.search(r'\b[A-Z]+\b$', text) and word_count <= 6) or 
                         (name_regex.search(text) and not first_cell.text.strip())):
                         # This line contains the name. 
                         # Add note if name is strikethrough
