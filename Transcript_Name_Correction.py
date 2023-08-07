@@ -382,7 +382,7 @@ st.title('Graduation Transcription Workflow Web Tool')
 # Add a slider in the sidebar
 st.sidebar.header('Set Overall Similarity Threshold for Combined Methods')
 similarity_threshold = st.sidebar.slider(
-    'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. When equally weighted, 0.45-0.6 gives acceptable output.',
+    'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. Start at 0.33, identify when nonsense matches begin in 'Names replaced', increase the threshold and run again.',
     min_value=0.0,
     max_value=1.0,
     value=0.30,
