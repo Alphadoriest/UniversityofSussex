@@ -4,7 +4,6 @@ import re
 from difflib import SequenceMatcher
 import streamlit as st
 from streamlit.components.v1 import html
-import docx
 from docx import Document
 from typing import List, Tuple
 from fuzzywuzzy import fuzz
@@ -16,8 +15,6 @@ from pathlib import Path
 from docx.oxml.ns import nsdecls
 from docx.oxml import parse_xml
 import regex
-from docx.oxml.ns import nsdecls
-from docx.oxml import parse_xml
 
 american_to_british_dict = {
   'honored':'honoured',
@@ -128,67 +125,53 @@ american_to_british_dict = {
 def extract_info(doc):
     middle_column_texts = []
 
-    # Flag to indicate if we're in the 'Additional Requirements' section
-    in_additional_requirements = False
+    # List of phrases to exclude
+    excluded_phrases = ["vacant seat", "carer's seat", "child", "seat for pa companion", 
+                        "pa companion", "pa companion seat", "companion seat"]
 
-    # Directly access the XML structure of the Document
-    root = doc.element.body
-
-    # Define an empty dictionary outside the loop
-    info = {'Identifier': None, 'Info': [], 'Name': None}
-
-    # Iterate over all elements in the order they appear in the Document
-    for child in root:
-        # If 'Additional Requirements' is in the paragraph, set the flag to skip the next table
-        if child.tag.endswith('}p') and child.text is not None and 'Additional requirements' in child.text:
-            in_additional_requirements = True
-            continue
-
-        # If this is a table and we're in the 'Additional Requirements' section, skip this table
-        if child.tag.endswith('}tbl') and in_additional_requirements:
-            in_additional_requirements = False
-            continue
-
-        # If this is a table and we're not in the 'Additional Requirements' section, process the table
-        if child.tag.endswith('}tbl') and not in_additional_requirements:
-            for table in doc.tables:
-                for row in table.rows:
-                    cells = row.cells
-                    if len(cells) > 1:
-                        # Grab the middle cell
-                        middle_cell = cells[len(cells) // 2]
-
-                        # Get all the paragraphs in the middle cell
-                        paragraphs = middle_cell.paragraphs
-
-                        for paragraph in paragraphs:
-                            text = paragraph.text.strip()
-
-                            # Check if the text is strikethrough
-                            is_strikethrough = any(run.font.strike for run in paragraph.runs)
-
-                            if re.search(r'\b[A-Z]+\b$', text):
-                                # This line contains the name. Decapitalize it before storing.
-                                # Add note if name is strikethrough
-                                if is_strikethrough:
-                                    text += ' (Marked As Not Present)'
-                                
-                                # If there is information from a previous entry, save it
-                                if info['Name']:
-                                    middle_column_texts.append(info)
-                                
-                                # Start a new dictionary for the new entry
-                                info = {'Identifier': None, 'Info': [], 'Name': decapitalize(text)}
-                            elif re.match(r'[AB]\d+', text):
-                                # This line contains an identifier, store it
-                                info['Identifier'] = text
-                            elif text:
-                                # This line contains information for the current entry
-                                info['Info'].append(text)
-
-                        # Save information from the last entry in the cell
-                        if info['Name']:
+    # Iterate over all tables and rows
+    for table in doc.tables:
+        for row in table.rows:
+            cells = row.cells
+            if len(cells) > 1:
+                # Grab the middle cell
+                middle_cell = cells[len(cells) // 2]
+                
+                # Get all the paragraphs in the middle cell
+                paragraphs = middle_cell.paragraphs
+                
+                info = {}
+                for paragraph in paragraphs:
+                    text = paragraph.text.strip()
+                    
+                    # Check for identifier (like "A32", "B26" etc.) indicating start of new entry
+                    if re.match(r'[AB]\d+', text):
+                        # If there is information from a previous entry, save it
+                        if info:
                             middle_column_texts.append(info)
+                        # Start a new dictionary for the new entry
+                        info = {'Identifier': text, 'Info': [], 'Name': None}
+                    else:
+                        # If info is empty, initialize it with default values
+                        if not info:
+                            info = {'Identifier': None, 'Info': [], 'Name': None}
+
+                        # Check if the text is strikethrough
+                        is_strikethrough = any(run.font.strike for run in paragraph.runs)
+
+                        if re.search(r'\b[A-Z]+\b$', text):
+                            # This line contains the name. Decapitalize it before storing.
+                            # Add note if name is strikethrough
+                            if is_strikethrough:
+                                text += ' (Marked As Not Present)'
+                            info['Name'] = decapitalize(text)
+                        elif text:
+                            # This line contains information for the current entry
+                            info['Info'].append(text)
+
+                # Save information from the last entry in the cell
+                if info:
+                    middle_column_texts.append(info)
 
     return middle_column_texts
   
