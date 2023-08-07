@@ -134,6 +134,9 @@ def extract_info(doc):
     # Directly access the XML structure of the Document
     root = doc.element.body
 
+    # Define an empty dictionary outside the loop
+    info = {'Identifier': None, 'Info': [], 'Name': None}
+
     # Iterate over all elements in the order they appear in the Document
     for child in root:
         # If 'Additional Requirements' is in the paragraph, set the flag to skip the next table
@@ -158,7 +161,6 @@ def extract_info(doc):
                         # Get all the paragraphs in the middle cell
                         paragraphs = middle_cell.paragraphs
 
-                        info = {}
                         for paragraph in paragraphs:
                             text = paragraph.text.strip()
 
@@ -172,7 +174,7 @@ def extract_info(doc):
                                     text += ' (Marked As Not Present)'
                                 
                                 # If there is information from a previous entry, save it
-                                if info:
+                                if info['Name']:
                                     middle_column_texts.append(info)
                                 
                                 # Start a new dictionary for the new entry
@@ -185,7 +187,7 @@ def extract_info(doc):
                                 info['Info'].append(text)
 
                         # Save information from the last entry in the cell
-                        if info:
+                        if info['Name']:
                             middle_column_texts.append(info)
 
     return middle_column_texts
