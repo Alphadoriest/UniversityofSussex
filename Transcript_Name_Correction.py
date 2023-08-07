@@ -129,6 +129,9 @@ def extract_info(doc):
     excluded_phrases = ["vacant seat", "carer's seat", "child", "seat for pa companion", 
                         "pa companion", "pa companion seat", "companion seat"]
 
+    # Boolean flag for extraction
+    extract = True
+
     # Iterate over all tables and rows
     for table in doc.tables:
         for row in table.rows:
@@ -143,9 +146,14 @@ def extract_info(doc):
                 info = {}
                 for paragraph in paragraphs:
                     text = paragraph.text.strip()
-                    
+
+                    # Stop extracting if 'Additional requirements' is detected
+                    if 'Additional requirements' in text:
+                        extract = False
+                        break 
+
                     # Check for identifier (like "A32", "B26" etc.) indicating start of new entry
-                    if re.match(r'[AB]\d+', text):
+                    if re.match(r'[AB]\d+', text) and extract:
                         # If there is information from a previous entry, save it
                         if info:
                             middle_column_texts.append(info)
@@ -159,18 +167,18 @@ def extract_info(doc):
                         # Check if the text is strikethrough
                         is_strikethrough = any(run.font.strike for run in paragraph.runs)
 
-                        if re.search(r'\b[A-Z]+\b$', text):
+                        if re.search(r'\b[A-Z]+\b$', text) and extract:
                             # This line contains the name. Decapitalize it before storing.
                             # Add note if name is strikethrough
                             if is_strikethrough:
                                 text += ' (Marked As Not Present)'
                             info['Name'] = decapitalize(text)
-                        elif text:
+                        elif text and extract:
                             # This line contains information for the current entry
                             info['Info'].append(text)
 
                 # Save information from the last entry in the cell
-                if info:
+                if info and extract:
                     middle_column_texts.append(info)
 
     return middle_column_texts
