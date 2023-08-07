@@ -132,6 +132,9 @@ def extract_names(doc):
     # Compile all excluded phrases into a single regular expression
     excluded_phrases_regex = re.compile("|".join(excluded_phrases), re.IGNORECASE)
 
+    # Regular expression for name extraction
+    name_regex = re.compile(r'\b[A-Z][a-zA-Z]*\b')
+
     # Iterate over all tables and rows
     for table in doc.tables:
         for row in table.rows:
