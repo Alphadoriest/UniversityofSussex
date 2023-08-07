@@ -148,45 +148,45 @@ def extract_info(doc):
 
         # If this is a table and we're not in the 'Additional Requirements' section, process the table
         if child.tag.endswith('}tbl') and not in_additional_requirements:
-            table = docx.table.Table(child, doc)
-            for row in table.rows:
-                cells = row.cells
-                if len(cells) > 1:
-                    # Grab the middle cell
-                    middle_cell = cells[len(cells) // 2]
+            for table in doc.tables:
+                for row in table.rows:
+                    cells = row.cells
+                    if len(cells) > 1:
+                        # Grab the middle cell
+                        middle_cell = cells[len(cells) // 2]
 
-                    # Get all the paragraphs in the middle cell
-                    paragraphs = middle_cell.paragraphs
+                        # Get all the paragraphs in the middle cell
+                        paragraphs = middle_cell.paragraphs
 
-                    info = {}
-                    for paragraph in paragraphs:
-                        text = paragraph.text.strip()
+                        info = {}
+                        for paragraph in paragraphs:
+                            text = paragraph.text.strip()
 
-                        # Check if the text is strikethrough
-                        is_strikethrough = any(run.font.strike for run in paragraph.runs)
+                            # Check if the text is strikethrough
+                            is_strikethrough = any(run.font.strike for run in paragraph.runs)
 
-                        if re.search(r'\b[A-Z]+\b$', text):
-                            # This line contains the name. Decapitalize it before storing.
-                            # Add note if name is strikethrough
-                            if is_strikethrough:
-                                text += ' (Marked As Not Present)'
-                            
-                            # If there is information from a previous entry, save it
-                            if info:
-                                middle_column_texts.append(info)
-                            
-                            # Start a new dictionary for the new entry
-                            info = {'Identifier': None, 'Info': [], 'Name': decapitalize(text)}
-                        elif re.match(r'[AB]\d+', text):
-                            # This line contains an identifier, store it
-                            info['Identifier'] = text
-                        elif text:
-                            # This line contains information for the current entry
-                            info['Info'].append(text)
+                            if re.search(r'\b[A-Z]+\b$', text):
+                                # This line contains the name. Decapitalize it before storing.
+                                # Add note if name is strikethrough
+                                if is_strikethrough:
+                                    text += ' (Marked As Not Present)'
+                                
+                                # If there is information from a previous entry, save it
+                                if info:
+                                    middle_column_texts.append(info)
+                                
+                                # Start a new dictionary for the new entry
+                                info = {'Identifier': None, 'Info': [], 'Name': decapitalize(text)}
+                            elif re.match(r'[AB]\d+', text):
+                                # This line contains an identifier, store it
+                                info['Identifier'] = text
+                            elif text:
+                                # This line contains information for the current entry
+                                info['Info'].append(text)
 
-                    # Save information from the last entry in the cell
-                    if info:
-                        middle_column_texts.append(info)
+                        # Save information from the last entry in the cell
+                        if info:
+                            middle_column_texts.append(info)
 
     return middle_column_texts
   
