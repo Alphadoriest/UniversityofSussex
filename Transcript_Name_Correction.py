@@ -399,8 +399,8 @@ if uploaded_file is not None:
     document = Document(io.BytesIO(uploaded_file.read()))
     data = extract_names(document)  # Keep data as a list
 
-# Extract the names_list from the data
-names_list = [entry['Name'] for entry in data]
+# Use data (the names_list) directly, as there is no 'Name' key to extract from
+names_list = data
 
 # Use names_list as the default value for the names_list text_area
 names_list = [name for name in names_list if name is not None]
@@ -420,13 +420,6 @@ if names_list:  # Check if names_list is not empty
         
         # Display the names list using st.markdown
         st.markdown(names_md, unsafe_allow_html=True)
-
-    # Apply the decapitalize function to the 'Info' part of the data
-    for entry in data:
-        entry['Info'] = [decapitalize(text) for text in entry['Info']]
-
-    # Display the modified data
-    # st.write(data)  # Commented out to stop printing dictionary results
 
 st.header("Graduation Subtitles Name Corrector")
 # Initialize subtitles_text as an empty string
