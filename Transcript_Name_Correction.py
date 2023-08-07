@@ -146,22 +146,12 @@ def extract_names(doc):
                     # Check if the text is strikethrough
                     is_strikethrough = any(run.font.strike for run in paragraph.runs)
 
-                    # Use case-insensitive matching for excluded phrases
-                    if not any(excluded_phrase.lower() in text.lower() for excluded_phrase in excluded_phrases):
-                        # Check if there is only one line and the last word isn't capitalized
-                        if len(paragraphs) == 1 and not text.split()[-1].isupper():
-                            # Capitalize the last word and extract the line
-                            text = ' '.join(text.split()[:-1]) + ' ' + text.split()[-1].upper()
-                            
-                        elif re.search(r'\b[A-Z]+\b$', text):
-                            # This line contains the name. 
-                            # Add note if name is strikethrough
-                            if is_strikethrough:
-                                text += ' (Marked As Not Present)'
-
-                        # Remove single letters from the name
-                        text = ' '.join(word for word in text.split() if len(word) > 1)
-
+                    # Check if the text is not in excluded phrases and ends with a uppercase word
+                    if not any(excluded_phrase in text for excluded_phrase in excluded_phrases) and re.search(r'\b[A-Z]+\b$', text):
+                        # This line contains the name. 
+                        # Add note if name is strikethrough
+                        if is_strikethrough:
+                            text += ' (Marked As Not Present)'
                         middle_column_texts.append(text)
 
     # Decapitalize names before returning
