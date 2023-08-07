@@ -146,8 +146,8 @@ def extract_names(doc):
                     # Check if the text is strikethrough
                     is_strikethrough = any(run.font.strike for run in paragraph.runs)
 
-                    # Check if the text is not in excluded phrases
-                    if not any(excluded_phrase in text for excluded_phrase in excluded_phrases):
+                    # Check if the text is not in excluded phrases and ends with a uppercase word
+                    if not any(excluded_phrase in text for excluded_phrase in excluded_phrases) and re.search(r'\b[A-Z]+\b$', text):
                         # This line contains the name. 
                         # Add note if name is strikethrough
                         if is_strikethrough:
