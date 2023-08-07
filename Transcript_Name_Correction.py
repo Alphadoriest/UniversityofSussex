@@ -157,7 +157,7 @@ def extract_info(doc):
                             info = {'Identifier': None, 'Info': [], 'Name': None}
 
                         # Check if the text is strikethrough
-                        is_strikethrough = any(run.strikethrough for run in paragraph.runs)
+                        is_strikethrough = any(run.font.strike for run in paragraph.runs)
 
                         if re.search(r'\b[A-Z]+\b$', text):
                             # This line contains the name. Decapitalize it before storing.
