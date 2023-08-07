@@ -149,12 +149,17 @@ def extract_names(doc):
                     # Check if the text is strikethrough
                     is_strikethrough = any(run.font.strike for run in paragraph.runs)
 
-                    # Check if the text is not in excluded phrases and ends with a uppercase word
+                    # Check if the text is not in excluded phrases and ends with an uppercase word
                     if not excluded_phrases_regex.search(text) and re.search(r'\b[A-Z]+\b$', text):
                         # This line contains the name. 
                         # Add note if name is strikethrough
                         if is_strikethrough:
                             text += ' (Marked As Not Present)'
+                        
+                        # Remove single-letter words
+                        words = text.split()
+                        text = ' '.join(word for word in words if len(word) > 1)
+                        
                         middle_column_texts.append(text)
 
     # Decapitalize names before returning
