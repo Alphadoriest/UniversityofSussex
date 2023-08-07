@@ -137,7 +137,7 @@ def extract_info(doc):
     # Iterate over all elements in the order they appear in the Document
     for child in root:
         # If 'Additional Requirements' is in the paragraph, set the flag to skip the next table
-        if child.tag.endswith('}p') and 'Additional requirements' in child.text:
+        if child.tag.endswith('}p') and child.text is not None and 'Additional requirements' in child.text:
             in_additional_requirements = True
             continue
 
