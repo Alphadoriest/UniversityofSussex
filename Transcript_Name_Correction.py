@@ -140,24 +140,26 @@ american_to_british_dict = {
 # Name Extractor for graduation ceremony in-person lists functions
 
 def convert_to_table(doc):
-    # Regular expression to match the entries
-    entry_re = re.compile(r'([PMN]\d+)\s+([\w\s-]+)\s+(.*)', re.MULTILINE)
-
     new_doc = Document()
-
-    for paragraph in doc.paragraphs:
-        # Check if the paragraph matches the entry format
-        match = entry_re.match(paragraph.text)
-        if match:
-            # If it does, create a new table and fill it with the data
+    for para in doc.paragraphs:
+        if '---------' in para.text:
+            # This is a separator line, start a new table
             table = new_doc.add_table(rows=1, cols=3)
-            id, name, status = match.groups()
-            cells = table.rows[0].cells
-            cells[0].text = id
-            cells[1].text = name
-            cells[2].text = status
 
-    return doc
+        elif 'Already collected' in para.text:
+            # This is a status line, add it to the last row of the current table
+            # You may need to adapt this line depending on how you're adding new rows to your table
+            last_row = table.rows[-1]
+            last_row.cells[2].text = 'Already collected'
+
+        else:
+            # This is a name line, add it to a new row in the current table
+            row = table.add_row()
+            id_, name = para.text.split(maxsplit=1)
+            row.cells[0].text = id_
+            row.cells[1].text = name
+    
+    return new_doc
 
 def extract_names(doc):
     middle_column_texts = []
