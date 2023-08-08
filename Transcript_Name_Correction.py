@@ -16,6 +16,18 @@ from docx.oxml.ns import nsdecls
 from docx.oxml import parse_xml
 import regex
 
+# Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
+if 'preceding_names' not in st.session_state:
+    st.session_state.preceding_names = []
+if 'succeeding_names' not in st.session_state:
+    st.session_state.succeeding_names = []
+if 'new_text' not in st.session_state:
+    st.session_state.new_text = ""
+if 'replaced_names' not in st.session_state:
+    st.session_state.replaced_names = []
+if 'unmatched_names' not in st.session_state:
+    st.session_state.unmatched_names = []
+
 american_to_british_dict = {
   'honored':'honoured',
   'honor':'honour',
@@ -488,18 +500,6 @@ with st.expander("Name Extractor for Graduation Ceremony In-Person Lists"):
                     st.session_state.preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
                     # Get the names that succeed the unmatched names and store in the session state
                     st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
-
-            # Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
-            if 'preceding_names' not in st.session_state:
-                st.session_state.preceding_names = []
-            if 'succeeding_names' not in st.session_state:
-                st.session_state.succeeding_names = []
-            if 'new_text' not in st.session_state:
-                st.session_state.new_text = ""
-            if 'replaced_names' not in st.session_state:
-                st.session_state.replaced_names = []
-            if 'unmatched_names' not in st.session_state:
-                st.session_state.unmatched_names = []
             
             # Display replaced, unmatched, preceding, and succeeding names from session state
 with st.expander("Names replaced:"):
