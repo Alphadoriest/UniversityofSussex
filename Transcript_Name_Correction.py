@@ -462,7 +462,6 @@ if names_list:  # Check if names_list is not empty
 
         # Create a collapsible section or container for the Graduation Subtitles Name Corrector
         with st.beta_expander("Graduation Subtitles Name Corrector"):
-            # Now insert the rest of your Graduation Subtitles Name Corrector code here...
 
             # Initialize subtitles_text as an empty string
             subtitles_text = ''
@@ -490,66 +489,66 @@ if names_list:  # Check if names_list is not empty
                     # Get the names that succeed the unmatched names and store in the session state
                     st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
 
-# Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
-if 'preceding_names' not in st.session_state:
-    st.session_state.preceding_names = []
-if 'succeeding_names' not in st.session_state:
-    st.session_state.succeeding_names = []
-if 'new_text' not in st.session_state:
-    st.session_state.new_text = ""
-if 'replaced_names' not in st.session_state:
-    st.session_state.replaced_names = []
-if 'unmatched_names' not in st.session_state:
-    st.session_state.unmatched_names = []
-
-# Display replaced, unmatched, preceding, and succeeding names from session state
-st.subheader("Names replaced:")
-for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
-    original_words = original.split()
-    replaced_words = replaced.split()
-    if len(original_words) != len(replaced_words):
-        st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
-    else:
-        st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
-
-st.subheader("Names not matched:")
-st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
-unmatched_names_str = ', '.join(st.session_state.unmatched_names)
-st.write(unmatched_names_str)
-
-# Button to copy unmatched names to clipboard
-copy_unmatched_names_button_html = f"""
-    <button onclick="copyUnmatchedNames()">Copy unmatched names to clipboard</button>
-    <script>
-    function copyUnmatchedNames() {{
-        navigator.clipboard.writeText("{unmatched_names_str}");
-    }}
-    </script>
-    """
-components.v1.html(copy_unmatched_names_button_html, height=30)
-
-# Get the indices of unmatched names in names_list
-unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
-
-# Get the names that precede the unmatched names
-preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
-
-# Get the names that succeed the unmatched names
-succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
-
-st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Subtitles Box:")
-for preceding, succeeding, unmatched in zip(st.session_state.preceding_names, st.session_state.succeeding_names, st.session_state.unmatched_names):
-    st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
-
-# Get the text from the text area
-new_text = st.text_area("Updated Subtitles Text to Copy Into VTT/TXT File:", st.session_state.get('new_text', ''), key='updated_subtitles_text')
-
-# Save changes button
-if st.button('Save Changes'):
-    # Update session state with any changes made in the text area
-    st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
-
-st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")
+            # Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
+            if 'preceding_names' not in st.session_state:
+                st.session_state.preceding_names = []
+            if 'succeeding_names' not in st.session_state:
+                st.session_state.succeeding_names = []
+            if 'new_text' not in st.session_state:
+                st.session_state.new_text = ""
+            if 'replaced_names' not in st.session_state:
+                st.session_state.replaced_names = []
+            if 'unmatched_names' not in st.session_state:
+                st.session_state.unmatched_names = []
+            
+            # Display replaced, unmatched, preceding, and succeeding names from session state
+            st.subheader("Names replaced:")
+            for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
+                original_words = original.split()
+                replaced_words = replaced.split()
+                if len(original_words) != len(replaced_words):
+                    st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
+                else:
+                    st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
+            
+            st.subheader("Names not matched:")
+            st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
+            unmatched_names_str = ', '.join(st.session_state.unmatched_names)
+            st.write(unmatched_names_str)
+            
+            # Button to copy unmatched names to clipboard
+            copy_unmatched_names_button_html = f"""
+                <button onclick="copyUnmatchedNames()">Copy unmatched names to clipboard</button>
+                <script>
+                function copyUnmatchedNames() {{
+                    navigator.clipboard.writeText("{unmatched_names_str}");
+                }}
+                </script>
+                """
+            components.v1.html(copy_unmatched_names_button_html, height=30)
+            
+            # Get the indices of unmatched names in names_list
+            unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
+            
+            # Get the names that precede the unmatched names
+            preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
+            
+            # Get the names that succeed the unmatched names
+            succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
+            
+            st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Subtitles Box:")
+            for preceding, succeeding, unmatched in zip(st.session_state.preceding_names, st.session_state.succeeding_names, st.session_state.unmatched_names):
+                st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
+            
+            # Get the text from the text area
+            new_text = st.text_area("Updated Subtitles Text to Copy Into VTT/TXT File:", st.session_state.get('new_text', ''), key='updated_subtitles_text')
+            
+            # Save changes button
+            if st.button('Save Changes'):
+                # Update session state with any changes made in the text area
+                st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
+            
+            st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")
 
 st.header("Reformat Your VTT Into a Word Transcript")
 
