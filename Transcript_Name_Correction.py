@@ -394,7 +394,7 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
         
 #Name Corrector UI
 
-st.title('Graduation Transcription Workflow Web Tool')
+st.markdown("<h1 style='text-align: center; color: black; font-size: 40px;'>Graduation Transcription Workflow Web Tool</h1>", unsafe_allow_html=True)
 
 # Add a slider in the sidebar
 st.sidebar.header('Set Overall Similarity Threshold for Combined Methods')
