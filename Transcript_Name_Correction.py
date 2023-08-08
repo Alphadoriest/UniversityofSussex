@@ -413,8 +413,6 @@ match_word_count = st.sidebar.checkbox('Should the number of words match?', valu
 # Add the banner image at the top of the app
 st.image("banner2.jpg")
 
-github_gist("https://colab.research.google.com/drive/1mGeZ_2qnc8KrLyV-U1xR5wtvf6MV8zFa#scrollTo=z0igG7ruI-7q")
-
 st.header('Name Extractor for Graduation Ceremony In-Person Lists')
 
 uploaded_file = st.file_uploader("Choose a Ceremony In-Person List Word document", type="docx")
