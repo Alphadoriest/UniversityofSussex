@@ -419,7 +419,7 @@ st.markdown("""
     <style>
         .highlight {
             color: black;
-            background-color: yellow;
+            background-color: white;
         }
     </style>
 """, unsafe_allow_html=True)
