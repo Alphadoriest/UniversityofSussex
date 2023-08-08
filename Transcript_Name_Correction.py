@@ -139,37 +139,13 @@ american_to_british_dict = {
 
 # Name Extractor for graduation ceremony in-person lists functions
 
-def convert_to_table(doc):
-    new_doc = Document()
-    table = None  # Initialize table
+doc = Document('document.docx')
 
-    for i, para in enumerate(doc.paragraphs):
-        print(f"Processing paragraph {i}: {para.text}")
-        
-        if '---------' in para.text:
-            # This is a separator line, start a new table
-            print("Starting a new table.")
-            table = new_doc.add_table(rows=1, cols=3)
-        
-        elif 'Already collected' in para.text:
-            # This is a status line, add it to the last row of the current table
-            if table is not None:
-                print("Adding status to last row.")
-                last_row = table.rows[-1]
-                last_row.cells[2].text = 'Already collected'
-        
-        else:
-            # This is a name line, add it to a new row in the current table
-            if table is not None:
-                print("Adding a new row.")
-                row = table.add_row()
-                id_, name = para.text.split(maxsplit=1)
-                row.cells[0].text = id_
-                row.cells[1].text = name
-            else:
-                print("Skipping this paragraph because no table has been started yet.")
-    
-    return new_doc
+for element in doc.element.body:
+    if isinstance(element, OxmlElement):
+        print(f"Found an OxmlElement: {element.xml}")
+    else:
+        print(f"Found a Paragraph: {element.text}")
 
 def extract_names(doc):
     middle_column_texts = []
