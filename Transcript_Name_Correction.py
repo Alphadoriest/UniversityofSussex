@@ -140,14 +140,23 @@ american_to_british_dict = {
 # Name Extractor for graduation ceremony in-person lists functions
 
 def convert_to_table(doc):
-    for idx, paragraph in enumerate(doc.paragraphs):
-        if '---' in paragraph.text:  # identify the dashed format
-            lines = paragraph.text.split('\n')  # split the paragraph into lines
-            table = doc.add_table(rows=1, cols=len(lines[0].split()))  # create a new table
-            for line in lines:
-                cells = table.add_row().cells
-                for i, data in enumerate(line.split()):
-                    cells[i].text = data
+    # Regular expression to match the entries
+    entry_re = re.compile(r'([PMN]\d+)\s+([\w\s-]+)\s+(.*)', re.MULTILINE)
+
+    new_doc = Document()
+
+    for paragraph in doc.paragraphs:
+        # Check if the paragraph matches the entry format
+        match = entry_re.match(paragraph.text)
+        if match:
+            # If it does, create a new table and fill it with the data
+            table = new_doc.add_table(rows=1, cols=3)
+            id, name, status = match.groups()
+            cells = table.rows[0].cells
+            cells[0].text = id
+            cells[1].text = name
+            cells[2].text = status
+
     return doc
 
 def extract_names(doc):
