@@ -418,8 +418,8 @@ st.header('Follow URL Below To Generate Subtitle VTT File')
 st.markdown("""
     <style>
         .highlight {
-            color: black;
-            background-color: white;
+            color: white;
+            background-color: black;
         }
     </style>
 """, unsafe_allow_html=True)
