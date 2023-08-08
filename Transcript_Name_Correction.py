@@ -422,7 +422,7 @@ url = "https://colab.research.google.com/drive/1mGeZ_2qnc8KrLyV-U1xR5wtvf6MV8zFa
 image_url = "https://github.com/Alphadoriest/UniversityofSussex/blob/Main-6/Collab.png?raw=true"  # replace with your image URL
 
 # Create the HTML string
-html = f'<a href="{url}" target="_blank"><img src="{image_url}" alt="Colab link" style="width:100px; height:100px;"/></a>'
+html = f'<a href="{url}" target="_blank"><img src="{image_url}" alt="Colab link" style="width:400px; height:400px;"/></a>'
 
 # Display the HTML in the app
 st.markdown(html, unsafe_allow_html=True)
