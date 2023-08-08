@@ -15,7 +15,6 @@ from pathlib import Path
 from docx.oxml.ns import nsdecls
 from docx.oxml import parse_xml
 import regex
-from streamlit_embedcode import github_gist
 
 american_to_british_dict = {
   'honored':'honoured',
