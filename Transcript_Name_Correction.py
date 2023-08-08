@@ -15,7 +15,6 @@ from pathlib import Path
 from docx.oxml.ns import nsdecls
 from docx.oxml import parse_xml
 import regex
-from docx.oxml import OxmlElement
 
 # Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
 if 'extracted_names' not in st.session_state:
@@ -139,7 +138,6 @@ american_to_british_dict = {
 }
 
 # Name Extractor for graduation ceremony in-person lists functions
-
 def extract_names(doc):
     middle_column_texts = []
 
@@ -448,43 +446,33 @@ with st.expander("1 - Follow URL Below To Generate Subtitle VTT File From Vimeo 
 with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
 
     uploaded_file = st.file_uploader("Choose a Ceremony In-Person List Word document", type="docx")
-
+    
     # Initialize data as an empty list
     data = []
-
+    
     if uploaded_file is not None:
-        # Convert the uploaded file to a BytesIO object
-        byte_stream = io.BytesIO(uploaded_file.read())
-
-        # Load the document using python-docx
-        document = Document(byte_stream)
-
-        # Iterate over all elements in the document
-        for element in document.element.body:
-            st.write(f"Found a {type(element)}: {element.xml if hasattr(element, 'xml') else element.text}")
-
-        # Process the document normally
+        document = Document(io.BytesIO(uploaded_file.read()))
         data = extract_names(document)  # Keep data as a list
-
+    
     # Use data (the names_list) directly, as there is no 'Name' key to extract from
     names_list = data
-
+    
     # Use names_list as the default value for the names_list text_area
     names_list = [name for name in names_list if name is not None]
     names_list = st.text_area("Alternatively, enter names, separated by commas:", ', '.join(names_list), key='names_list')
-
+    
     if names_list:  # Check if names_list is not empty
         names_list = names_list.split(',')
         names_list = [name.strip() for name in names_list]
-
+        
         # Check if names_list contains meaningful entries
         if any(name for name in names_list):
             # Assuming format_names now returns a list of tuples like [(name, color), ...]
             formatted_names = format_names(names_list)
-
+        
             # Create the names list as a Markdown string
             names_md = ', '.join([f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
-
+            
             # Display the names list using st.markdown
             st.markdown(names_md, unsafe_allow_html=True)
             
