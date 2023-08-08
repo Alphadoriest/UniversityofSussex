@@ -139,14 +139,6 @@ american_to_british_dict = {
 
 # Name Extractor for graduation ceremony in-person lists functions
 
-doc = Document('document.docx')
-
-for element in doc.element.body:
-    if isinstance(element, OxmlElement):
-        print(f"Found an OxmlElement: {element.xml}")
-    else:
-        print(f"Found a Paragraph: {element.text}")
-
 def extract_names(doc):
     middle_column_texts = []
 
@@ -461,8 +453,13 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
 
     if uploaded_file is not None:
         document = Document(io.BytesIO(uploaded_file.read()))
-        document = convert_to_table(document)  # Convert dashed format to table
         data = extract_names(document)  # Keep data as a list
+
+    for element in doc.element.body:
+    if isinstance(element, OxmlElement):
+        print(f"Found an OxmlElement: {element.xml}")
+    else:
+        print(f"Found a Paragraph: {element.text}")
 
     # Use data (the names_list) directly, as there is no 'Name' key to extract from
     names_list = data
