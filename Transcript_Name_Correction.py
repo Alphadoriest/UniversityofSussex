@@ -425,7 +425,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown(""" 
-    <span class="highlight">https://colab.research.google.com/drive/1mGeZ_2qnc8KrLyV-U1xR5wtvf6MV8zFa</span>.
+    <span class="highlight">https://colab.research.google.com/drive/1mGeZ_2qnc8KrLyV-U1xR5wtvf6MV8zFa</span>
 """, unsafe_allow_html=True)
 
 st.header('Name Extractor for Graduation Ceremony In-Person Lists')
