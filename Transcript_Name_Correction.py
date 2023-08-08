@@ -414,7 +414,19 @@ match_word_count = st.sidebar.checkbox('Should the number of words match?', valu
 st.image("banner2.jpg")
 
 st.header('Follow URL Below To Generate Subtitle VTT File')
-https://colab.research.google.com/drive/1mGeZ_2qnc8KrLyV-U1xR5wtvf6MV8zFa
+
+st.markdown("""
+    <style>
+        .highlight {
+            color: black;
+            background-color: yellow;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown(""" 
+    <span class="highlight">https://colab.research.google.com/drive/1mGeZ_2qnc8KrLyV-U1xR5wtvf6MV8zFa</span>.
+""", unsafe_allow_html=True)
 
 st.header('Name Extractor for Graduation Ceremony In-Person Lists')
 
