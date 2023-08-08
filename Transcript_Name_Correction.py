@@ -413,6 +413,9 @@ match_word_count = st.sidebar.checkbox('Should the number of words match?', valu
 # Add the banner image at the top of the app
 st.image("banner2.jpg")
 
+st.header('Follow URL Below To Generate Subtitle VTT File')
+https://colab.research.google.com/drive/1mGeZ_2qnc8KrLyV-U1xR5wtvf6MV8zFa
+
 st.header('Name Extractor for Graduation Ceremony In-Person Lists')
 
 uploaded_file = st.file_uploader("Choose a Ceremony In-Person List Word document", type="docx")
