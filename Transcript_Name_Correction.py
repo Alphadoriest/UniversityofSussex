@@ -158,7 +158,7 @@ def extract_names(doc):
             if len(cells) > 1:
                 # Grab the first and middle cell
                 # Grab the second cell
-                second_cell = cells[1]
+                middle_cell = cells[1]
 
                 # Get all the paragraphs in the middle cell
                 paragraphs = middle_cell.paragraphs
