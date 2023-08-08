@@ -141,24 +141,23 @@ american_to_british_dict = {
 
 def convert_to_table(doc):
     new_doc = Document()
+    table = None  # Initialize table
     for para in doc.paragraphs:
         if '---------' in para.text:
             # This is a separator line, start a new table
             table = new_doc.add_table(rows=1, cols=3)
-
         elif 'Already collected' in para.text:
             # This is a status line, add it to the last row of the current table
-            # You may need to adapt this line depending on how you're adding new rows to your table
-            last_row = table.rows[-1]
-            last_row.cells[2].text = 'Already collected'
-
+            if table is not None:
+                last_row = table.rows[-1]
+                last_row.cells[2].text = 'Already collected'
         else:
             # This is a name line, add it to a new row in the current table
-            row = table.add_row()
-            id_, name = para.text.split(maxsplit=1)
-            row.cells[0].text = id_
-            row.cells[1].text = name
-    
+            if table is not None:
+                row = table.add_row()
+                id_, name = para.text.split(maxsplit=1)
+                row.cells[0].text = id_
+                row.cells[1].text = name
     return new_doc
 
 def extract_names(doc):
