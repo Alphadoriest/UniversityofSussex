@@ -425,7 +425,7 @@ match_word_count = st.sidebar.checkbox('Should the number of words match?', valu
 # Add the banner image at the top of the app
 st.image("banner2.jpg")
 
-with st.expander("Follow URL Below To Generate Subtitle VTT File"):
+with st.expander("Follow URL Below To Generate Subtitle VTT File From Vimeo URL"):
 
     # Define the URL
     url = "https://colab.research.google.com/drive/1mGeZ_2qnc8KrLyV-U1xR5wtvf6MV8zFa"
