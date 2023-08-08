@@ -460,32 +460,35 @@ if names_list:  # Check if names_list is not empty
         # Display the names list using st.markdown
         st.markdown(names_md, unsafe_allow_html=True)
 
-st.header("Graduation Subtitles Name Corrector")
-# Initialize subtitles_text as an empty string
-subtitles_text = ''
+        # Create a collapsible section or container for the Graduation Subtitles Name Corrector
+        with st.beta_expander("Graduation Subtitles Name Corrector"):
+            # Now insert the rest of your Graduation Subtitles Name Corrector code here...
 
-uploaded_subtitles_file = st.file_uploader("Choose a VTT or TXT Subtitles File ", type=["vtt", "txt"])
-if uploaded_subtitles_file is not None:
-    subtitles_text = uploaded_subtitles_file.read().decode()
+            # Initialize subtitles_text as an empty string
+            subtitles_text = ''
 
-# Use the subtitles_text as the default value for the subtitles text_area
-text = st.text_area("Alternatively, Enter Text From a Subtitles:", subtitles_text, key='subtitles_text')
+            uploaded_subtitles_file = st.file_uploader("Choose a VTT or TXT Subtitles File ", type=["vtt", "txt"])
+            if uploaded_subtitles_file is not None:
+                subtitles_text = uploaded_subtitles_file.read().decode()
 
-# Add a separate button for the name replacement process
-if st.button("Press to Replace Names"):  
-    if names_list and text:  # Check if both text boxes are populated
-        replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
+            # Use the subtitles_text as the default value for the subtitles text_area
+            text = st.text_area("Alternatively, Enter Text From a Subtitles:", subtitles_text, key='subtitles_text')
 
-        # Store the resultant text and replaced_names and unmatched_names in session state
-        st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
-        st.session_state.replaced_names = replaced_names
-        st.session_state.unmatched_names = unmatched_names
-        # Get the indices of unmatched names in names_list
-        unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
-        # Get the names that precede the unmatched names and store in the session state
-        st.session_state.preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
-        # Get the names that succeed the unmatched names and store in the session state
-        st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
+            # Add a separate button for the name replacement process
+            if st.button("Press to Replace Names"):  
+                if names_list and text:  # Check if both text boxes are populated
+                    replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
+
+                    # Store the resultant text and replaced_names and unmatched_names in session state
+                    st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
+                    st.session_state.replaced_names = replaced_names
+                    st.session_state.unmatched_names = unmatched_names
+                    # Get the indices of unmatched names in names_list
+                    unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
+                    # Get the names that precede the unmatched names and store in the session state
+                    st.session_state.preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
+                    # Get the names that succeed the unmatched names and store in the session state
+                    st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
 
 # Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
 if 'preceding_names' not in st.session_state:
