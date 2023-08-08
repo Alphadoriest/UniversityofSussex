@@ -164,7 +164,7 @@ def extract_names(doc):
                 paragraphs = middle_cell.paragraphs
 
                 for paragraph in paragraphs:
-                    text = paragraph.text.strip()
+                    text = ' '.join(run.text for run in paragraph.runs).strip()
 
                     # Check if the text is strikethrough
                     is_strikethrough = any(run.font.strike for run in paragraph.runs)
