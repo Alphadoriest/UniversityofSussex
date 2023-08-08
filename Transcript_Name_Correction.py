@@ -429,7 +429,7 @@ match_word_count = st.sidebar.checkbox('Should the number of words match?', valu
 # Add the banner image at the top of the app
 st.image("banner2.jpg")
 
-with st.expander("1. Follow URL Below To Generate Subtitle VTT File From Vimeo URL"):
+with st.expander("1 - Follow URL Below To Generate Subtitle VTT File From Vimeo URL"):
 
     # Define the URL
     url = "https://colab.research.google.com/drive/1mGeZ_2qnc8KrLyV-U1xR5wtvf6MV8zFa"
@@ -443,7 +443,7 @@ with st.expander("1. Follow URL Below To Generate Subtitle VTT File From Vimeo U
     # Display the HTML in the app
     st.markdown(html, unsafe_allow_html=True)
 
-with st.expander("2. Name Extractor for Graduation Ceremony In-Person Lists"):
+with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
 
     uploaded_file = st.file_uploader("Choose a Ceremony In-Person List Word document", type="docx")
     
@@ -477,7 +477,7 @@ with st.expander("2. Name Extractor for Graduation Ceremony In-Person Lists"):
             st.markdown(names_md, unsafe_allow_html=True)
             
 # Create a collapsible section or container for the Graduation Subtitles Name Corrector
-with st.expander("3. Graduation Subtitles Name Corrector"):
+with st.expander("3 - Graduation Subtitles Name Corrector"):
 
             # Initialize subtitles_text as an empty string
             subtitles_text = ''
@@ -554,7 +554,7 @@ with st.expander("3. Graduation Subtitles Name Corrector"):
             
             st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")        
 
-with st.expander("4. Reformat Your VTT Into a Word Transcript"):
+with st.expander("4 - Reformat Your VTT Into a Word Transcript"):
 
         # Initialize transcript_text as an empty string
         transcript_text = ''
