@@ -227,7 +227,7 @@ def decapitalize(text):
             word = "'".join(apostrophe_parts)
 
             # If a name starts with 'Mc', capitalize the next letter
-            if word.startswith('Mc'):
+            if word.startswith('Mc') and len(word) >= 3:
                 word = word[:2] + word[2].upper() + word[3:]
 
             words[i] = word
