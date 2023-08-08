@@ -17,6 +17,10 @@ from docx.oxml import parse_xml
 import regex
 
 # Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
+if 'extracted_names' not in st.session_state:
+    st.session_state.extracted_names = []
+if 'formatted_names' not in st.session_state:
+    st.session_state.formatted_names = []
 if 'preceding_names' not in st.session_state:
     st.session_state.preceding_names = []
 if 'succeeding_names' not in st.session_state:
