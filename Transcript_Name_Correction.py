@@ -461,7 +461,7 @@ if names_list:  # Check if names_list is not empty
         st.markdown(names_md, unsafe_allow_html=True)
 
         # Create a collapsible section or container for the Graduation Subtitles Name Corrector
-        with st.beta_expander("Graduation Subtitles Name Corrector"):
+        with st.expander("Graduation Subtitles Name Corrector"):
 
             # Initialize subtitles_text as an empty string
             subtitles_text = ''
