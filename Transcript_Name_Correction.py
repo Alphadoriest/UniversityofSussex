@@ -461,10 +461,7 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
 
         # Iterate over all elements in the document
         for element in document.element.body:
-            if isinstance(element, OxmlElement):
-                st.write(f"Found an OxmlElement: {element.xml}")
-            else:
-                st.write(f"Found a Paragraph: {element.text}")
+            st.write(f"Found a {type(element)}: {element.xml if hasattr(element, 'xml') else element.text}")
 
         # Process the document normally
         data = extract_names(document)  # Keep data as a list
