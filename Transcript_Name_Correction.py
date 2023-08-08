@@ -471,8 +471,8 @@ with st.expander("Name Extractor for Graduation Ceremony In-Person Lists"):
             
             # Display the names list using st.markdown
             st.markdown(names_md, unsafe_allow_html=True)
-
-        # Create a collapsible section or container for the Graduation Subtitles Name Corrector
+            
+# Create a collapsible section or container for the Graduation Subtitles Name Corrector
         with st.expander("Graduation Subtitles Name Corrector"):
 
             # Initialize subtitles_text as an empty string
@@ -502,7 +502,8 @@ with st.expander("Name Extractor for Graduation Ceremony In-Person Lists"):
                     st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
             
             # Display replaced, unmatched, preceding, and succeeding names from session state
-with st.expander("Names replaced:"):
+        
+st.subheader("Names replaced:")
     for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
         original_words = original.split()
         replaced_words = replaced.split()
@@ -511,7 +512,7 @@ with st.expander("Names replaced:"):
         else:
             st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
 
-with st.expander("Names not matched:"):
+st.subheader("Names not matched:")
     st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
     unmatched_names_str = ', '.join(st.session_state.unmatched_names)
     st.write(unmatched_names_str)
