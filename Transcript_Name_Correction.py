@@ -415,18 +415,17 @@ st.image("banner2.jpg")
 
 st.header('Follow URL Below To Generate Subtitle VTT File')
 
-st.markdown("""
-    <style>
-        .highlight {
-            color: white;
-            background-color: black;
-        }
-    </style>
-""", unsafe_allow_html=True)
+# Define the URL
+url = "https://colab.research.google.com/drive/1mGeZ_2qnc8KrLyV-U1xR5wtvf6MV8zFa"
 
-st.markdown(""" 
-    <span class="highlight">https://colab.research.google.com/drive/1mGeZ_2qnc8KrLyV-U1xR5wtvf6MV8zFa</span>
-""", unsafe_allow_html=True)
+# Define the image URL
+image_url = st.image("Collab.png")  # replace with your image URL
+
+# Create the HTML string
+html = f'<a href="{url}" target="_blank"><img src="{image_url}" alt="Colab link"/></a>'
+
+# Display the HTML in the app
+st.markdown(html, unsafe_allow_html=True)
 
 st.header('Name Extractor for Graduation Ceremony In-Person Lists')
 
