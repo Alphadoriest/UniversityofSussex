@@ -15,6 +15,7 @@ from pathlib import Path
 from docx.oxml.ns import nsdecls
 from docx.oxml import parse_xml
 import regex
+from docx.oxml import OxmlElement
 
 # Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
 if 'extracted_names' not in st.session_state:
@@ -452,14 +453,21 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
     data = []
 
     if uploaded_file is not None:
-        document = Document(io.BytesIO(uploaded_file.read()))
-        data = extract_names(document)  # Keep data as a list
+        # Convert the uploaded file to a BytesIO object
+        byte_stream = io.BytesIO(uploaded_file.read())
 
-    for element in doc.element.body:
-    if isinstance(element, OxmlElement):
-        print(f"Found an OxmlElement: {element.xml}")
-    else:
-        print(f"Found a Paragraph: {element.text}")
+        # Load the document using python-docx
+        document = Document(byte_stream)
+
+        # Iterate over all elements in the document
+        for element in document.element.body:
+            if isinstance(element, OxmlElement):
+                st.write(f"Found an OxmlElement: {element.xml}")
+            else:
+                st.write(f"Found a Paragraph: {element.text}")
+
+        # Process the document normally
+        data = extract_names(document)  # Keep data as a list
 
     # Use data (the names_list) directly, as there is no 'Name' key to extract from
     names_list = data
