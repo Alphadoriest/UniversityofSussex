@@ -482,8 +482,8 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
             # Assuming format_names now returns a list of tuples like [(name, color), ...]
             formatted_names = format_names(names_list)
         
-       # Create the names list as a Markdown string
-       names_md = ', '.join([f'<span style="color:{color};"><strong><u>{name}</u></strong></span>' if (len(name.split()) > 7 or len(name.split()) < 2 or any(len(word) < 3 for word in name.split())) else f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
+        # Create the names list as a Markdown string
+        names_md = ', '.join([f'<span style="color:{color};"><strong><u>{name}</u></strong></span>' if (len(name.split()) > 7 or len(name.split()) < 2 or any(len(word) < 3 for word in name.split())) else f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
             
         # Display the names list using st.markdown
         st.markdown(names_md, unsafe_allow_html=True)
