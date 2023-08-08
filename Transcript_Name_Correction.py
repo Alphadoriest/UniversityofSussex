@@ -224,7 +224,13 @@ def decapitalize(text):
             # Split words with apostrophes and capitalize each part
             apostrophe_parts = word.split("'")
             apostrophe_parts = [part.lower().title() for part in apostrophe_parts]
-            words[i] = "'".join(apostrophe_parts)
+            word = "'".join(apostrophe_parts)
+
+            # If a name starts with 'Mc', capitalize the next letter
+            if word.startswith('Mc'):
+                word = word[:2] + word[2].upper() + word[3:]
+
+            words[i] = word
 
     return ' '.join(words)
 
