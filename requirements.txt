@@ -5,4 +5,3 @@ metaphone
 python-Levenshtein
 lxml
 regex
-streamlit-embedcode
