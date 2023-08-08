@@ -472,14 +472,18 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
     if names_list:  # Check if names_list is not empty
         names_list = names_list.split(',')
         names_list = [name.strip() for name in names_list]
+
+    # Remove single-letter words from each name and apply decapitalize
+        names_list = [' '.join(word for word in name.split() if len(word) > 1) for name in names_list if name not in ["VACANT SEAT", "Vacant Seat", "Carer's seat", "CARER'S SEAT", "Child", "CHILD","Seat for PA Companion", "PA Companion", "PA Companion seat", "Companion Seat",]]
+        names_list = [decapitalize(name) for name in names_list]
         
         # Check if names_list contains meaningful entries
         if any(name for name in names_list):
             # Assuming format_names now returns a list of tuples like [(name, color), ...]
             formatted_names = format_names(names_list)
         
-            # Create the names list as a Markdown string
-            names_md = ', '.join([f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
+          # Create the names list as a Markdown string
+        names_md = ', '.join([f'<span style="color:{color};"><strong><u>{name}</u></strong></span>' if '(Marked As Not Present)' not in name and (len(name.split()) > 4 or len(name.split()) < 2 or any(len(word) < 3 for word in name.split()) or re.search(r'[^a-zA-Z\s]', name)) else f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
             
             # Display the names list using st.markdown
             st.markdown(names_md, unsafe_allow_html=True)
