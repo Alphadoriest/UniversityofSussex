@@ -473,7 +473,7 @@ with st.expander("Name Extractor for Graduation Ceremony In-Person Lists"):
             st.markdown(names_md, unsafe_allow_html=True)
             
 # Create a collapsible section or container for the Graduation Subtitles Name Corrector
-        with st.expander("Graduation Subtitles Name Corrector"):
+with st.expander("Graduation Subtitles Name Corrector"):
 
             # Initialize subtitles_text as an empty string
             subtitles_text = ''
@@ -548,7 +548,7 @@ with st.expander("Name Extractor for Graduation Ceremony In-Person Lists"):
                 # Update session state with any changes made in the text area
                 st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
             
-            st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")
+            st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")        
 
 with st.expander("Reformat Your VTT Into a Word Transcript"):
 
