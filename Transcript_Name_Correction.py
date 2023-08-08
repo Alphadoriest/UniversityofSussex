@@ -413,52 +413,52 @@ match_word_count = st.sidebar.checkbox('Should the number of words match?', valu
 # Add the banner image at the top of the app
 st.image("banner2.jpg")
 
-st.header('Follow URL Below To Generate Subtitle VTT File')
+with st.expander("Follow URL Below To Generate Subtitle VTT File"):
 
-# Define the URL
-url = "https://colab.research.google.com/drive/1mGeZ_2qnc8KrLyV-U1xR5wtvf6MV8zFa"
-
-# Define the image URL
-image_url = "https://github.com/Alphadoriest/UniversityofSussex/blob/Main-6/Collab.png?raw=true"  # replace with your image URL
-
-# Create the HTML string
-html = f'<a href="{url}" target="_blank"><img src="{image_url}" alt="Colab link" style="width:853px; height:423px;"/></a>'
-
-# Display the HTML in the app
-st.markdown(html, unsafe_allow_html=True)
-
-st.header('Name Extractor for Graduation Ceremony In-Person Lists')
-
-uploaded_file = st.file_uploader("Choose a Ceremony In-Person List Word document", type="docx")
-
-# Initialize data as an empty list
-data = []
-
-if uploaded_file is not None:
-    document = Document(io.BytesIO(uploaded_file.read()))
-    data = extract_names(document)  # Keep data as a list
-
-# Use data (the names_list) directly, as there is no 'Name' key to extract from
-names_list = data
-
-# Use names_list as the default value for the names_list text_area
-names_list = [name for name in names_list if name is not None]
-names_list = st.text_area("Alternatively, enter names, separated by commas:", ', '.join(names_list), key='names_list')
-
-if names_list:  # Check if names_list is not empty
-    names_list = names_list.split(',')
-    names_list = [name.strip() for name in names_list]
+    # Define the URL
+    url = "https://colab.research.google.com/drive/1mGeZ_2qnc8KrLyV-U1xR5wtvf6MV8zFa"
     
-    # Check if names_list contains meaningful entries
-    if any(name for name in names_list):
-        # Assuming format_names now returns a list of tuples like [(name, color), ...]
-        formatted_names = format_names(names_list)
+    # Define the image URL
+    image_url = "https://github.com/Alphadoriest/UniversityofSussex/blob/Main-6/Collab.png?raw=true"  # replace with your image URL
     
-        # Create the names list as a Markdown string
-        names_md = ', '.join([f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
+    # Create the HTML string
+    html = f'<a href="{url}" target="_blank"><img src="{image_url}" alt="Colab link" style="width:853px; height:423px;"/></a>'
+    
+    # Display the HTML in the app
+    st.markdown(html, unsafe_allow_html=True)
+
+with st.expander("Name Extractor for Graduation Ceremony In-Person Lists"):
+
+    uploaded_file = st.file_uploader("Choose a Ceremony In-Person List Word document", type="docx")
+    
+    # Initialize data as an empty list
+    data = []
+    
+    if uploaded_file is not None:
+        document = Document(io.BytesIO(uploaded_file.read()))
+        data = extract_names(document)  # Keep data as a list
+    
+    # Use data (the names_list) directly, as there is no 'Name' key to extract from
+    names_list = data
+    
+    # Use names_list as the default value for the names_list text_area
+    names_list = [name for name in names_list if name is not None]
+    names_list = st.text_area("Alternatively, enter names, separated by commas:", ', '.join(names_list), key='names_list')
+    
+    if names_list:  # Check if names_list is not empty
+        names_list = names_list.split(',')
+        names_list = [name.strip() for name in names_list]
         
-        # Display the names list using st.markdown
-        st.markdown(names_md, unsafe_allow_html=True)
+        # Check if names_list contains meaningful entries
+        if any(name for name in names_list):
+            # Assuming format_names now returns a list of tuples like [(name, color), ...]
+            formatted_names = format_names(names_list)
+        
+            # Create the names list as a Markdown string
+            names_md = ', '.join([f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
+            
+            # Display the names list using st.markdown
+            st.markdown(names_md, unsafe_allow_html=True)
 
         # Create a collapsible section or container for the Graduation Subtitles Name Corrector
         with st.expander("Graduation Subtitles Name Corrector"):
@@ -502,53 +502,55 @@ if names_list:  # Check if names_list is not empty
                 st.session_state.unmatched_names = []
             
             # Display replaced, unmatched, preceding, and succeeding names from session state
-            st.subheader("Names replaced:")
-            for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
-                original_words = original.split()
-                replaced_words = replaced.split()
-                if len(original_words) != len(replaced_words):
-                    st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
-                else:
-                    st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
-            
-            st.subheader("Names not matched:")
-            st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
-            unmatched_names_str = ', '.join(st.session_state.unmatched_names)
-            st.write(unmatched_names_str)
-            
-            # Button to copy unmatched names to clipboard
-            copy_unmatched_names_button_html = f"""
-                <button onclick="copyUnmatchedNames()">Copy unmatched names to clipboard</button>
-                <script>
-                function copyUnmatchedNames() {{
-                    navigator.clipboard.writeText("{unmatched_names_str}");
-                }}
-                </script>
-                """
-            components.v1.html(copy_unmatched_names_button_html, height=30)
-            
-            # Get the indices of unmatched names in names_list
-            unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
-            
-            # Get the names that precede the unmatched names
-            preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
-            
-            # Get the names that succeed the unmatched names
-            succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
-            
-            st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Subtitles Box:")
-            for preceding, succeeding, unmatched in zip(st.session_state.preceding_names, st.session_state.succeeding_names, st.session_state.unmatched_names):
-                st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
-            
-            # Get the text from the text area
-            new_text = st.text_area("Updated Subtitles Text to Copy Into VTT/TXT File:", st.session_state.get('new_text', ''), key='updated_subtitles_text')
-            
-            # Save changes button
-            if st.button('Save Changes'):
-                # Update session state with any changes made in the text area
-                st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
-            
-            st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")
+          with st.expander("Names replaced:"):
+          
+                for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
+                    original_words = original.split()
+                    replaced_words = replaced.split()
+                    if len(original_words) != len(replaced_words):
+                        st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
+                    else:
+                        st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
+
+          with st.expander("Names not matched:"):
+        
+                st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
+                unmatched_names_str = ', '.join(st.session_state.unmatched_names)
+                st.write(unmatched_names_str)
+                
+                # Button to copy unmatched names to clipboard
+                copy_unmatched_names_button_html = f"""
+                    <button onclick="copyUnmatchedNames()">Copy unmatched names to clipboard</button>
+                    <script>
+                    function copyUnmatchedNames() {{
+                        navigator.clipboard.writeText("{unmatched_names_str}");
+                    }}
+                    </script>
+                    """
+                components.v1.html(copy_unmatched_names_button_html, height=30)
+                
+                # Get the indices of unmatched names in names_list
+                unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
+                
+                # Get the names that precede the unmatched names
+                preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
+                
+                # Get the names that succeed the unmatched names
+                succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
+                
+                st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Subtitles Box:")
+                for preceding, succeeding, unmatched in zip(st.session_state.preceding_names, st.session_state.succeeding_names, st.session_state.unmatched_names):
+                    st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
+                
+                # Get the text from the text area
+                new_text = st.text_area("Updated Subtitles Text to Copy Into VTT/TXT File:", st.session_state.get('new_text', ''), key='updated_subtitles_text')
+                
+                # Save changes button
+                if st.button('Save Changes'):
+                    # Update session state with any changes made in the text area
+                    st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
+                
+                st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")
 
 st.header("Reformat Your VTT Into a Word Transcript")
 
