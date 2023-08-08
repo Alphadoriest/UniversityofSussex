@@ -502,55 +502,55 @@ with st.expander("Name Extractor for Graduation Ceremony In-Person Lists"):
                 st.session_state.unmatched_names = []
             
             # Display replaced, unmatched, preceding, and succeeding names from session state
-          with st.expander("Names replaced:"):
+        with st.expander("Names replaced:"):
           
-                for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
-                    original_words = original.split()
-                    replaced_words = replaced.split()
-                    if len(original_words) != len(replaced_words):
-                        st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
-                    else:
-                        st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
+              for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
+                  original_words = original.split()
+                  replaced_words = replaced.split()
+                  if len(original_words) != len(replaced_words):
+                      st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
+                  else:
+                      st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
 
-          with st.expander("Names not matched:"):
+        with st.expander("Names not matched:"):
         
-                st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
-                unmatched_names_str = ', '.join(st.session_state.unmatched_names)
-                st.write(unmatched_names_str)
+              st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
+              unmatched_names_str = ', '.join(st.session_state.unmatched_names)
+              st.write(unmatched_names_str)
                 
-                # Button to copy unmatched names to clipboard
-                copy_unmatched_names_button_html = f"""
-                    <button onclick="copyUnmatchedNames()">Copy unmatched names to clipboard</button>
-                    <script>
-                    function copyUnmatchedNames() {{
-                        navigator.clipboard.writeText("{unmatched_names_str}");
-                    }}
-                    </script>
-                    """
-                components.v1.html(copy_unmatched_names_button_html, height=30)
+              # Button to copy unmatched names to clipboard
+              copy_unmatched_names_button_html = f"""
+                  <button onclick="copyUnmatchedNames()">Copy unmatched names to clipboard</button>
+                  <script>
+                  function copyUnmatchedNames() {{
+                      navigator.clipboard.writeText("{unmatched_names_str}");
+                  }}
+                  </script>
+                  """
+              components.v1.html(copy_unmatched_names_button_html, height=30)
                 
-                # Get the indices of unmatched names in names_list
-                unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
+              # Get the indices of unmatched names in names_list
+              unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
                 
-                # Get the names that precede the unmatched names
-                preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
+              # Get the names that precede the unmatched names
+              preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
                 
-                # Get the names that succeed the unmatched names
-                succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
+              # Get the names that succeed the unmatched names
+              succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
                 
-                st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Subtitles Box:")
-                for preceding, succeeding, unmatched in zip(st.session_state.preceding_names, st.session_state.succeeding_names, st.session_state.unmatched_names):
-                    st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
+              st.subheader("Preceding and Succeeding Names for Easy Look Up of Unmatched Name for Addition to Updated Subtitles Box:")
+              for preceding, succeeding, unmatched in zip(st.session_state.preceding_names, st.session_state.succeeding_names, st.session_state.unmatched_names):
+                  st.write(f"{preceding or 'N/A'}, {succeeding or 'N/A'} -> {unmatched}")
                 
-                # Get the text from the text area
+              # Get the text from the text area
                 new_text = st.text_area("Updated Subtitles Text to Copy Into VTT/TXT File:", st.session_state.get('new_text', ''), key='updated_subtitles_text')
                 
-                # Save changes button
-                if st.button('Save Changes'):
-                    # Update session state with any changes made in the text area
-                    st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
+              # Save changes button
+              if st.button('Save Changes'):
+                  # Update session state with any changes made in the text area
+                  st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
                 
-                st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")
+              st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")
 
 with st.expander("Reformat Your VTT Into a Word Transcript"):
 
