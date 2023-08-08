@@ -262,17 +262,17 @@ def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[
         for original, replaced, _ in replaced_names:
             if full_name == replaced:
                 return full_name
-
+    
         max_similarity = 0
         most_similar_name = None
         for name in names_list:
             # Remove the "(Marked As Not Present)" marker for comparison
             clean_name = name.replace(' (Marked As Not Present)', '')
             sim = similarity(full_name, clean_name)
-            if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(name.split())):
+            if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(clean_name.split())):  # Compare with clean_name
                 max_similarity = sim
-                most_similar_name = name  # Keep the marker in the final name
-
+                most_similar_name = clean_name  # Use clean_name to replace
+    
         if max_similarity >= similarity_threshold:
             replaced_names.append((full_name, most_similar_name, max_similarity))
             # Remove the name from unmatched_names if it was matched
