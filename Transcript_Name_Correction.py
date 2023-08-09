@@ -245,6 +245,21 @@ def decapitalize(text):
     # Remove duplicates and return the result
     return list(set(similar_names))
 
+def similarity(a, b):
+    sequence_similarity = SequenceMatcher(None, a, b).ratio()
+    fuzz_similarity = fuzz.ratio(a, b) / 100.0
+    metaphone_similarity = doublemetaphone(a) == doublemetaphone(b)
+
+    # Calculate overall similarity
+    overall_similarity = sequence_weight * sequence_similarity + fuzz_weight * fuzz_similarity + metaphone_weight * metaphone_similarity
+
+    # Apply penalty if one name is a single word and the other is multi-word
+    if (len(a.split()) == 1 and len(b.split()) > 1) or (len(a.split()) > 1 and len(b.split()) == 1):
+        penalty_factor = 0.75  # Adjust this value to increase or decrease the penalty
+        overall_similarity *= penalty_factor
+
+    return overall_similarity
+
 def replace_similar_names(text: str, names_list: List[str], similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight):
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
