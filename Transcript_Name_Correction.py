@@ -516,7 +516,7 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
                 for i, record in enumerate(replaced_names):
                     col1, col2 = st.beta_columns(2)  # this will create two columns
                     with col1:
-                        col1.write(f"Original: {record['original']}, Replaced: {record['replaced']}, Similarity: {record['similarity']}")
+                        col1.write(f"Original: {record['original']}, Replaced: {record['replaced']}")
                     with col2:
                         if col2.button('Ignore', key=i):
                             record['ignore'] = True
