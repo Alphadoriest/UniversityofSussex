@@ -280,12 +280,12 @@ grid_response = AgGrid(
     allow_unsafe_jscode=True,
 )
 
-    def replace_name(match):
-        full_name = match.group(0)
-        # Check if the name is already replaced
-        for original, replaced, _ in replaced_names:
-            if full_name == replaced:
-                return full_name
+def replace_name(match):
+    full_name = match.group(0)
+    # Check if the name is already replaced
+    for original, replaced, _ in replaced_names:
+        if full_name == replaced:
+            return full_name
     
         max_similarity = 0
         most_similar_name = None
