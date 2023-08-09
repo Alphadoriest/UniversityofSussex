@@ -517,14 +517,14 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
                     # Sort replaced_names by similarity score in descending order
                     replaced_names = sorted(replaced_names, key=lambda x: -x['similarity'])
                 
-                # Display the replacements
-                for i, record in enumerate(replaced_names):
-                    col1, col2 = st.columns(2)  # this will create two columns
-                    with col1:
-                        col1.write(f"Original: {record['original']}, Replaced: {record['replaced']}")
-                    with col2:
-                        if col2.button('Ignore', key=i):
-                            record['ignore'] = True
+                    # Display the replacements
+                    for i, record in enumerate(sorted(st.session_state.replaced_names, key=lambda x: -x['similarity'])):  # Sort by similarity
+                        col1, col2 = st.columns(2)  # this will create two columns
+                        with col1:
+                            col1.write(f"Original: {record['original']}, Replaced: {record['replaced']}")
+                        with col2:
+                            if col2.button('Ignore', key=i):
+                                record['ignore'] = True
             
                     # Store the resultant text and replaced_names and unmatched_names in session state
                     st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
@@ -539,7 +539,7 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
             
             # Display replaced, unmatched, preceding, and succeeding names from session state
             st.subheader("Names replaced:")
-            for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
+            for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x['similarity']):  # Sort by similarity
                 original_words = original.split()
                 replaced_words = replaced.split()
                 if len(original_words) != len(replaced_words):
