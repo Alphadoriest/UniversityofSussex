@@ -260,15 +260,16 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text: str, names_list: List[str], similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight):
+def replace_similar_names(text: str, names_list: List[str], similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight, ignored_names=None):
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
+    ignored_names = ignored_names or []
 
     def replace_name(match):
         full_name = match.group(0)  # Get the matched string
 
-        # Check if the name is already replaced
-        for record in replaced_names:
+        # Check if the name is already replaced or ignored
+        for record in replaced_names + ignored_names:
             if full_name == record['replaced'] and not record['ignore']:
                 return full_name
 
