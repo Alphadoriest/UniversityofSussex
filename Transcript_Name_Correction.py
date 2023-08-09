@@ -519,7 +519,7 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
                 
                 # Display the replacements
                 for i, record in enumerate(replaced_names):
-                    col1, col2 = st.beta_columns(2)  # this will create two columns
+                    col1, col2 = st.columns(2)  # this will create two columns
                     with col1:
                         col1.write(f"Original: {record['original']}, Replaced: {record['replaced']}")
                     with col2:
