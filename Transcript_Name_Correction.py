@@ -509,14 +509,17 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
                 if names_list and text:
                     # Replace names in the text
                     replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight)
+                    # Sort replaced_names by similarity score in descending order
+                    replaced_names = sorted(replaced_names, key=lambda x: -x['similarity'])
                 
                 # Display the replacements
                 for i, record in enumerate(replaced_names):
-                    st.write(f"Original: {record['original']}, Replaced: {record['replaced']}")
-                    
-                    # Add a button to ignore this replacement in future
-                    if st.button('Ignore', key=i):
-                        record['ignore'] = True
+                    col1, col2 = st.beta_columns(2)  # this will create two columns
+                    with col1:
+                        col1.write(f"Original: {record['original']}, Replaced: {record['replaced']}, Similarity: {record['similarity']}")
+                    with col2:
+                        if col2.button('Ignore', key=i):
+                            record['ignore'] = True
             
                     # Store the resultant text and replaced_names and unmatched_names in session state
                     st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
