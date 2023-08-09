@@ -499,86 +499,86 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
 # Create a collapsible section or container for the Graduation Subtitles Name Corrector
 with st.expander("3 - Graduation Subtitles Name Corrector"):
 
-            # Initialize subtitles_text as an empty string
-            subtitles_text = ''
+    # Initialize subtitles_text as an empty string
+    subtitles_text = ''
 
-            uploaded_subtitles_file = st.file_uploader("Choose a VTT or TXT Subtitles File ", type=["vtt", "txt"])
-            if uploaded_subtitles_file is not None:
-                subtitles_text = uploaded_subtitles_file.read().decode()
+    uploaded_subtitles_file = st.file_uploader("Choose a VTT or TXT Subtitles File ", type=["vtt", "txt"])
+    if uploaded_subtitles_file is not None:
+        subtitles_text = uploaded_subtitles_file.read().decode()
 
-            # Use the subtitles_text as the default value for the subtitles text_area
-            text = st.text_area("Alternatively, Enter Text From a Subtitles:", subtitles_text, key='subtitles_text')
+    # Use the subtitles_text as the default value for the subtitles text_area
+    text = st.text_area("Alternatively, Enter Text From a Subtitles:", subtitles_text, key='subtitles_text')
 
-# Initialization of session state
-if 'replaced_names' not in st.session_state:
-    st.session_state.replaced_names = []
+    # Initialization of session state
+    if 'replaced_names' not in st.session_state:
+        st.session_state.replaced_names = []
+        
+    if st.button("Press to Replace Names"):  
+        # Make sure both text and names_list are populated
+        if names_list and text:
+            # Replace names in the text
+            replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight)
+            # Sort replaced_names by similarity score in descending order
+            replaced_names = sorted(replaced_names, key=lambda x: -x['similarity'])
+    
+            # If 'replaced_names' exists in the session state, iterate over it and check for ignored names.
+            for previous_name in st.session_state.replaced_names:
+                if previous_name['ignore']:
+                    # Find the equivalent name in the new 'replaced_names' list and set its 'ignore' flag.
+                    for current_name in replaced_names:
+                        if current_name['original'] == previous_name['original']:
+                            current_name['ignore'] = True
+                            break
 
-if st.button("Press to Replace Names"):  
-    # Make sure both text and names_list are populated
-    if names_list and text:
-        # Replace names in the text
-        replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight)
-        # Sort replaced_names by similarity score in descending order
-        replaced_names = sorted(replaced_names, key=lambda x: -x['similarity'])
+    st.session_state.replaced_names = replaced_names
+    st.session_state.new_text = new_text
+    st.session_state.unmatched_names = unmatched_names
+    
+    # Display the replacements
+    for i, record in enumerate(sorted(st.session_state.replaced_names, key=lambda x: -x['similarity'])):  # Sort by similarity
+        col1, col2 = st.columns(2)  # this will create two columns
+        with col1:
+            col1.write(f"Original: {record['original']}, Replaced: {record['replaced']}")
+        with col2:
+            if col2.button('Ignore', key=f"ignore_button_{i}"):
+                record['ignore'] = True
 
-        # If 'replaced_names' exists in the session state, iterate over it and check for ignored names.
-        for previous_name in st.session_state.replaced_names:
-            if previous_name['ignore']:
-                # Find the equivalent name in the new 'replaced_names' list and set its 'ignore' flag.
-                for current_name in replaced_names:
-                    if current_name['original'] == previous_name['original']:
-                        current_name['ignore'] = True
-                        break
+    # Store the resultant text and replaced_names and unmatched_names in session state
+    st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
+    st.session_state.replaced_names = replaced_names
+    st.session_state.unmatched_names = unmatched_names
+    # Get the indices of unmatched names in names_list
+    unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
+    # Get the names that precede the unmatched names and store in the session state
+    st.session_state.preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
+    # Get the names that succeed the unmatched names and store in the session state
+    st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
 
-        st.session_state.replaced_names = replaced_names
-        st.session_state.new_text = new_text
-        st.session_state.unmatched_names = unmatched_names
-                
-                    # Display the replacements
-                    for i, record in enumerate(sorted(st.session_state.replaced_names, key=lambda x: -x['similarity'])):  # Sort by similarity
-                        col1, col2 = st.columns(2)  # this will create two columns
-                        with col1:
-                            col1.write(f"Original: {record['original']}, Replaced: {record['replaced']}")
-                        with col2:
-                            if col2.button('Ignore', key=f"ignore_button_{i}"):
-                                record['ignore'] = True
-            
-                    # Store the resultant text and replaced_names and unmatched_names in session state
-                    st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
-                    st.session_state.replaced_names = replaced_names
-                    st.session_state.unmatched_names = unmatched_names
-                    # Get the indices of unmatched names in names_list
-                    unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
-                    # Get the names that precede the unmatched names and store in the session state
-                    st.session_state.preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
-                    # Get the names that succeed the unmatched names and store in the session state
-                    st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
-            
-            # Display replaced, unmatched, preceding, and succeeding names from session state
-            st.subheader("Names replaced:")
-            for i, record in enumerate(sorted(st.session_state.replaced_names, key=lambda x: -x['similarity'])):  # Sort by similarity
-                original = record['original']
-                replaced = record['replaced']
-                similarity = record['similarity']
-            
-                # Create two columns: one for the text and one for the button
-                col1, col2 = st.columns([4, 1])  # Adjust the numbers for desired column widths
-            
-                # Then continue with your desired operations using original, replaced, and similarity
-                original_words = original.split()
-                replaced_words = replaced.split()
-            
-                with col1:
-                    if len(original_words) != len(replaced_words):
-                        col1.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
-                    else:
-                        col1.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
-            
-                with col2:
-                    if col2.button('Ignore', key=i):
-                        record['ignore'] = True
-            
-            st.subheader("Names not matched:")
+    # Display replaced, unmatched, preceding, and succeeding names from session state
+    st.subheader("Names replaced:")
+    for i, record in enumerate(sorted(st.session_state.replaced_names, key=lambda x: -x['similarity'])):  # Sort by similarity
+        original = record['original']
+        replaced = record['replaced']
+        similarity = record['similarity']
+    
+        # Create two columns: one for the text and one for the button
+        col1, col2 = st.columns([4, 1])  # Adjust the numbers for desired column widths
+    
+        # Then continue with your desired operations using original, replaced, and similarity
+        original_words = original.split()
+        replaced_words = replaced.split()
+    
+        with col1:
+            if len(original_words) != len(replaced_words):
+                col1.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
+            else:
+                col1.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
+    
+        with col2:
+            if col2.button('Ignore', key=i):
+                record['ignore'] = True
+    
+    st.subheader("Names not matched:")
             st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
             unmatched_names_str = ', '.join(st.session_state.unmatched_names)
             st.write(unmatched_names_str)
