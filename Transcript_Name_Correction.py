@@ -547,7 +547,7 @@ for original, replaced, similarity in sorted(st.session_state.replaced_names, ke
          replaced_words = replaced.split()
          if len(original_words) != len(replaced_words):
             st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
-        else:
+         else:
             st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
             
             st.subheader("Names not matched:")
