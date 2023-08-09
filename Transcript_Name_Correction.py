@@ -523,7 +523,7 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
                         with col1:
                             col1.write(f"Original: {record['original']}, Replaced: {record['replaced']}")
                         with col2:
-                            if col2.button('Ignore', key=i):
+                            if col2.button('Ignore', key=f"ignore_button_{i}"):
                                 record['ignore'] = True
             
                     # Store the resultant text and replaced_names and unmatched_names in session state
