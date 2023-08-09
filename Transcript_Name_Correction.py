@@ -289,7 +289,7 @@ def replace_similar_names(text: str, names_list: List[str], ignore_replacements:
         for i, ignore_replacement in enumerate(ignore_replacements):
             line = re.sub(pattern, lambda match: replace_name(match, ignore_replacement), line)
         processed_lines.append(line)
-            continue
+        continue
 
         line = re.sub(pattern, replace_name, line)
         processed_lines.append(line)
