@@ -248,18 +248,39 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text: str, names_list: List[str], ignore_replacements: List[bool]) -> Tuple[List[Tuple[str, str, float]], str]:
+def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str, float]], str]:
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
 
-    def replace_name(match, ignore_replacement):
-        # If the replacement should be ignored, return the original name
-        if ignore_replacement:
-            return match.group(0)
-        
-        # Existing code here...
+    def replace_name(match):
+        full_name = match.group(0)
+        # Check if the name is already replaced
+        for original, replaced, _ in replaced_names:
+            if full_name == replaced:
+                return full_name
+    
+        max_similarity = 0
+        most_similar_name = None
+        for name in names_list:
+            # Remove the "(Marked As Not Present)" marker for comparison
+            clean_name = name.replace(' (Marked As Not Present)', '')
+            sim = similarity(full_name, clean_name)
+            if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(clean_name.split())):  # Compare with clean_name
+                max_similarity = sim
+                most_similar_name = clean_name  # Use clean_name to replace
+    
+        if max_similarity >= similarity_threshold:
+            replaced_names.append((full_name, most_similar_name, max_similarity))
+            # Remove the name from unmatched_names if it was matched
+            if most_similar_name in unmatched_names:
+                unmatched_names.remove(most_similar_name)
+            return most_similar_name
+        else:
+            return full_name
 
-    # Updated code to use 'ignore_replacement' in the 'replace_name' function
+    # Updated regex pattern
+    pattern = r'\b([A-Z][a-z]+(?:(?: |-)[A-Z][a-z]+)*)\b'
+
     processed_lines = []
     lines = text.split('\n')
     for line in lines:
@@ -270,10 +291,6 @@ def replace_similar_names(text: str, names_list: List[str], ignore_replacements:
 
         for i, ignore_replacement in enumerate(ignore_replacements):
             line = re.sub(pattern, lambda match: replace_name(match, ignore_replacement), line)
-        processed_lines.append(line)
-        continue
-
-        line = re.sub(pattern, replace_name, line)
         processed_lines.append(line)
 
     new_text = '\n'.join(processed_lines)
