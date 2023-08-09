@@ -236,10 +236,6 @@ def decapitalize(text):
 
 #Correct all names in graduation subtitles (find and replace) functions
 
-def get_similar_names(text: str, name: str) -> List[str]:
-    # Split the name into words
-    name_words = name.split()
-
     # Create a regex pattern to match the name with optional whitespace between words
     pattern = r'\b' + r'\s*'.join(re.escape(word) for word in name_words) + r'\b'
 
