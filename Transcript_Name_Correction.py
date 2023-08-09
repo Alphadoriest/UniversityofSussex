@@ -264,35 +264,35 @@ def replace_similar_names(text: str, names_list: List[str], similarity_threshold
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
 
-def replace_name(match):
-    full_name = match.group(0)  # Get the matched string
+    def replace_name(match):
+        full_name = match.group(0)  # Get the matched string
 
-    # Check if the name is already replaced
-    for record in replaced_names:
-        if full_name == record['replaced'] and not record['ignore']:
+        # Check if the name is already replaced
+        for record in replaced_names:
+            if full_name == record['replaced'] and not record['ignore']:
+                return full_name
+
+        max_similarity = 0
+        most_similar_name = None
+        for name in unmatched_names:
+            clean_name = name.replace(' (Marked As Not Present)', '')
+            if match_word_count and len(full_name.split()) != len(clean_name.split()):
+                continue
+            sim = similarity(full_name, clean_name)
+            if sim > max_similarity:
+                max_similarity = sim
+                most_similar_name = name
+        if max_similarity >= similarity_threshold:
+            unmatched_names.remove(most_similar_name)
+            replaced_names.append({
+                'original': full_name, 
+                'replaced': most_similar_name, 
+                'similarity': max_similarity,  # Add the similarity score here
+                'ignore': False
+            })
+            return most_similar_name
+        else:
             return full_name
-
-    max_similarity = 0
-    most_similar_name = None
-    for name in unmatched_names:
-        clean_name = name.replace(' (Marked As Not Present)', '')
-        if match_word_count and len(full_name.split()) != len(clean_name.split()):
-            continue
-        sim = similarity(full_name, clean_name)
-        if sim > max_similarity:
-            max_similarity = sim
-            most_similar_name = name
-    if max_similarity >= similarity_threshold:
-        unmatched_names.remove(most_similar_name)
-        replaced_names.append({
-            'original': full_name, 
-            'replaced': most_similar_name, 
-            'similarity': max_similarity,  # Add the similarity score here
-            'ignore': False
-        })
-        return most_similar_name
-    else:
-        return full_name
 
     # Updated regex pattern
     pattern = r'\b([A-Z][a-z]+(?:(?: |-)[A-Z][a-z]+)*)\b'
