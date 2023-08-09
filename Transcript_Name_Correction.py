@@ -508,7 +508,7 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
                 # Make sure both text and names_list are populated
                 if names_list and text:
                     # Replace names in the text
-                    corrected_text = replace_similar_names(text, names_list, similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight)
+                    replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight)
                 
                 # Display the replacements
                 for i, record in enumerate(replaced_names):
