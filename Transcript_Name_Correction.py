@@ -529,16 +529,16 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
                                     # If the 'ignore' field is checked, remove this replacement from replaced_names
                                     replaced_names.remove(replacement)
 
-                    # Store the resultant text and replaced_names and unmatched_names in session state
-                    st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
-                    st.session_state.replaced_names = replaced_names
-                    st.session_state.unmatched_names = unmatched_names
-                    # Get the indices of unmatched names in names_list
-                    unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
-                    # Get the names that precede the unmatched names and store in the session state
-                    st.session_state.preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
-                    # Get the names that succeed the unmatched names and store in the session state
-                    st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
+# Store the resultant text and replaced_names and unmatched_names in session state
+st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
+st.session_state.replaced_names = replaced_names
+st.session_state.unmatched_names = unmatched_names
+# Get the indices of unmatched names in names_list
+unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
+# Get the names that precede the unmatched names and store in the session state
+st.session_state.preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
+# Get the names that succeed the unmatched names and store in the session state
+st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
             
             # Display replaced, unmatched, preceding, and succeeding names from session state
             st.subheader("Names replaced:")
