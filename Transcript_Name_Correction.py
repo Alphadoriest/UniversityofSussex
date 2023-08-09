@@ -483,15 +483,15 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
             formatted_names = format_names(names_list)
         
         # Create the names list as a Markdown string
-        names_md = ', '.join(
+names_md = ', '.join(
     [
         f'<span style="color:{color};"><strong><u>{name}</u></strong></span>'
-        if (len(name.split()) > 7 or re.search(r'[^a-zA-Z\s]', name))
+        if (len(name.split()) > 7 or re.search(r'[()\[\]{}]', name))
         else f'<span style="color:{color};">{name}</span>'
         for name, color in formatted_names
     ]
 )
-        st.text("If a name contains more than 7 words or contains non-alphanumeric characters, the name is underlined and made bold so it's easy to spot potential errors in extraction.")    
+        st.text("If a name contains more than 7 words or brackets, the name is underlined and made bold so it's easy to spot potential errors in extraction.")    
         # Display the names list using st.markdown
         st.markdown(names_md, unsafe_allow_html=True)
             
