@@ -484,7 +484,7 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
         
         # Create the names list as a Markdown string
         names_md = ', '.join([f'<span style="color:{color};"><strong><u>{name}</u></strong></span>' if (len(name.split()) > 7 or len(name.split()) < 2 or any(len(word) < 3 for word in name.split())) else f'<span style="color:{color};">{name}</span>' for name, color in formatted_names])
-            
+        st.text("If a name contains more than 7 or less than 2 words, or if any word in the name contains less than 3 characters, the name is underlined and made bold so it's easy to spot potential errors in extraction.")    
         # Display the names list using st.markdown
         st.markdown(names_md, unsafe_allow_html=True)
             
