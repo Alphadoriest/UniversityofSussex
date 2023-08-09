@@ -539,7 +539,12 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
             
             # Display replaced, unmatched, preceding, and succeeding names from session state
             st.subheader("Names replaced:")
-            for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x['similarity']):  # Sort by similarity
+            for record in sorted(st.session_state.replaced_names, key=lambda x: -x['similarity']):  # Sort by similarity
+                original = record['original']
+                replaced = record['replaced']
+                similarity = record['similarity']
+                
+    # Then continue with your desired operations using original, replaced, and similarity
                 original_words = original.split()
                 replaced_words = replaced.split()
                 if len(original_words) != len(replaced_words):
