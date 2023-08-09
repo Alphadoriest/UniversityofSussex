@@ -18,7 +18,7 @@ import regex
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, DataReturnMode
 import pandas as pd
 
-# Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
+# Initialize session state variables
 if 'extracted_names' not in st.session_state:
     st.session_state.extracted_names = []
 if 'formatted_names' not in st.session_state:
@@ -30,9 +30,9 @@ if 'succeeding_names' not in st.session_state:
 if 'new_text' not in st.session_state:
     st.session_state.new_text = ""
 if 'replaced_names' not in st.session_state:
-    st.session_state.replaced_names = []
+    st.session_state.replaced_names = pd.DataFrame()
 if 'unmatched_names' not in st.session_state:
-    st.session_state.unmatched_names = []
+    st.session_state.unmatched_names = pd.DataFrame()
 
 american_to_british_dict = {
   'honored':'honoured',
@@ -493,9 +493,21 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
         # Display the names list using st.markdown
         st.markdown(names_md, unsafe_allow_html=True)
 
-# Define new_text before the button click block
-replaced_names = pd.DataFrame()
-new_text = ""
+# Initialize session state variables
+if 'extracted_names' not in st.session_state:
+    st.session_state.extracted_names = []
+if 'formatted_names' not in st.session_state:
+    st.session_state.formatted_names = []
+if 'preceding_names' not in st.session_state:
+    st.session_state.preceding_names = []
+if 'succeeding_names' not in st.session_state:
+    st.session_state.succeeding_names = []
+if 'new_text' not in st.session_state:
+    st.session_state.new_text = ""
+if 'replaced_names' not in st.session_state:
+    st.session_state.replaced_names = pd.DataFrame()
+if 'unmatched_names' not in st.session_state:
+    st.session_state.unmatched_names = pd.DataFrame()
 
 # Create a collapsible section or container for the Graduation Subtitles Name Corrector
 with st.expander("3 - Graduation Subtitles Name Corrector"):
