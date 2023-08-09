@@ -5,3 +5,4 @@ metaphone
 python-Levenshtein
 lxml
 regex
+streamlit-aggrid
