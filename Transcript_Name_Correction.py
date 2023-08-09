@@ -542,7 +542,7 @@ st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 
 
 # Display replaced, unmatched, preceding, and succeeding names from session state
 st.subheader("Names replaced:")
-    for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
+ for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
          original_words = original.split()
          replaced_words = replaced.split()
          if len(original_words) != len(replaced_words):
