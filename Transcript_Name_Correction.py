@@ -493,6 +493,7 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
         st.markdown(names_md, unsafe_allow_html=True)
 
 # Define new_text before the button click block
+replaced_names = pd.DataFrame()
 new_text = ""
 
 # Create a collapsible section or container for the Graduation Subtitles Name Corrector
