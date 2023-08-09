@@ -539,18 +539,27 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
             
             # Display replaced, unmatched, preceding, and succeeding names from session state
             st.subheader("Names replaced:")
-            for record in sorted(st.session_state.replaced_names, key=lambda x: -x['similarity']):  # Sort by similarity
+            for i, record in enumerate(sorted(st.session_state.replaced_names, key=lambda x: -x['similarity'])):  # Sort by similarity
                 original = record['original']
                 replaced = record['replaced']
                 similarity = record['similarity']
-                
-    # Then continue with your desired operations using original, replaced, and similarity
+            
+                # Create two columns: one for the text and one for the button
+                col1, col2 = st.columns([4, 1])  # Adjust the numbers for desired column widths
+            
+                # Then continue with your desired operations using original, replaced, and similarity
                 original_words = original.split()
                 replaced_words = replaced.split()
-                if len(original_words) != len(replaced_words):
-                    st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
-                else:
-                    st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
+            
+                with col1:
+                    if len(original_words) != len(replaced_words):
+                        col1.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
+                    else:
+                        col1.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
+            
+                with col2:
+                    if col2.button('Ignore', key=i):
+                        record['ignore'] = True
             
             st.subheader("Names not matched:")
             st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
