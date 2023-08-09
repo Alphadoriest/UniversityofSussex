@@ -151,9 +151,6 @@ def extract_names(doc):
     # Regular expression for name extraction
     name_regex = re.compile(r'\b[A-Z][a-zA-Z]*\b')
 
-    # Regular expression for all uppercase word
-    all_caps_regex = re.compile(r'\b[A-Z]+\b')
-
     # Iterate over all tables and rows
     for table in doc.tables:
         for row in table.rows:
@@ -183,8 +180,8 @@ def extract_names(doc):
                     # 3. Matches a name pattern and the first cell is empty, or
                     # 4. There is only a single line or paragraph in the middle column cell
                     if not excluded_phrases_regex.search(text) and \
-                       ((all_caps_regex.match(words[0]) and word_count <= 7) or 
-                        (all_caps_regex.match(words[-1]) and word_count <= 7) or 
+                       ((re.search(r'^\b[A-Z]+\b', text) and word_count <= 7) or 
+                        (re.search(r'\b[A-Z]+\b$', text) and word_count <= 7) or 
                         (name_regex.search(text) and not first_cell.text.strip()) or
                         (len(paragraphs) == 1)):
                         # This line contains the name. 
