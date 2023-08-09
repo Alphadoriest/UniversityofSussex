@@ -539,14 +539,14 @@ unmatched_indices = [names_list.index(name) for name in st.session_state.unmatch
 st.session_state.preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
 # Get the names that succeed the unmatched names and store in the session state
 st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
-            
-            # Display replaced, unmatched, preceding, and succeeding names from session state
-            st.subheader("Names replaced:")
-            for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
-                original_words = original.split()
-                replaced_words = replaced.split()
-                if len(original_words) != len(replaced_words):
-                    st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
+
+# Display replaced, unmatched, preceding, and succeeding names from session state
+st.subheader("Names replaced:")
+    for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
+         original_words = original.split()
+         replaced_words = replaced.split()
+         if len(original_words) != len(replaced_words):
+            st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
                 else:
                     st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
             
