@@ -255,7 +255,7 @@ def replace_similar_names(text: str, names_list: List[str], ignore_replacements:
     def replace_name(match, ignore_replacement):
       if ignore_replacement:
         return match.group()  # return original match
-    else:
+      else:
         full_name = match.group(0)
         # Check if the name is already replaced
         for original, replaced, _ in replaced_names:
