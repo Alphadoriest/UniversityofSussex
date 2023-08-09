@@ -260,7 +260,7 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str, float]], str]:
+def replace_similar_names(text: str, names_list: List[str], similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight):
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
 
@@ -505,8 +505,10 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
 
             # Add a separate button for the name replacement process
             if st.button("Press to Replace Names"):  
-                # Replace names in the text
-                corrected_text = replace_similar_names(text, names_list, similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight)
+                # Make sure both text and names_list are populated
+                if names_list and text:
+                    # Replace names in the text
+                    corrected_text = replace_similar_names(text, names_list, similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight)
                 
                 # Display the replacements
                 for i, record in enumerate(replaced_names):
