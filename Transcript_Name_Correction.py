@@ -265,21 +265,6 @@ def replace_similar_names(text: str, names_list: List[str], similarity_threshold
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list  # replaced_names should be a list of dictionaries, each containing an 'ignore' field initially set to False
 
-gb = GridOptionsBuilder.from_dataframe(replaced_names)
-gb.set_checkbox_selection()
-gridOptions = gb.build()
-
-grid_response = AgGrid(
-    replaced_names,
-    gridOptions=gridOptions,
-    height=600,
-    width='100%',
-    data_return_mode=DataReturnMode.SELECTED_ROWS,
-    update_mode=GridUpdateMode.SELECTION_CHANGED,
-    fit_columns_on_grid_load=True,
-    allow_unsafe_jscode=True,
-)
-
 def replace_name(match):
     full_name = match.group(0)
     # Check if the name is already replaced
@@ -523,11 +508,28 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
             # Add a separate button for the name replacement process
             if st.button("Press to Replace Names"):  
                 if names_list and text:
-                            replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight)
-                            for replacement in grid_response['selected_rows']:
-                                if replacement['ignore']:
-                                    # If the 'ignore' field is checked, remove this replacement from replaced_names
-                                    replaced_names.remove(replacement)
+                    replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight)
+                    
+                    # Now, build the AgGrid using replaced_names returned from the function
+                    gb = GridOptionsBuilder.from_dataframe(replaced_names)
+                    gb.set_checkbox_selection()
+                    gridOptions = gb.build()
+        
+                    grid_response = AgGrid(
+                        replaced_names,
+                        gridOptions=gridOptions,
+                        height=600,
+                        width='100%',
+                        data_return_mode=DataReturnMode.SELECTED_ROWS,
+                        update_mode=GridUpdateMode.SELECTION_CHANGED,
+                        fit_columns_on_grid_load=True,
+                        allow_unsafe_jscode=True,
+                    )
+        
+                    for replacement in grid_response['selected_rows']:
+                        if replacement['ignore']:
+                            # If the 'ignore' field is checked, remove this replacement from replaced_names
+                            replaced_names.remove(replacement)
 
 # Store the resultant text and replaced_names and unmatched_names in session state
 st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
