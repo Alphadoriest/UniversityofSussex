@@ -252,7 +252,10 @@ def replace_similar_names(text: str, names_list: List[str], ignore_replacements:
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
 
-    def replace_name(match):
+    def replace_name(match, ignore_replacement):
+    if ignore_replacement:
+        return match.group()  # return original match
+    else:
         full_name = match.group(0)
         # Check if the name is already replaced
         for original, replaced, _ in replaced_names:
@@ -602,3 +605,5 @@ with st.expander("4 - Reformat Your VTT Into a Word Transcript"):
             # Provide download link for the Word file
             buffer.seek(0)  # Reset buffer position
             st.download_button('Download Word file', buffer, 'Transcript.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
+st.write(st.session_state.ignore_replacements)
