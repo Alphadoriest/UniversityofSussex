@@ -491,9 +491,9 @@ names_md = ', '.join(
         for name, color in formatted_names
     ]
 )
-        st.text("If a name contains more than 7 words or brackets, the name is underlined and made bold so it's easy to spot potential errors in extraction.")    
-        # Display the names list using st.markdown
-        st.markdown(names_md, unsafe_allow_html=True)
+st.text("If a name contains more than 7 words or brackets, the name is underlined and made bold so it's easy to spot potential errors in extraction.")    
+# Display the names list using st.markdown
+st.markdown(names_md, unsafe_allow_html=True)
             
 # Create a collapsible section or container for the Graduation Subtitles Name Corrector
 with st.expander("3 - Graduation Subtitles Name Corrector"):
