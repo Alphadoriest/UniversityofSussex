@@ -16,24 +16,6 @@ from docx.oxml.ns import nsdecls
 from docx.oxml import parse_xml
 import regex
 
-# Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
-if 'extracted_names' not in st.session_state:
-    st.session_state.extracted_names = []
-if 'formatted_names' not in st.session_state:
-    st.session_state.formatted_names = []
-if 'preceding_names' not in st.session_state:
-    st.session_state.preceding_names = []
-if 'succeeding_names' not in st.session_state:
-    st.session_state.succeeding_names = []
-if 'new_text' not in st.session_state:
-    st.session_state.new_text = ""
-if 'replaced_names' not in st.session_state:
-    st.session_state.replaced_names = []
-if 'unmatched_names' not in st.session_state:
-    st.session_state.unmatched_names = []
-if 'ignore_replacements' not in st.session_state:
-    st.session_state.ignore_replacements = [False] * len(names_list)
-
 american_to_british_dict = {
   'honored':'honoured',
   'honor':'honour',
@@ -480,6 +462,24 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
         st.text("If a name contains more than 7 words or contains brackets the name is underlined and made bold so it's easy to spot potential errors in extraction.")    
         # Display the names list using st.markdown
         st.markdown(names_md, unsafe_allow_html=True)
+
+# Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
+if 'extracted_names' not in st.session_state:
+    st.session_state.extracted_names = []
+if 'formatted_names' not in st.session_state:
+    st.session_state.formatted_names = []
+if 'preceding_names' not in st.session_state:
+    st.session_state.preceding_names = []
+if 'succeeding_names' not in st.session_state:
+    st.session_state.succeeding_names = []
+if 'new_text' not in st.session_state:
+    st.session_state.new_text = ""
+if 'replaced_names' not in st.session_state:
+    st.session_state.replaced_names = []
+if 'unmatched_names' not in st.session_state:
+    st.session_state.unmatched_names = []
+if 'ignore_replacements' not in st.session_state:
+    st.session_state.ignore_replacements = [False] * len(names_list)
             
 # Create a collapsible section or container for the Graduation Subtitles Name Corrector
 with st.expander("3 - Graduation Subtitles Name Corrector"):
