@@ -15,10 +15,8 @@ from pathlib import Path
 from docx.oxml.ns import nsdecls
 from docx.oxml import parse_xml
 import regex
-from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, DataReturnMode
-import pandas as pd
 
-# Initialize session state variables
+# Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
 if 'extracted_names' not in st.session_state:
     st.session_state.extracted_names = []
 if 'formatted_names' not in st.session_state:
@@ -30,9 +28,9 @@ if 'succeeding_names' not in st.session_state:
 if 'new_text' not in st.session_state:
     st.session_state.new_text = ""
 if 'replaced_names' not in st.session_state:
-    st.session_state.replaced_names = pd.DataFrame()
+    st.session_state.replaced_names = []
 if 'unmatched_names' not in st.session_state:
-    st.session_state.unmatched_names = pd.DataFrame()
+    st.session_state.unmatched_names = []
 
 american_to_british_dict = {
   'honored':'honoured',
@@ -262,16 +260,16 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text: str, names_list: List[str], similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight):
+def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str, float]], str]:
     replaced_names = []
-    unmatched_names = names_list[:]  # Make a copy of names_list  # replaced_names should be a list of dictionaries, each containing an 'ignore' field initially set to False
+    unmatched_names = names_list[:]  # Make a copy of names_list
 
-def replace_name(match):
-    full_name = match.group(0)
-    # Check if the name is already replaced
-    for original, replaced, _ in replaced_names:
-        if full_name == replaced:
-            return full_name
+    def replace_name(match):
+        full_name = match.group(0)
+        # Check if the name is already replaced
+        for original, replaced, _ in replaced_names:
+            if full_name == replaced:
+                return full_name
     
         max_similarity = 0
         most_similar_name = None
@@ -492,23 +490,7 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
         st.text("If a name contains more than 7 words or contains brackets the name is underlined and made bold so it's easy to spot potential errors in extraction.")    
         # Display the names list using st.markdown
         st.markdown(names_md, unsafe_allow_html=True)
-
-# Initialize session state variables
-if 'extracted_names' not in st.session_state:
-    st.session_state.extracted_names = []
-if 'formatted_names' not in st.session_state:
-    st.session_state.formatted_names = []
-if 'preceding_names' not in st.session_state:
-    st.session_state.preceding_names = []
-if 'succeeding_names' not in st.session_state:
-    st.session_state.succeeding_names = []
-if 'new_text' not in st.session_state:
-    st.session_state.new_text = ""
-if 'replaced_names' not in st.session_state:
-    st.session_state.replaced_names = pd.DataFrame()
-if 'unmatched_names' not in st.session_state:
-    st.session_state.unmatched_names = pd.DataFrame()
-
+            
 # Create a collapsible section or container for the Graduation Subtitles Name Corrector
 with st.expander("3 - Graduation Subtitles Name Corrector"):
 
@@ -524,50 +506,29 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
 
             # Add a separate button for the name replacement process
             if st.button("Press to Replace Names"):  
-                if names_list and text:
-                    replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight)
-                    
-                    # Now, build the AgGrid using replaced_names returned from the function
-                    gb = GridOptionsBuilder.from_dataframe(replaced_names)
-                    gb.set_checkbox_selection()
-                    gridOptions = gb.build()
-        
-                    grid_response = AgGrid(
-                        replaced_names,
-                        gridOptions=gridOptions,
-                        height=600,
-                        width='100%',
-                        data_return_mode=DataReturnMode.SELECTED_ROWS,
-                        update_mode=GridUpdateMode.SELECTION_CHANGED,
-                        fit_columns_on_grid_load=True,
-                        allow_unsafe_jscode=True,
-                    )
-        
-                    for replacement in grid_response['selected_rows']:
-                        if replacement['ignore']:
-                            # If the 'ignore' field is checked, remove this replacement from replaced_names
-                            replaced_names.remove(replacement)
+                if names_list and text:  # Check if both text boxes are populated
+                    replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
 
-# Store the resultant text and replaced_names and unmatched_names in session state
-st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
-st.session_state.replaced_names = replaced_names
-st.session_state.unmatched_names = unmatched_names
-# Get the indices of unmatched names in names_list
-unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
-# Get the names that precede the unmatched names and store in the session state
-st.session_state.preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
-# Get the names that succeed the unmatched names and store in the session state
-st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
-
-# Display replaced, unmatched, preceding, and succeeding names from session state
-st.subheader("Names replaced:")
-for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
-         original_words = original.split()
-         replaced_words = replaced.split()
-         if len(original_words) != len(replaced_words):
-            st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
-         else:
-            st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
+                    # Store the resultant text and replaced_names and unmatched_names in session state
+                    st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
+                    st.session_state.replaced_names = replaced_names
+                    st.session_state.unmatched_names = unmatched_names
+                    # Get the indices of unmatched names in names_list
+                    unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
+                    # Get the names that precede the unmatched names and store in the session state
+                    st.session_state.preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
+                    # Get the names that succeed the unmatched names and store in the session state
+                    st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
+            
+            # Display replaced, unmatched, preceding, and succeeding names from session state
+            st.subheader("Names replaced:")
+            for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
+                original_words = original.split()
+                replaced_words = replaced.split()
+                if len(original_words) != len(replaced_words):
+                    st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
+                else:
+                    st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
             
             st.subheader("Names not matched:")
             st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
