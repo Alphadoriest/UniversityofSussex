@@ -248,7 +248,7 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str, float]], str]:
+def replace_similar_names(text: str, names_list: List[str], ignore_replacements: List[bool]) -> Tuple[List[Tuple[str, str, float]], str, List[str]]:
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
 
