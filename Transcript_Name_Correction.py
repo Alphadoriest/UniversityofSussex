@@ -16,6 +16,22 @@ from docx.oxml.ns import nsdecls
 from docx.oxml import parse_xml
 import regex
 
+# Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
+if 'extracted_names' not in st.session_state:
+    st.session_state.extracted_names = []
+if 'formatted_names' not in st.session_state:
+    st.session_state.formatted_names = []
+if 'preceding_names' not in st.session_state:
+    st.session_state.preceding_names = []
+if 'succeeding_names' not in st.session_state:
+    st.session_state.succeeding_names = []
+if 'new_text' not in st.session_state:
+    st.session_state.new_text = ""
+if 'replaced_names' not in st.session_state:
+    st.session_state.replaced_names = []
+if 'unmatched_names' not in st.session_state:
+    st.session_state.unmatched_names = []
+
 american_to_british_dict = {
   'honored':'honoured',
   'honor':'honour',
@@ -248,14 +264,11 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text: str, names_list: List[str], ignore_replacements: List[bool]) -> Tuple[List[Tuple[str, str, float]], str, List[str]]:
+def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str, float]], str]:
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
 
-    def replace_name(match, ignore_replacement):
-      if ignore_replacement:
-        return match.group()  # return original match
-      else:
+    def replace_name(match):
         full_name = match.group(0)
         # Check if the name is already replaced
         for original, replaced, _ in replaced_names:
@@ -292,8 +305,7 @@ def replace_similar_names(text: str, names_list: List[str], ignore_replacements:
             processed_lines.append(line)
             continue
 
-        for i, ignore_replacement in enumerate(ignore_replacements):
-            line = re.sub(pattern, lambda match: replace_name(match, ignore_replacement), line)
+        line = re.sub(pattern, replace_name, line)
         processed_lines.append(line)
 
     new_text = '\n'.join(processed_lines)
@@ -482,24 +494,6 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
         st.text("If a name contains more than 7 words or contains brackets the name is underlined and made bold so it's easy to spot potential errors in extraction.")    
         # Display the names list using st.markdown
         st.markdown(names_md, unsafe_allow_html=True)
-
-# Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
-if 'extracted_names' not in st.session_state:
-    st.session_state.extracted_names = []
-if 'formatted_names' not in st.session_state:
-    st.session_state.formatted_names = []
-if 'preceding_names' not in st.session_state:
-    st.session_state.preceding_names = []
-if 'succeeding_names' not in st.session_state:
-    st.session_state.succeeding_names = []
-if 'new_text' not in st.session_state:
-    st.session_state.new_text = ""
-if 'replaced_names' not in st.session_state:
-    st.session_state.replaced_names = []
-if 'unmatched_names' not in st.session_state:
-    st.session_state.unmatched_names = []
-if 'ignore_replacements' not in st.session_state:
-    st.session_state.ignore_replacements = [False] * len(names_list)
             
 # Create a collapsible section or container for the Graduation Subtitles Name Corrector
 with st.expander("3 - Graduation Subtitles Name Corrector"):
@@ -517,7 +511,7 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
             # Add a separate button for the name replacement process
             if st.button("Press to Replace Names"):  
                 if names_list and text:  # Check if both text boxes are populated
-                    replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, st.session_state.ignore_replacements)
+                    replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
 
                     # Store the resultant text and replaced_names and unmatched_names in session state
                     st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
@@ -532,11 +526,9 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
             
             # Display replaced, unmatched, preceding, and succeeding names from session state
             st.subheader("Names replaced:")
-            for i, (original, replaced, similarity) in enumerate(sorted(st.session_state.replaced_names, key=lambda x: -x[2])):  # Sort by similarity
+            for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
                 original_words = original.split()
                 replaced_words = replaced.split()
-                # Add a checkbox for this name replacement
-                st.session_state.ignore_replacements[i] = st.checkbox(f"Ignore replacement: {original} -> {replaced}", value=st.session_state.ignore_replacements[i])
                 if len(original_words) != len(replaced_words):
                     st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
                 else:
@@ -605,5 +597,3 @@ with st.expander("4 - Reformat Your VTT Into a Word Transcript"):
             # Provide download link for the Word file
             buffer.seek(0)  # Reset buffer position
             st.download_button('Download Word file', buffer, 'Transcript.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-
-st.write(st.session_state.ignore_replacements)
