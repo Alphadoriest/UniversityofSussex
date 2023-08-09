@@ -16,6 +16,7 @@ from docx.oxml.ns import nsdecls
 from docx.oxml import parse_xml
 import regex
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, DataReturnMode
+import pandas as pd
 
 # Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
 if 'extracted_names' not in st.session_state:
