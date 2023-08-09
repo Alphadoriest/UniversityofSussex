@@ -491,7 +491,10 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
         st.text("If a name contains more than 7 words or contains brackets the name is underlined and made bold so it's easy to spot potential errors in extraction.")    
         # Display the names list using st.markdown
         st.markdown(names_md, unsafe_allow_html=True)
-            
+
+# Define new_text before the button click block
+new_text = ""
+
 # Create a collapsible section or container for the Graduation Subtitles Name Corrector
 with st.expander("3 - Graduation Subtitles Name Corrector"):
 
