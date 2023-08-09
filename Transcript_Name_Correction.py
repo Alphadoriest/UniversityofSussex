@@ -509,27 +509,30 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
             # Use the subtitles_text as the default value for the subtitles text_area
             text = st.text_area("Alternatively, Enter Text From a Subtitles:", subtitles_text, key='subtitles_text')
 
-            if st.button("Press to Replace Names"):  
-                # Make sure both text and names_list are populated
-                if names_list and text:
-                    # Replace names in the text
-                    replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight)
-                    # Sort replaced_names by similarity score in descending order
-                    replaced_names = sorted(replaced_names, key=lambda x: -x['similarity'])
-            
-                    # If 'replaced_names' exists in the session state, iterate over it and check for ignored names.
-                    if 'replaced_names' in st.session_state:
-                        for previous_name in st.session_state.replaced_names:
-                            if previous_name['ignore']:
-                                # Find the equivalent name in the new 'replaced_names' list and set its 'ignore' flag.
-                                for current_name in replaced_names:
-                                    if current_name['original'] == previous_name['original']:
-                                        current_name['ignore'] = True
-                                        break
-            
-                    st.session_state.replaced_names = replaced_names
-                    st.session_state.new_text = new_text
-                    st.session_state.unmatched_names = unmatched_names
+# Initialization of session state
+if 'replaced_names' not in st.session_state:
+    st.session_state.replaced_names = []
+
+if st.button("Press to Replace Names"):  
+    # Make sure both text and names_list are populated
+    if names_list and text:
+        # Replace names in the text
+        replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight)
+        # Sort replaced_names by similarity score in descending order
+        replaced_names = sorted(replaced_names, key=lambda x: -x['similarity'])
+
+        # If 'replaced_names' exists in the session state, iterate over it and check for ignored names.
+        for previous_name in st.session_state.replaced_names:
+            if previous_name['ignore']:
+                # Find the equivalent name in the new 'replaced_names' list and set its 'ignore' flag.
+                for current_name in replaced_names:
+                    if current_name['original'] == previous_name['original']:
+                        current_name['ignore'] = True
+                        break
+
+        st.session_state.replaced_names = replaced_names
+        st.session_state.new_text = new_text
+        st.session_state.unmatched_names = unmatched_names
                 
                     # Display the replacements
                     for i, record in enumerate(sorted(st.session_state.replaced_names, key=lambda x: -x['similarity'])):  # Sort by similarity
