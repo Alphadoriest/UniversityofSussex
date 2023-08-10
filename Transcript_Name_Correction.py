@@ -529,7 +529,7 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
                         if current_name['original'] == previous_name['original']:
                             current_name['ignore'] = True
                             break
-
+    replaced_names = []
     st.session_state.replaced_names = replaced_names
     st.session_state.new_text = new_text
     st.session_state.unmatched_names = unmatched_names
