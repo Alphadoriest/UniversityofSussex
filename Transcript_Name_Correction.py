@@ -260,37 +260,32 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text: str, names_list: List[str], similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight, ignored_names=None):
+def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str, float]], str]:
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
-    ignored_names = ignored_names or []
 
     def replace_name(match):
-        full_name = match.group(0)  # Get the matched string
-
-        # Check if the name is already replaced or ignored
-        for record in replaced_names + ignored_names:
-            if full_name == record['replaced'] and not record['ignore']:
+        full_name = match.group(0)
+        # Check if the name is already replaced
+        for original, replaced, _ in replaced_names:
+            if full_name == replaced:
                 return full_name
-
+    
         max_similarity = 0
         most_similar_name = None
-        for name in unmatched_names:
+        for name in names_list:
+            # Remove the "(Marked As Not Present)" marker for comparison
             clean_name = name.replace(' (Marked As Not Present)', '')
-            if match_word_count and len(full_name.split()) != len(clean_name.split()):
-                continue
             sim = similarity(full_name, clean_name)
-            if sim > max_similarity:
+            if sim > max_similarity and (not match_word_count or len(full_name.split()) == len(clean_name.split())):  # Compare with clean_name
                 max_similarity = sim
-                most_similar_name = name
+                most_similar_name = clean_name  # Use clean_name to replace
+    
         if max_similarity >= similarity_threshold:
-            unmatched_names.remove(most_similar_name)
-            replaced_names.append({
-                'original': full_name, 
-                'replaced': most_similar_name, 
-                'similarity': max_similarity,  # Add the similarity score here
-                'ignore': False
-            })
+            replaced_names.append((full_name, most_similar_name, max_similarity))
+            # Remove the name from unmatched_names if it was matched
+            if most_similar_name in unmatched_names:
+                unmatched_names.remove(most_similar_name)
             return most_similar_name
         else:
             return full_name
@@ -509,37 +504,11 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
             # Use the subtitles_text as the default value for the subtitles text_area
             text = st.text_area("Alternatively, Enter Text From a Subtitles:", subtitles_text, key='subtitles_text')
 
+            # Add a separate button for the name replacement process
             if st.button("Press to Replace Names"):  
-                # Make sure both text and names_list are populated
-                if names_list and text:
-                    # Replace names in the text
-                    replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, similarity_threshold, match_word_count, sequence_weight, fuzz_weight, metaphone_weight)
-                    # Sort replaced_names by similarity score in descending order
-                    replaced_names = sorted(replaced_names, key=lambda x: -x['similarity'])
-            
-                    # If 'replaced_names' exists in the session state, iterate over it and check for ignored names.
-                    if 'replaced_names' in st.session_state:
-                        for previous_name in st.session_state.replaced_names:
-                            if previous_name['ignore']:
-                                # Find the equivalent name in the new 'replaced_names' list and set its 'ignore' flag.
-                                for current_name in replaced_names:
-                                    if current_name['original'] == previous_name['original']:
-                                        current_name['ignore'] = True
-                                        break
-            
-                    st.session_state.replaced_names = replaced_names
-                    st.session_state.new_text = new_text
-                    st.session_state.unmatched_names = unmatched_names
-                
-                    # Display the replacements
-                    for i, record in enumerate(sorted(st.session_state.replaced_names, key=lambda x: -x['similarity'])):  # Sort by similarity
-                        col1, col2 = st.columns(2)  # this will create two columns
-                        with col1:
-                            col1.write(f"Original: {record['original']}, Replaced: {record['replaced']}")
-                        with col2:
-                            if col2.button('Ignore', key=f"ignore_button_{i}"):
-                                record['ignore'] = True
-            
+                if names_list and text:  # Check if both text boxes are populated
+                    replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
+
                     # Store the resultant text and replaced_names and unmatched_names in session state
                     st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
                     st.session_state.replaced_names = replaced_names
@@ -553,27 +522,13 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
             
             # Display replaced, unmatched, preceding, and succeeding names from session state
             st.subheader("Names replaced:")
-            for i, record in enumerate(sorted(st.session_state.replaced_names, key=lambda x: -x['similarity'])):  # Sort by similarity
-                original = record['original']
-                replaced = record['replaced']
-                similarity = record['similarity']
-            
-                # Create two columns: one for the text and one for the button
-                col1, col2 = st.columns([4, 1])  # Adjust the numbers for desired column widths
-            
-                # Then continue with your desired operations using original, replaced, and similarity
+            for original, replaced, similarity in sorted(st.session_state.replaced_names, key=lambda x: -x[2]):  # Sort by similarity
                 original_words = original.split()
                 replaced_words = replaced.split()
-            
-                with col1:
-                    if len(original_words) != len(replaced_words):
-                        col1.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
-                    else:
-                        col1.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
-            
-                with col2:
-                    if col2.button('Ignore', key=i):
-                        record['ignore'] = True
+                if len(original_words) != len(replaced_words):
+                    st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
+                else:
+                    st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
             
             st.subheader("Names not matched:")
             st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
