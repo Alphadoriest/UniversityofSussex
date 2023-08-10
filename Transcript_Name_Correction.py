@@ -527,7 +527,7 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
             # Add a separate button for the name replacement process
             if st.button("Press to Replace Names"):  
                 if names_list and text:  # Check if both text boxes are populated
-                    replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, ignore_list)  # Pass ignore_list to function
+                    replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, st.session_state['ignore_list'])  # Pass ignore_list to function
 
                     # Store the resultant text and replaced_names and unmatched_names in session state
                     st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
@@ -554,7 +554,7 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
                 else:
                     st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
                     if st.checkbox(f"Ignore {original} -> {replaced}"):
-                        ignore_list.append(original)
+                        st.session_state['ignore_list'].append(original)
                         # st.session_state.ignore_list = ignore_list
             
             st.subheader("Names not matched:")
