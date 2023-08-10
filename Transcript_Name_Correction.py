@@ -454,7 +454,7 @@ with st.expander("1 - Follow URL Below To Generate Subtitle VTT File From Vimeo 
 
 with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
 
-Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
+    # Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
     if 'extracted_names' not in st.session_state:
         st.session_state.extracted_names = []
     if 'formatted_names' not in st.session_state:
