@@ -31,6 +31,8 @@ if 'replaced_names' not in st.session_state:
     st.session_state.replaced_names = []
 if 'unmatched_names' not in st.session_state:
     st.session_state.unmatched_names = []
+if 'ignore_list' not in st.session_state:
+    st.session_state['ignore_list'] = []
 
 american_to_british_dict = {
   'honored':'honoured',
