@@ -31,8 +31,6 @@ if 'replaced_names' not in st.session_state:
     st.session_state.replaced_names = []
 if 'unmatched_names' not in st.session_state:
     st.session_state.unmatched_names = []
-if 'ignore_list' not in st.session_state:
-    st.session_state['ignore_list'] = []
 
 american_to_british_dict = {
   'honored':'honoured',
@@ -262,15 +260,15 @@ def similarity(a, b):
 
     return overall_similarity
 
-def replace_similar_names(text: str, names_list: List[str], ignore_list: List[str] = []) -> Tuple[List[Tuple[str, str, float]], str]:
+def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str, float]], str]:
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
 
     def replace_name(match):
         full_name = match.group(0)
-        # Check if the name is already replaced or in the ignore list
+        # Check if the name is already replaced
         for original, replaced, _ in replaced_names:
-            if full_name == replaced or full_name in ignore_list:
+            if full_name == replaced:
                 return full_name
     
         max_similarity = 0
@@ -496,24 +494,6 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
 # Create a collapsible section or container for the Graduation Subtitles Name Corrector
 with st.expander("3 - Graduation Subtitles Name Corrector"):
 
-            # Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
-            if 'extracted_names' not in st.session_state:
-                st.session_state.extracted_names = []
-            if 'formatted_names' not in st.session_state:
-                st.session_state.formatted_names = []
-            if 'preceding_names' not in st.session_state:
-                st.session_state.preceding_names = []
-            if 'succeeding_names' not in st.session_state:
-                st.session_state.succeeding_names = []
-            if 'new_text' not in st.session_state:
-                st.session_state.new_text = ""
-            if 'replaced_names' not in st.session_state:
-                st.session_state.replaced_names = []
-            if 'unmatched_names' not in st.session_state:
-                st.session_state.unmatched_names = []
-            if 'ignore_list' not in st.session_state:
-                st.session_state['ignore_list'] = []
-
             # Initialize subtitles_text as an empty string
             subtitles_text = ''
 
@@ -527,7 +507,7 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
             # Add a separate button for the name replacement process
             if st.button("Press to Replace Names"):  
                 if names_list and text:  # Check if both text boxes are populated
-                    replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list, st.session_state['ignore_list'])  # Pass ignore_list to function
+                    replaced_names, new_text, unmatched_names = replace_similar_names(text, names_list)  # Unpack unmatched_names
 
                     # Store the resultant text and replaced_names and unmatched_names in session state
                     st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
@@ -547,15 +527,8 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
                 replaced_words = replaced.split()
                 if len(original_words) != len(replaced_words):
                     st.markdown(f"**{original} -> {replaced} (Similarity: {similarity:.2f})**")
-                    if st.checkbox(f"Ignore {original} -> {replaced}"):
-                        ignore_list.append(original)
-                        # You could save ignore list in the session state or in a file/database for future use
-                        # st.session_state.ignore_list = ignore_list
                 else:
                     st.write(f"{original} -> {replaced} (Similarity: {similarity:.2f})")
-                    if st.checkbox(f"Ignore {original} -> {replaced}"):
-                        st.session_state['ignore_list'].append(original)
-                        # st.session_state.ignore_list = ignore_list
             
             st.subheader("Names not matched:")
             st.text("These can be addressed in one of two ways. Either copy the comma separated list and run just those names in another instance of the app at a lower threshold or browser search for the names surrounding the unmatched name and paste in the correct name in the updated subtitles text box. The app will reset after each addition, but all progress is saved.")
