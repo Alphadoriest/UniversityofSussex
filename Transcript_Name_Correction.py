@@ -508,28 +508,27 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
 
             # Use the subtitles_text as the default value for the subtitles text_area
             text = st.text_area("Alternatively, Enter Text From a Subtitles:", subtitles_text, key='subtitles_text')
-
            
             # Dictionary to store the state of checkboxes for each name
-                names_dict = {}
-                # Create checkboxes for each name
-                for name in names_list:
-                    names_dict[name] = st.checkbox(name, value=True)
+            names_dict = {}
+            # Create checkboxes for each name
+            for name in names_list:
+                names_dict[name] = st.checkbox(name, value=True)
             
-                if st.button("Press to Replace Names"):  
-                    if names_dict and text:  # Check if both text boxes are populated
-                        replaced_names, new_text, unmatched_names = replace_similar_names(text, names_dict)  # Pass names_dict instead of names_list
+            if st.button("Press to Replace Names"):  
+                if names_dict and text:  # Check if both text boxes are populated
+                    replaced_names, new_text, unmatched_names = replace_similar_names(text, names_dict)  # Pass names_dict instead of names_list
 
-                    # Store the resultant text and replaced_names and unmatched_names in session state
-                    st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
-                    st.session_state.replaced_names = replaced_names
-                    st.session_state.unmatched_names = unmatched_names
-                    # Get the indices of unmatched names in names_list
-                    unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
-                    # Get the names that precede the unmatched names and store in the session state
-                    st.session_state.preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
-                    # Get the names that succeed the unmatched names and store in the session state
-                    st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
+            # Store the resultant text and replaced_names and unmatched_names in session state
+            st.session_state.new_text = reformat_subtitles(new_text)  # Use reformat_subtitles here
+            st.session_state.replaced_names = replaced_names
+            st.session_state.unmatched_names = unmatched_names
+            # Get the indices of unmatched names in names_list
+            unmatched_indices = [names_list.index(name) for name in st.session_state.unmatched_names if name in names_list]
+            # Get the names that precede the unmatched names and store in the session state
+            st.session_state.preceding_names = [names_list[i-1] if i > 0 else None for i in unmatched_indices]
+            # Get the names that succeed the unmatched names and store in the session state
+            st.session_state.succeeding_names = [names_list[i+1] if i < len(names_list) - 1 else None for i in unmatched_indices]
             
             # Display replaced, unmatched, preceding, and succeeding names from session state
             st.subheader("Names replaced:")
