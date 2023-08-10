@@ -16,7 +16,7 @@ from docx.oxml.ns import nsdecls
 from docx.oxml import parse_xml
 import regex
 
-# Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
+# Initialize session state variables if they don't exist
 if 'extracted_names' not in st.session_state:
     st.session_state.extracted_names = []
 if 'formatted_names' not in st.session_state:
@@ -31,6 +31,8 @@ if 'replaced_names' not in st.session_state:
     st.session_state.replaced_names = []
 if 'unmatched_names' not in st.session_state:
     st.session_state.unmatched_names = []
+if 'names_dict' not in st.session_state:
+    st.session_state.names_dict = {}
 
 american_to_british_dict = {
   'honored':'honoured',
@@ -499,8 +501,23 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
 # Create a collapsible section or container for the Graduation Subtitles Name Corrector
 with st.expander("3 - Graduation Subtitles Name Corrector"):
 
-            # Initialize subtitles_text as an empty string
-            subtitles_text = ''
+            # Initialize session state variables if they don't exist
+            if 'extracted_names' not in st.session_state:
+                st.session_state.extracted_names = []
+            if 'formatted_names' not in st.session_state:
+                st.session_state.formatted_names = []
+            if 'preceding_names' not in st.session_state:
+                st.session_state.preceding_names = []
+            if 'succeeding_names' not in st.session_state:
+                st.session_state.succeeding_names = []
+            if 'new_text' not in st.session_state:
+                st.session_state.new_text = ""
+            if 'replaced_names' not in st.session_state:
+                st.session_state.replaced_names = []
+            if 'unmatched_names' not in st.session_state:
+                st.session_state.unmatched_names = []
+            if 'names_dict' not in st.session_state:
+                st.session_state.names_dict = {}
 
             uploaded_subtitles_file = st.file_uploader("Choose a VTT or TXT Subtitles File ", type=["vtt", "txt"])
             if uploaded_subtitles_file is not None:
