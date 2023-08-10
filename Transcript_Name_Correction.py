@@ -454,7 +454,22 @@ with st.expander("1 - Follow URL Below To Generate Subtitle VTT File From Vimeo 
 
 with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
 
-    uploaded_file = st.file_uploader("Choose a Ceremony In-Person List Word document", type="docx")
+Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
+    if 'extracted_names' not in st.session_state:
+        st.session_state.extracted_names = []
+    if 'formatted_names' not in st.session_state:
+        st.session_state.formatted_names = []
+    if 'preceding_names' not in st.session_state:
+        st.session_state.preceding_names = []
+    if 'succeeding_names' not in st.session_state:
+        st.session_state.succeeding_names = []
+    if 'new_text' not in st.session_state:
+        st.session_state.new_text = ""
+    if 'replaced_names' not in st.session_state:
+        st.session_state.replaced_names = []
+    if 'unmatched_names' not in st.session_state:
+        st.session_state.unmatched_names = []
+        uploaded_file = st.file_uploader("Choose a Ceremony In-Person List Word document", type="docx")
     
     # Initialize data as an empty list
     data = []
@@ -529,7 +544,7 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
                         if current_name['original'] == previous_name['original']:
                             current_name['ignore'] = True
                             break
-    replaced_names = []
+    
     st.session_state.replaced_names = replaced_names
     st.session_state.new_text = new_text
     st.session_state.unmatched_names = unmatched_names
