@@ -469,7 +469,8 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
         st.session_state.replaced_names = []
     if 'unmatched_names' not in st.session_state:
         st.session_state.unmatched_names = []
-        uploaded_file = st.file_uploader("Choose a Ceremony In-Person List Word document", type="docx")
+        
+    uploaded_file = st.file_uploader("Choose a Ceremony In-Person List Word document", type="docx")
     
     # Initialize data as an empty list
     data = []
