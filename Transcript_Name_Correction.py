@@ -236,15 +236,6 @@ def decapitalize(text):
 
 #Correct all names in graduation subtitles (find and replace) functions
 
-    # Create a regex pattern to match the name with optional whitespace between words
-    pattern = r'\b' + r'\s*'.join(re.escape(word) for word in name_words) + r'\b'
-
-    # Find all occurrences of the pattern in the text (case-insensitive)
-    similar_names = re.findall(pattern, text, flags=re.IGNORECASE)
-
-    # Remove duplicates and return the result
-    return list(set(similar_names))
-
 def similarity(a, b):
     sequence_similarity = SequenceMatcher(None, a, b).ratio()
     fuzz_similarity = fuzz.ratio(a, b) / 100.0
@@ -255,7 +246,7 @@ def similarity(a, b):
 
     # Apply penalty if one name is a single word and the other is multi-word
     if (len(a.split()) == 1 and len(b.split()) > 1) or (len(a.split()) > 1 and len(b.split()) == 1):
-        penalty_factor = 0.75  # Adjust this value to increase or decrease the penalty
+        penalty_factor = 0.10  # Adjust this value to increase or decrease the penalty
         overall_similarity *= penalty_factor
 
     return overall_similarity
@@ -263,6 +254,15 @@ def similarity(a, b):
 def replace_similar_names(text: str, names_list: List[str]) -> Tuple[List[Tuple[str, str, float]], str]:
     replaced_names = []
     unmatched_names = names_list[:]  # Make a copy of names_list
+
+        # Create a regex pattern to match the name with optional whitespace between words
+    pattern = r'\b' + r'\s*'.join(re.escape(word) for word in name_words) + r'\b'
+
+    # Find all occurrences of the pattern in the text (case-insensitive)
+    similar_names = re.findall(pattern, text, flags=re.IGNORECASE)
+
+    # Remove duplicates and return the result
+    return list(set(similar_names))
 
     def replace_name(match):
         full_name = match.group(0)
