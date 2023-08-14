@@ -496,7 +496,7 @@ with st.expander("2 - Name Extractor for Graduation Ceremony In-Person Lists"):
         names_md = ', '.join(
             [
                 f'<span style="color:{color};"><strong><u>{name}</u></strong></span>'
-                if (len(name.split()) > 7 or re.search(r'[()\[\]{}\'",;&*=+/?\\:\.-]', name))
+                if (len(name.split()) > 7 or re.search(r'[()\[\]{}\'",;&*=+/?:.]', name))
                 else f'<span style="color:{color};">{name}</span>'
                 for name, color in formatted_names
             ]
