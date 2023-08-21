@@ -402,6 +402,7 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
     return href
         
 #Name Corrector UI
+st.markdown("""
 <h1 style='text-align: center; font-size: 60px; color: white;'>Graduation Transcription Workflow Web Tool</h1>
 """, unsafe_allow_html=True)
 st.markdown("[Read the Workflow Document here for more information on how to use this app.](https://sussex.box.com/s/0mkoals6oqy9tkiasshos917zrlorrha)")
