@@ -443,6 +443,11 @@ if sequence_weight + fuzz_weight + metaphone_weight != 1.0:
 # Add the banner image at the top of the app
 st.image("banner2.jpg")
 
+# Match Word Count UI
+st.sidebar.header('Match Word Count')
+st.sidebar.text('Turning on ensures less mismatching, but more necessary if only relying on SequenceMatcher.')
+match_word_count = st.sidebar.checkbox('Should the number of words match?', value=False)
+
 with st.expander("1 - Follow URL Below To Generate Subtitle VTT File From Vimeo URL"):
 
     # Define the URL
