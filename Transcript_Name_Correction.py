@@ -15,6 +15,7 @@ from pathlib import Path
 from docx.oxml.ns import nsdecls
 from docx.oxml import parse_xml
 import regex
+import os
 
 # Ensure preceding_names, succeeding_names, new_text, replaced_names, and unmatched_names are in session state
 if 'extracted_names' not in st.session_state:
