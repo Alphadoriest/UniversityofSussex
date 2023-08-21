@@ -420,9 +420,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Add a slider in the sidebar
-theme = st.sidebar.selectbox('Select a theme', ('light', 'dark'))
-st.sidebar.markdown(f'You selected {theme} theme. Please restart the app with the corresponding theme in config.toml.')
-
 st.sidebar.header('Set Overall Similarity Threshold for Combined Methods')
 similarity_threshold = st.sidebar.slider(
     'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. Start at 0.30, identify when nonsense matches begin in Names Replaced, increase the threshold and run again.',
@@ -442,11 +439,6 @@ metaphone_weight = st.sidebar.slider ('Double Metaphone Weight', 0.0, 1.0, 0.34,
 # Ensure the sum of weights equal to 1
 if sequence_weight + fuzz_weight + metaphone_weight != 1.0:
     st.sidebar.error('Please adjust the weights so their sum equals to 1.0')
-
-# Match Word Count UI
-st.sidebar.header('Match Word Count')
-st.sidebar.text('Turning on ensures less mismatching, but more necessary if only relying on SequenceMatcher.')
-match_word_count = st.sidebar.checkbox('Should the number of words match?', value=False)
 
 # Add the banner image at the top of the app
 st.image("banner2.jpg")
