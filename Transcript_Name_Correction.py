@@ -403,9 +403,7 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
         
 #Name Corrector UI
 
-st.markdown("""
-<h1 style='text-align: center; font-size: 60px; color: white;'>Graduation Transcription Workflow Web Tool</h1>
-""", unsafe_allow_html=True)
+st.markdown("[Read the Workflow Document here for more information on how to use this app.](https://sussex.box.com/s/0mkoals6oqy9tkiasshos917zrlorrha)")
 
 # Add a slider in the sidebar
 st.sidebar.header('Set Overall Similarity Threshold for Combined Methods')
@@ -598,3 +596,6 @@ with st.expander("4 - Reformat Your VTT Into a Word Transcript"):
         buffer.seek(0)  # Reset buffer position
         download_file_name = f"{original_file_name} Transcript.docx"
         st.download_button('Download Word file', buffer, download_file_name, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
+with st.expander("5 - Use the Closed Captions Pool to add Captions to the Reformatted Transcript"):
+    st.markdown("[Closed Captions Pool](https://sussex.box.com/s/3asyl10xocjs0qmdkzpr39mvz9kukdsb)")
