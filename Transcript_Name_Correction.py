@@ -420,6 +420,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Add a slider in the sidebar
+theme = st.sidebar.selectbox('Select a theme', ('light', 'dark'))
+st.sidebar.markdown(f'You selected {theme} theme. Please restart the app with the corresponding theme in config.toml.')
+
 st.sidebar.header('Set Overall Similarity Threshold for Combined Methods')
 similarity_threshold = st.sidebar.slider(
     'Set your similarity threshold. Lower values make name matching more lenient, higher values make it stricter. Start at 0.30, identify when nonsense matches begin in Names Replaced, increase the threshold and run again.',
