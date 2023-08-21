@@ -608,5 +608,5 @@ with st.expander("4 - Reformat Your VTT Into a Word Transcript"):
         
         # Provide download link for the Word file
         buffer.seek(0)  # Reset buffer position
-        download_file_name = f"{original_file_name}Transcript.docx"
+        download_file_name = f"{original_file_name} Transcript.docx"
         st.download_button('Download Word file', buffer, download_file_name, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
