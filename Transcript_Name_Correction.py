@@ -584,26 +584,28 @@ with st.expander("3 - Graduation Subtitles Name Corrector"):
             st.markdown("To copy the replaced text to the clipboard, manually select the text above and use your browser's copy function (right-click and select 'Copy' or use the keyboard shortcut Ctrl/Cmd+C).")        
 
 with st.expander("4 - Reformat Your VTT Into a Word Transcript"):
-
-        # Initialize transcript_text as an empty string
-        transcript_text = ''
+    # Initialize transcript_text as an empty string
+    transcript_text = ''
+    original_file_name = ''  # Initialize to ensure variable exists even if no file is uploaded
+    
+    uploaded_transcript_file = st.file_uploader("Choose a Transcript VTT or TXT File ", type=["vtt", "txt"])
+    if uploaded_transcript_file is not None:
+        original_file_name, _ = os.path.splitext(uploaded_transcript_file.name)
+        transcript_text = uploaded_transcript_file.read().decode()
+    
+    # Use the transcript_text as the default value for the transcript text_area
+    transcript_text = st.text_area("Alternatively, Enter VTT/TXT Text:", transcript_text, key='transcript_text')
+    
+    # Reformat the transcript when a button is pressed
+    if st.button("Reformat VTT/TXT Into Transcript", key="reformat_button"):
+        if transcript_text:  # Check if transcript_text is not empty
+            reformatted_transcript, buffer = reformat_transcript(transcript_text)  # Unpack buffer
+            transcript_text = reformatted_transcript  # Overwrite transcript_text with the reformatted transcript    
         
-        uploaded_transcript_file = st.file_uploader("Choose a Transcript VTT or TXT File ", type=["vtt", "txt"])
-        if uploaded_transcript_file is not None:
-            transcript_text = uploaded_transcript_file.read().decode()
+        # Display the reformatted transcript
+        st.text_area("Reformatted Transcript:", transcript_text, key='reformatted_transcript')
         
-        # Use the transcript_text as the default value for the transcript text_area
-        transcript_text = st.text_area("Alternatively, Enter VTT/TXT Text:", transcript_text, key='transcript_text')
-        
-        # Reformat the transcript when a button is pressed
-        if st.button("Reformat VTT/TXT Into Transcript", key="reformat_button"):
-            if transcript_text:  # Check if transcript_text is not empty
-                reformatted_transcript, buffer = reformat_transcript(transcript_text)  # Unpack buffer
-                transcript_text = reformatted_transcript  # Overwrite transcript_text with the reformatted transcript    
-        
-            # Display the reformatted transcript
-            st.text_area("Reformatted Transcript:", transcript_text, key='reformatted_transcript')
-        
-            # Provide download link for the Word file
-            buffer.seek(0)  # Reset buffer position
-            st.download_button('Download Word file', buffer, 'Transcript.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        # Provide download link for the Word file
+        buffer.seek(0)  # Reset buffer position
+        download_file_name = f"{original_file_name}Transcript.docx"
+        st.download_button('Download Word file', buffer, download_file_name, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
