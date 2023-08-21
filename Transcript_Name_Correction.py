@@ -254,8 +254,8 @@ def similarity(a, b):
     # Calculate overall similarity
     overall_similarity = sequence_weight * sequence_similarity + fuzz_weight * fuzz_similarity + metaphone_weight * metaphone_similarity
 
-    # Apply penalty if one name is a single word and the other is multi-word
-    if (len(a.split()) == 1 and len(b.split()) > 1) or (len(a.split()) > 1 and len(b.split()) == 1):
+    # Apply penalty if a name in the subtitles (a) has less words than a name in the list (b)
+    if len(a.split()) < len(b.split()):
         penalty_factor = 0.05  # Adjust this value to increase or decrease the penalty
         overall_similarity *= penalty_factor
 
